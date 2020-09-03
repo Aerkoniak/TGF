@@ -5,11 +5,12 @@ import App from './App';
 import { Provider } from 'react-redux';
 
 ReactDOM.render(
-  <Provider>
-    <React.StrictMode>
-      <App />
-    </React.StrictMode>
-  </Provider>,
+  // <Provider>
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
+  // </Provider>
+  ,
   document.getElementById('root')
 );
 
