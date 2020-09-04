@@ -7,8 +7,8 @@ function createThunkMiddleware(extraArgument) {
       return next(action);
     };
   }
-  
+
   const thunk = createThunkMiddleware();
   thunk.withExtraArgument = createThunkMiddleware;
-  
+
   export default thunk;
