@@ -1,0 +1,1 @@
+// plik dla akcji ogólnych
