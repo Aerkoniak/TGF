@@ -7,6 +7,11 @@ const firebase = require("firebase/app");
 const firebaseConfig = require('./firebaseConfig');
 firebase.initializeApp(firebaseConfig);
 
+const admin = require('firebase-admin');
+const dbAdmin = require('./firebaseAdmin');
+admin.initializeApp(dbAdmin);
+
+const db = admin.firestore()
 
 
 const app = express();
