@@ -1,20 +1,25 @@
 import React, { Component } from 'react';
+import AOS from 'aos';
+import 'aos/dist/aos.css';
+
 import './css/App.css';
 import { BrowserRouter } from 'react-router-dom';
 import { connect } from 'react-redux'
 
 import LoginPanel from './components/LogReg/LoginPanel';
+import GamePanel from './components/GamePanel/GamePanel';
 
+
+AOS.init({
+  once: true
+});
 
 function App({ isLogged }) {
   return (
     <BrowserRouter>
       <section className="App">
-      <p className="loadPage">Oude Aard</p>
-      <p className="loadPage">Tekstowa Gra Fabularna</p>
-      <p className="loadPage"></p>
 
-        {isLogged ? <p className="loadPage">Zalogowany</p> : <LoginPanel />}
+        {isLogged ? <GamePanel /> : <LoginPanel />}
 
       </section>
     </BrowserRouter>
