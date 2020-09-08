@@ -1,15 +1,23 @@
 import React from 'react';
+import { connect } from 'react-redux'
 
 
-const LoginPanel = () => {
+const LoginPanel = ({ logIn }) => {
 
     return (
 
         <div className="logPanel">
-            <p className="loadPage">Nie zalogowano</p>
+            <div className="login" onClick={ logIn } >Zaloguj</div>
+            <div className="reg">Zarejestruj</div>
         </div>
 
     );
 }
 
-export default LoginPanel;
+const MapDispatchToProps = (dispatch) => {
+    return {
+        logIn: () => dispatch({ type: "LOG_IN" })
+    }
+}
+
+export default connect(null,MapDispatchToProps)(LoginPanel);
