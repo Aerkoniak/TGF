@@ -1,26 +1,28 @@
 import React, { Component } from 'react';
 import './css/App.css';
+import { BrowserRouter } from 'react-router-dom';
+import { connect } from 'react-redux'
 
-// function App() {
-//   return (
-//     <div className="App">
-//      <p>Tekstowa Gra Fabularna</p>
-//      <h4>Oude Aard</h4>
-//     </div>
-//   );
-// }
+import LoginPanel from './components/LogReg/LoginPanel';
 
-class App extends Component {
-  state = {}
-  render() {
-    return (
-      <div className="App">
-        <p>Tekstowa Gra Fabularna</p>
-        <h4>Oude Aard</h4>
-      </div>
-    );
-  }
+
+function App({ isLogged }) {
+  return (
+    <BrowserRouter>
+      <section className="App">
+      <p className="loadPage">Oude Aard</p>
+      <p className="loadPage">Tekstowa Gra Fabularna</p>
+      <p className="loadPage"></p>
+
+        {isLogged ? <p className="loadPage">Zalogowany</p> : <LoginPanel />}
+
+      </section>
+    </BrowserRouter>
+  );
 }
 
+const mapStateToProps = state => ({
+  isLogged: state.player.isLogged
+})
 
-export default App;
+export default connect(mapStateToProps)(App);
