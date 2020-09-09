@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter, Switch, Route } from 'react-router-dom';
 
+import Navbar from '../Navbar/Navbar';
 import HeroldPage from '../pages/HeroldPage';
 import SessionPage from '../pages/SessionPage';
 import TavernPage from '../pages/TavernPage';
@@ -12,7 +13,7 @@ import SettingsPage from '../pages/SettingsPage';
 const GamePanel = () => {
     return ( 
         <section className="gamePanel" data-aos="fade-up" >
-            <p>Nawigacja</p>
+            <Navbar />
             <Switch>
                 <Route exact path='/' component={HeroldPage} />
                 <Route path="/sessions" component={SessionPage} />
