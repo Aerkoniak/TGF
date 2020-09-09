@@ -29,7 +29,7 @@ p.loadPage {
 .logPanel {
   position: absolute;
   bottom: 20vh;
-  
+
   display: flex;
   width: 100%;
 }
@@ -46,4 +46,61 @@ p.loadPage {
 .reg {
   text-align: left;
   padding-left: 20px;
+}
+
+
+
+.navMob {
+  position: absolute;
+  right: 5vh;
+
+  border: 2px solid black;
+  height: 30px;
+  width: 30px;
+  border-radius: 50%;
+  text-align: center;
+  line-height: 27px;
+  text-decoration: none;
+  color: black;
+  background-color: #fff;
+}
+.navMob.active {
+  color: white;
+  background-color: grey;
+}
+
+.navMob:nth-of-type(1) {
+  bottom: 5vh;
+}
+.navMob:nth-of-type(2) {
+  bottom: 12vh;
+}
+.navMob:nth-of-type(3) {
+  bottom: 19vh;
+}
+.navMob:nth-of-type(4) {
+  bottom: 26vh;
+}
+.navMob:nth-of-type(5) {
+  bottom: 33vh;
+}
+
+.navMob.left {
+  left: 5vh;
+}
+
+
+nav.desktop {
+  display: none;
+}
+
+
+
+@media (min-width: 1280px) {
+  nav.mobile {
+    display: none;
+  }
+  nav.desktop {
+    display: block;
+  }
 }
