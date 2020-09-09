@@ -70,19 +70,19 @@ p.loadPage {
 }
 
 .navMob:nth-of-type(1) {
-  bottom: 5vh;
-}
-.navMob:nth-of-type(2) {
   bottom: 12vh;
 }
-.navMob:nth-of-type(3) {
+.navMob:nth-of-type(2) {
   bottom: 19vh;
 }
-.navMob:nth-of-type(4) {
+.navMob:nth-of-type(3) {
   bottom: 26vh;
 }
-.navMob:nth-of-type(5) {
+.navMob:nth-of-type(4) {
   bottom: 33vh;
+}
+.navMob:nth-of-type(5) {
+  bottom: 40vh;
 }
 
 .navMob.left {

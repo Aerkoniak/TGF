@@ -1,4 +1,4 @@
-const initState = { player: { name: "Aerkoniak", id: 0, rank: 1 }, isLogged: true, isLeftHanded: false };
+const initState = { player: { name: "Aerkoniak", id: 0, rank: 1 }, isLogged: false, isLeftHanded: false };
 
 
 const playerReducer = (state = initState, action) => {
@@ -7,6 +7,11 @@ const playerReducer = (state = initState, action) => {
         return {
             ...state,
             isLogged: true
+        };
+        case 'TOGGLE_HAND':
+            return {
+                ...state,
+                isLeftHanded: !state.player.isLeftHanded
         };
         
         default:
