@@ -1,5 +1,7 @@
 node_modules
 client/node_modules
+client/build
+client/build.zip
 .gitignore
 .env
 oudeaard2-firebase-adminsdk-qrxo5-aef75c348c.json
