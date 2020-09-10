@@ -4,6 +4,7 @@ import { BrowserRouter, Switch, Route } from 'react-router-dom';
 import Navbar from '../Navbar/Navbar';
 import HeroldPage from '../pages/HeroldPage';
 import SessionPage from '../pages/SessionPage';
+import MailPage from '../pages/MailPage';
 import TavernPage from '../pages/TavernPage';
 import CharakterPage from '../pages/CharakterPage';
 import SettingsPage from '../pages/SettingsPage';
@@ -17,6 +18,7 @@ const GamePanel = () => {
             <Switch>
                 <Route exact path='/' component={HeroldPage} />
                 <Route path="/sessions" component={SessionPage} />
+                <Route path="/mails" component={MailPage} />
                 <Route path="/tavern" component={TavernPage} />
                 <Route path="/charakter" component={CharakterPage} />
                 <Route path="/settings" component={SettingsPage} />
