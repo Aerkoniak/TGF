@@ -50,43 +50,56 @@ p.loadPage {
 
 
 
-.navMob {
-  position: absolute;
-  right: 5vh;
+.navMob,.navburger {
+  position: fixed;
+  right: 1vh;
 
   border: 2px solid black;
-  height: 30px;
-  width: 30px;
+  height: 40px;
+  width: 40px;
   border-radius: 50%;
   text-align: center;
-  line-height: 27px;
+  line-height: 37px;
   text-decoration: none;
   color: black;
   background-color: #fff;
+  font-size: 20px;
+  transition: 0.3s;
 }
+
+/* .navburger{
+  bottom: 10vh;
+
+  height: 40px;
+  width: 40px;
+} */
+
 .navMob.active {
   color: white;
-  background-color: grey;
+  background-color: #111;
 }
 
 .navMob:nth-of-type(1) {
-  bottom: 12vh;
+  bottom: 10vh;
 }
 .navMob:nth-of-type(2) {
-  bottom: 19vh;
+  bottom: 17vh;
 }
 .navMob:nth-of-type(3) {
-  bottom: 26vh;
+  bottom: 24vh;
 }
 .navMob:nth-of-type(4) {
-  bottom: 33vh;
+  bottom: 31vh;
 }
 .navMob:nth-of-type(5) {
-  bottom: 40vh;
+  bottom: 38vh;
+}
+.navMob:nth-of-type(6) {
+  bottom: 45vh;
 }
 
 .navMob.left {
-  left: 5vh;
+  left: 1vh;
 }
 
 
@@ -94,13 +107,51 @@ nav.desktop {
   display: none;
 }
 
+.mainPage {
+  padding: 10px 55px 0 10px;
+  text-align: justify;
+}
+
+.test {
+  padding: 10px 0 0;
+  font-size: 18px;
+}
+
+
 
 
 @media (min-width: 1280px) {
   nav.mobile {
     display: none;
   }
-  nav.desktop {
-    display: block;
+
+  .navSettings {
+    display: none;
   }
+
+  nav.desktop {
+    display: flex;
+    position: fixed;
+    margin-left: 20%;
+    width: 80%;
+  }
+  .navDesk {
+    flex-basis: 10%;
+    margin: 20px 50px;
+    text-align: center;
+    font-size: 24px;
+    text-decoration: none;
+    color: black;
+    border-bottom: 2px solid white;
+    transition: 0.2s;
+  }
+  .navDesk.active {
+    transform: translateY(10px);
+    border-bottom: 2px solid black;
+  }
+  section.mainPage {
+    padding-top: 50px
+  }
+
+
 }
