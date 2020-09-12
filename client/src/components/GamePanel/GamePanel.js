@@ -1,5 +1,7 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import { BrowserRouter, Switch, Route } from 'react-router-dom';
+import { setHandCoockie } from '../../data/actions/generalActions';
 
 import Navbar from '../Navbar/Navbar';
 import HeroldPage from '../pages/HeroldPage';
@@ -11,9 +13,10 @@ import SettingsPage from '../pages/SettingsPage';
 
 
 
-const GamePanel = () => {
+const GamePanel = ({ isLeftHanded, setHandCoockie }) => {
+    setHandCoockie();
     return ( 
-        <section className="gamePanel" data-aos="fade-up" >
+        <section className={isLeftHanded ? "gamePanel left" : "gamePanel"}  >
             <Navbar />
             <Switch>
                 <Route exact path='/' component={HeroldPage} />
@@ -29,5 +32,13 @@ const GamePanel = () => {
         </section>
      );
 }
- 
-export default GamePanel;
+const MapStateToProps = state => ({
+    isLeftHanded: state.player.isLeftHanded
+})
+const MapDispatchToProps = dispatch => {
+    return {
+        setHandCoockie: () => dispatch(setHandCoockie())
+    }
+}
+
+export default connect(MapStateToProps, MapDispatchToProps)(GamePanel);

@@ -11,7 +11,7 @@ const playerReducer = (state = initState, action) => {
         case 'TOGGLE_HAND':
             return {
                 ...state,
-                isLeftHanded: !state.player.isLeftHanded
+                isLeftHanded: action.value
         };
         
         default:
