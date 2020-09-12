@@ -21,6 +21,13 @@ body, #root {
   font-family: 'Courgette', cursive;
 }
 
+.gamePanel {
+  padding: 10px 55px 0 10px;
+}
+.gamePanel.left {
+  padding: 10px 10px 0 55px;
+}
+
 p.loadPage {
   text-align: center;
   padding-top: 50px;
@@ -108,7 +115,7 @@ nav.desktop {
 }
 
 .mainPage {
-  padding: 10px 55px 0 10px;
+  
   text-align: justify;
 }
 
