@@ -2,6 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux'
 
 import RegisterForm from './RegisterForm'
+import LoginForm from './LoginForm'
 
 
 const LoginPanel = ({ logIn }) => {
@@ -14,6 +15,7 @@ const LoginPanel = ({ logIn }) => {
             <div className="logPanel">
                 <div className="login" onClick={logIn} >
                     <p className="logSent">Zaloguj</p>
+                    <LoginForm loginClassName="loginForm" />
                 </div>
                 <div className="reg">
                     <p className="regSent">Zarejestruj</p>
