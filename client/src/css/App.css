@@ -43,6 +43,7 @@ p.loadPage {
 
 .logPanel * {
   flex-basis: 50%;
+  /* overflow: hidden; */
 }
 
 .login {
@@ -55,6 +56,15 @@ p.loadPage {
   padding-left: 20px;
 }
 
+.registerForm {
+  position: absolute;
+  left: 50vw;
+  top: -100%;
+}
+
+.registerSubmit {
+  margin: 0 auto;
+}
 
 
 .navMob,.navburger {
