@@ -1,6 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux'
 
+import RegisterForm from './RegisterForm'
+
 
 const LoginPanel = ({ logIn }) => {
 
@@ -10,8 +12,13 @@ const LoginPanel = ({ logIn }) => {
             <p className="loadPage">Tekstowa Gra Fabularna</p>
             
             <div className="logPanel">
-                <div className="login" onClick={logIn} >Zaloguj</div>
-                <div className="reg">Zarejestruj</div>
+                <div className="login" onClick={logIn} >
+                    <p className="logSent">Zaloguj</p>
+                </div>
+                <div className="reg">
+                    <p className="regSent">Zarejestruj</p>
+                    <RegisterForm formClassName="registerForm" />
+                </div>
             </div>
         </section>
 
