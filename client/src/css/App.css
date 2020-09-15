@@ -38,32 +38,55 @@ p.loadPage {
   bottom: 20vh;
 
   display: flex;
-  width: 100%;
+  align-items: flex-end;
+  width: 100vw;
+  height: 50vh;
 }
 
-.logPanel * {
+.logPanel .login, .logPanel .reg {
   flex-basis: 50%;
   /* overflow: hidden; */
 }
+
 
 .login {
   text-align: right;
   padding-right: 20px;
   border-right: 1px solid black;
+  height: 5vh;
 }
 .reg {
   text-align: left;
   padding-left: 20px;
+  height: 5vh;
 }
 
+.loginForm {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 50vw;
+  display: flex;
+  flex-wrap: wrap;
+  padding-left: 15px;
+}
 .registerForm {
   position: absolute;
-  left: 50vw;
-  top: -100%;
+  top: 0;
+  left: 50%;
+  width: 50vw;
+  display: flex;
+  flex-wrap: wrap;
+  padding-right: 15px;
+}
+.regInput, .logInput {
+  width: 100%;
 }
 
-.registerSubmit {
-  
+.registerSubmit, .loginSubmit {
+  background-color: #999;
+  border: none;
+  flex-basis: 100%;
 }
 
 
@@ -83,6 +106,8 @@ p.loadPage {
   font-size: 20px;
   transition: 0.3s;
 }
+
+
 
 /* .navburger{
   bottom: 10vh;
@@ -125,7 +150,6 @@ nav.desktop {
 }
 
 .mainPage {
-  
   text-align: justify;
 }
 
@@ -172,3 +196,4 @@ nav.desktop {
 
 
 }
+
