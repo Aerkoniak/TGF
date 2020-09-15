@@ -13,7 +13,7 @@ const LoginPanel = ({ logIn }) => {
             <p className="loadPage">Tekstowa Gra Fabularna</p>
             
             <div className="logPanel">
-                <div className="login" onClick={logIn} >
+                <div className="login" >
                     <p className="logSent">Zaloguj</p>
                     <LoginForm loginClassName="loginForm" />
                 </div>

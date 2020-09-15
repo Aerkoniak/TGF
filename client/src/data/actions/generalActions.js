@@ -14,4 +14,7 @@ export const toggleHand = ( argument ) => (dispatch) => {
     Cookies.set('isLeftHanded', argument, {expires: 1});
 }
 
+export const logIn = (dispatch) => {
+    dispatch({type: "LOG_IN"})
+}
  
