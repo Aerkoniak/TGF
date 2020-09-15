@@ -10,7 +10,8 @@ class LoginForm extends Component {
             <form className={this.props.loginClassName} onSubmit={(e) => e.preventDefault()}>
                 <input className="logInput" type="text"/>
                 <input className="logInput" type="password"/>
-                <input className='loginSubmit' type="submit" onClick={this.props.logIn} />
+                <input className='loginSubmit' type="submit" value="Zaloguj" onClick={this.props.logIn} />
+                <p className="formInfo">Logować będzie można się nickiem, jak i nazwą postaci (po wypełnieniu kreatora).</p>
             </form>
          );
     }

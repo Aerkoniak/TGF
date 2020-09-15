@@ -36,15 +36,19 @@ p.loadPage {
   text-align: center;
   padding-top: 50px;
 }
+p.formInfo {
+  text-align: center;
+  font-size: 15px;
+}
 
 .logPanel {
   position: absolute;
-  bottom: 20vh;
+  bottom: 10vh;
 
   display: flex;
   align-items: flex-end;
   width: 100vw;
-  height: 50vh;
+  height: 60vh;
 }
 
 .logPanel .login, .logPanel .reg {
@@ -107,11 +111,15 @@ p.loadPage {
   flex-basis: 100%;
   font-size: 16px;
   font-family: 'Courgette', cursive;
-  padding: 25px 0 5px;
+  padding: 30px 0 5px;
   border-bottom: 1px solid black;
+  margin-bottom: 10px;
 }
 .registerSubmit:focus, .loginSubmit:focus {
  outline: none;
+}
+.loginSubmit {
+  padding-top: 60px;
 }
 
 /* NAWIGACJE */
@@ -182,8 +190,28 @@ nav.desktop {
 
 @media (min-width: 1280px) {
   /* LOGINPANEL */
+  p.formInfo {
+    text-align: left;
+    font-size: 15px;
+    padding-bottom: 5px;
+  }
 
-  
+  .login, .reg {
+    height: 3vh;
+  }
+
+  .loginForm {
+    width: 30vw;
+    top: 20%;
+    left: 45vw;
+    transform: translateX(-100%);
+  }
+  .registerForm {
+    width: 30vw;
+    top: 20%;
+    left: 55vw;
+  }
+
 
 
   /* NAWIGACJA */
