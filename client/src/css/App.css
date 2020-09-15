@@ -2,6 +2,8 @@
 
 /* font-family: 'Courgette', cursive;  
 font-family: 'Open Sans', sans-serif;*/
+
+/* Główne elementy strony */
 * {
   margin: 0;
   padding: 0;
@@ -28,6 +30,8 @@ body, #root {
   padding: 10px 10px 0 55px;
 }
 
+/* LOGINPANEL */
+
 p.loadPage {
   text-align: center;
   padding-top: 50px;
@@ -48,7 +52,6 @@ p.loadPage {
   /* overflow: hidden; */
 }
 
-
 .login {
   text-align: right;
   padding-right: 20px;
@@ -59,6 +62,11 @@ p.loadPage {
   text-align: left;
   padding-left: 20px;
   height: 5vh;
+}
+
+.logSent, .regSent {
+  font-family: 'Courgette', cursive;
+  font-size: 16px;
 }
 
 .loginForm {
@@ -79,16 +87,34 @@ p.loadPage {
   flex-wrap: wrap;
   padding-right: 15px;
 }
+
+.loginForm.hidden, .registerForm.hidden {
+ display: none;
+}
+
 .regInput, .logInput {
   width: 100%;
+  font-size: 14px;
+  padding: 5px 0 5px 5px;
+}
+.regInput:focus, .logInput:focus {
+  outline-color: black;
 }
 
 .registerSubmit, .loginSubmit {
-  background-color: #999;
   border: none;
+  background-color: #fff;
   flex-basis: 100%;
+  font-size: 16px;
+  font-family: 'Courgette', cursive;
+  padding: 25px 0 5px;
+  border-bottom: 1px solid black;
+}
+.registerSubmit:focus, .loginSubmit:focus {
+ outline: none;
 }
 
+/* NAWIGACJE */
 
 .navMob,.navburger {
   position: fixed;
@@ -107,18 +133,12 @@ p.loadPage {
   transition: 0.3s;
 }
 
-
-
-/* .navburger{
-  bottom: 10vh;
-
-  height: 40px;
-  width: 40px;
-} */
-
 .navMob.active {
   color: white;
   background-color: #111;
+}
+.navMob:focus {
+  outline: none;
 }
 
 .navMob:nth-of-type(1) {
@@ -144,7 +164,6 @@ p.loadPage {
   left: 1vh;
 }
 
-
 nav.desktop {
   display: none;
 }
@@ -159,9 +178,15 @@ nav.desktop {
 }
 
 
-
+/* QUERIES */
 
 @media (min-width: 1280px) {
+  /* LOGINPANEL */
+
+  
+
+
+  /* NAWIGACJA */
   nav.mobile {
     display: none;
   }
@@ -193,7 +218,6 @@ nav.desktop {
   section.mainPage {
     padding-top: 50px
   }
-
 
 }
 
