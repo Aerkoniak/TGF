@@ -1,5 +1,8 @@
 // plik dla akcji ogólnych
 import Cookies from 'js-cookie';
+import axios from 'axios';
+
+import { createDate } from '../usefullFN';
 
 export const setHandCoockie = argument => dispatch => {
     const cookie = Cookies.get('isLeftHanded');
@@ -14,7 +17,30 @@ export const toggleHand = ( argument ) => (dispatch) => {
     Cookies.set('isLeftHanded', argument, {expires: 1});
 }
 
-export const logIn = (dispatch) => {
-    dispatch({type: "LOG_IN"})
+
+export const createAccount = account => dispatch => {
+    account.registrationDay = createDate();
+    axios.post('/registerAccount', {account})
+    .then(res => {
+        let player = res.data.player;
+        dispatch({type: 'REGISTER_PLAYER', player})
+    })
 }
  
+export const logInPlayer = account => dispatch => {
+    axios.post('/login', {account})
+    .then(res => {
+        let msg = false;
+        let player = false;
+        if (res.data.msg) {
+            msg = res.data.msg;
+            console.log(msg)
+            dispatch({type:'LOG_IN_NOT', msg})
+        } else {
+            player = res.data.player;
+            console.log(player)
+            dispatch({type: "LOG_IN", player})
+        }
+        
+    })
+}
