@@ -3,15 +3,21 @@ const initState = { player: { login: "Aerkoniak", id: 0, rank: 1 }, isLogged: fa
 
 const playerReducer = (state = initState, action) => {
     switch (action.type) {
+        case 'LOG_IN_CHECKING':
+        return {
+            ...state,
+            isLogged: "checking"
+        };
         case 'LOG_IN': 
         return {
             ...state,
-            isLogged: true,
+            isLogged: "logged", 
             player: action.player
         };
         case 'LOG_IN_NOT':
             return {
                 ...state,
+                isLogged: false,
                 msg: action.msg
             }
         case 'TOGGLE_HAND':
@@ -22,7 +28,7 @@ const playerReducer = (state = initState, action) => {
         case 'REGISTER_PLAYER': 
         return {
             ...state,
-            isLogged: true, 
+            isLogged: "logged", 
             player: action.player
         }
         
