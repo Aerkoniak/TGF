@@ -1,4 +1,4 @@
-const initState = { player: { name: "Aerkoniak", id: 0, rank: 1 }, isLogged: false, isLeftHanded: false };
+const initState = { player: { login: "Aerkoniak", id: 0, rank: 1 }, isLogged: false, isLeftHanded: false };
 
 
 const playerReducer = (state = initState, action) => {
@@ -6,13 +6,25 @@ const playerReducer = (state = initState, action) => {
         case 'LOG_IN': 
         return {
             ...state,
-            isLogged: true
+            isLogged: true,
+            player: action.player
         };
+        case 'LOG_IN_NOT':
+            return {
+                ...state,
+                msg: action.msg
+            }
         case 'TOGGLE_HAND':
             return {
                 ...state,
                 isLeftHanded: action.value
         };
+        case 'REGISTER_PLAYER': 
+        return {
+            ...state,
+            isLogged: true, 
+            player: action.player
+        }
         
         default:
             return state
