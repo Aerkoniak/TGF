@@ -1,14 +1,18 @@
 import React, { useState } from 'react';
-import { connect } from 'react-redux'
+// import { connect } from 'react-redux'
 
-import RegisterForm from './RegisterForm'
-import LoginForm from './LoginForm'
+//  ClassComponents
+// import RegisterForm from './RegisterForm'
+// import LoginForm from './LoginForm'
+
+import LogFormSFC from './LogFormSFC'
+import RegFormSFC from './RegFormSFC'
 
 
-const LoginPanel = ({ logIn }) => {
+const LoginPanel = () => {
 
-    const [isLogFormVisible, setLogVisibility] = useState(true);
-    const [isRegFormVisible, setRegVisibility] = useState(true);
+    const [isLogFormVisible, setLogVisibility] = useState(false);
+    const [isRegFormVisible, setRegVisibility] = useState(false);
 
     const toggleFormsVisibility = (e) => {
         if (e.target.className === "logSent") {
@@ -32,11 +36,11 @@ const LoginPanel = ({ logIn }) => {
             <div className="logPanel">
                 <div className="login" >
                     <p className="logSent" onClick={toggleFormsVisibility}>Zaloguj</p>
-                    <LoginForm loginClassName={isLogFormVisible ? "loginForm" : "loginForm hidden"} />
+                    <LogFormSFC loginClassName={isLogFormVisible ? "loginForm" : "loginForm hidden"} />
                 </div>
                 <div className="reg">
                     <p className="regSent" onClick={toggleFormsVisibility}>Zarejestruj</p>
-                    <RegisterForm formClassName={isRegFormVisible ? "registerForm" : "registerForm hidden"} />
+                    <RegFormSFC regClassName={isRegFormVisible ? "registerForm" : "registerForm hidden"} />
                 </div>
             </div>
         </section>
@@ -44,10 +48,6 @@ const LoginPanel = ({ logIn }) => {
     );
 }
 
-const MapDispatchToProps = (dispatch) => {
-    return {
-        logIn: () => dispatch({ type: "LOG_IN" })
-    }
-}
 
-export default connect(null, MapDispatchToProps)(LoginPanel);
+
+export default LoginPanel;
