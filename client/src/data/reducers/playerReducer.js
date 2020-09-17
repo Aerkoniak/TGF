@@ -1,4 +1,4 @@
-const initState = { player: { login: "Aerkoniak", id: 0, rank: 1 }, isLogged: false, isLeftHanded: false };
+const initState = { player: { login: "Aerkoniak", id: 0, rank: 1 }, isLogged: "logged", isLeftHanded: false };
 
 
 const playerReducer = (state = initState, action) => {

@@ -19,6 +19,7 @@ export const toggleHand = ( argument ) => (dispatch) => {
 
 
 export const createAccount = account => dispatch => {
+    dispatch({type: "LOG_IN_CHECKING"});
     account.registrationDay = createDate();
     axios.post('/registerAccount', {account})
     .then(res => {
@@ -28,6 +29,7 @@ export const createAccount = account => dispatch => {
 }
  
 export const logInPlayer = account => dispatch => {
+    dispatch({type: "LOG_IN_CHECKING"});
     axios.post('/login', {account})
     .then(res => {
         let msg = false;
