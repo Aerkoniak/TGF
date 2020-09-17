@@ -13,6 +13,7 @@ admin.initializeApp(dbAdmin);
 
 const db = admin.firestore()
 const players = db.collection("players");
+const stories = db.collection('stories')
 
 
 const app = express();
@@ -21,10 +22,10 @@ const port = process.env.PORT || 3000;
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-app.use(express.static(path.join(__dirname, 'build')));
-app.get('/*', function (req, res) {
-    res.sendFile(path.join(__dirname, 'build', 'index.html'));
-});
+// app.use(express.static(path.join(__dirname, 'build')));
+// app.get('/*', function (req, res) {
+//     res.sendFile(path.join(__dirname, 'build', 'index.html'));
+// });
 
 
 app.post("/registerAccount", (req, res) => {
@@ -65,10 +66,10 @@ app.post('/login', (req, res) => {
                     const document = doc.data();
                     if (password === document.password) {
                         let player = {};
-                        player.login = document.login;
-                        player.id = document.id;
-                        player.rank = document.rank;
-                        player.registrationDay = document.registrationDay;
+                        player = document;
+                        delete player.password;
+                        delete player.repPass;
+
                         res.json({ player });
                         console.log("Zalogowano")
                     } else {
@@ -80,6 +81,51 @@ app.post('/login', (req, res) => {
         })
 })
 
+
+app.post('/edit-account', (req, res) => {
+    let character = req.body.character;
+
+    players.doc(character.accountDocRef).set({ name: character.name }, { merge: true })
+    .then(ok => {
+        if (ok.writeTime) {
+            res.json({saved: true})
+        }
+    })
+})
+
+app.post('/stories-fetch', (req,res) => {
+    let storiesArray = [];
+    stories.get()
+    .then(snapshot => {
+        snapshot.forEach(doc => {
+            console.log(doc.data())
+            let story = doc.data();
+            storiesArray.push(story);
+        })
+        res.json({storiesArray})
+    })
+})
+
+app.post('/stories-update', (req,res) => {
+    let chapter = req.body.chapter;
+    let chaptersArray = [];
+
+    stories.doc(chapter.storyID).get()
+    .then(doc => {
+        let story = doc.data();
+        console.log(story.chapters)
+        chaptersArray = story.chapters;
+        chaptersArray.push(chapter);
+        console.log(chaptersArray);
+        
+        stories.doc(chapter.storyID).set({chapters: chaptersArray}, {merge: true})
+        .then(ok => {
+            if (ok.writeTime) {
+                res.json({saved: true})
+            }
+        })
+    })
+})
 
 app.listen(port, () => console.log(`Listening on port ${port}`));
 
