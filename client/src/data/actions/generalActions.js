@@ -36,13 +36,22 @@ export const logInPlayer = account => dispatch => {
         let player = false;
         if (res.data.msg) {
             msg = res.data.msg;
-            console.log(msg)
             dispatch({type:'LOG_IN_NOT', msg})
         } else {
             player = res.data.player;
-            console.log(player)
             dispatch({type: "LOG_IN", player})
         }
         
+    })
+}
+
+export const setCharName = character => dispatch => {
+    console.log(character);
+    axios.post('/edit-account', {character})
+    .then(res => {
+        if (res.data.saved) {
+            dispatch({type: 'SET_PLAYER_NAME', character});
+            dispatch({type: 'CLEAN_MSG'})
+        }
     })
 }
