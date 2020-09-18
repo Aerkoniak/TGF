@@ -42,10 +42,10 @@ app.post("/registerAccount", (req, res) => {
                         .then(ok => {
                             if (ok.writeTime) {
                                 let player = {};
-                                player.login = account.login;
-                                player.id = account.id;
-                                player.rank = account.rank;
-                                player.registrationDay = account.registrationDay;
+                                player = account;
+                                delete player.password;
+                                delete player.repPass;
+
                                 res.json({ player });
                             }
                         })
@@ -86,45 +86,47 @@ app.post('/edit-account', (req, res) => {
     let character = req.body.character;
 
     players.doc(character.accountDocRef).set({ name: character.name }, { merge: true })
-    .then(ok => {
-        if (ok.writeTime) {
-            res.json({saved: true})
-        }
-    })
-})
-
-app.post('/stories-fetch', (req,res) => {
-    let storiesArray = [];
-    stories.get()
-    .then(snapshot => {
-        snapshot.forEach(doc => {
-            console.log(doc.data())
-            let story = doc.data();
-            storiesArray.push(story);
-        })
-        res.json({storiesArray})
-    })
-})
-
-app.post('/stories-update', (req,res) => {
-    let chapter = req.body.chapter;
-    let chaptersArray = [];
-
-    stories.doc(chapter.storyID).get()
-    .then(doc => {
-        let story = doc.data();
-        console.log(story.chapters)
-        chaptersArray = story.chapters;
-        chaptersArray.push(chapter);
-        console.log(chaptersArray);
-        
-        stories.doc(chapter.storyID).set({chapters: chaptersArray}, {merge: true})
         .then(ok => {
             if (ok.writeTime) {
-                res.json({saved: true})
+                res.json({ saved: true })
             }
         })
-    })
+})
+
+app.post('/stories-fetch', (req, res) => {
+    let storiesArray = [];
+    stories.get()
+        .then(snapshot => {
+            snapshot.forEach(doc => {
+                console.log(doc.data())
+                let story = doc.data();
+                storiesArray.push(story);
+            })
+            res.json({ storiesArray })
+        })
+})
+
+app.post('/stories-update', (req, res) => {
+    let chapter = req.body.chapter;
+    let chaptersArray = [];
+    console.log(chapter.msg)
+
+    stories.doc(chapter.storyID).get()
+        .then(doc => {
+            let story = doc.data();
+            console.log(story.chapters)
+            chaptersArray = story.chapters;
+            chaptersArray.push(chapter);
+            console.log(chaptersArray);
+            console.log(chaptersArray[6].msg);
+            res.json(chaptersArray[6].msg)
+            stories.doc(chapter.storyID).set({ chapters: chaptersArray }, { merge: true })
+                .then(ok => {
+                    if (ok.writeTime) {
+                        res.json({ saved: true })
+                    }
+                })
+        })
 })
 
 app.listen(port, () => console.log(`Listening on port ${port}`));
