@@ -1,4 +1,4 @@
-const initState = { player: { login: "Aerkoniak", id: 0, rank: 1 }, isLogged: "logged", isLeftHanded: false };
+const initState = { player: { login: "Aerkoniak", id: 0, name: "" , rank: 1, accountDocRef: "9cxA9hHaBFP1pWFScTFp" }, isLogged: false, isLeftHanded: false };
 
 
 const playerReducer = (state = initState, action) => {
@@ -30,6 +30,18 @@ const playerReducer = (state = initState, action) => {
             ...state,
             isLogged: "logged", 
             player: action.player
+        };
+        case 'SET_PLAYER_NAME':
+            return {
+                ...state,
+                msg: "Imię zmienione",
+                player: action.character
+            };
+
+        case 'CLEAN_MSG': 
+        return {
+            ...state,
+            msg: false
         }
         
         default:
