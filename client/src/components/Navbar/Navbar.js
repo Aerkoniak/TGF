@@ -1,13 +1,15 @@
-import React, {useState} from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
 import { NavLink } from 'react-router-dom';
 
-const Navbar = ( { isLeftHanded } ) => {
+import { fetchStories } from '../../data/actions/storiesActions';
+
+const Navbar = ({ isLeftHanded, fetchStories }) => {
     // zrób checkboxa w settings do zmiany ustawienia nawigacji mobile
 
     return (
         <>
-            <nav className="mobile">
+            <nav className="mobile" onClick={fetchStories} >
                 {/* <button className="navburger"><i className="fas fa-bars"></i></button> */}
                 <NavLink exact className={isLeftHanded ? "navMob left" : "navMob"} to="/">H</NavLink>
                 <NavLink className={isLeftHanded ? "navMob left" : "navMob"} to="/sessions">S</NavLink>
@@ -25,11 +27,17 @@ const Navbar = ( { isLeftHanded } ) => {
                 <NavLink to="/settings" className="navDesk">Ustawienia</NavLink>
             </nav>
         </>
-    ); 
+    );
 }
 
 const mapStateToProps = state => ({
     isLeftHanded: state.player.isLeftHanded
-  })
+})
 
-export default connect(mapStateToProps)(Navbar);
+const MapDispatchToProps = dispatch => {
+    return {
+        fetchStories: () => dispatch(fetchStories())
+    }
+}
+
+export default connect(mapStateToProps, MapDispatchToProps)(Navbar);
