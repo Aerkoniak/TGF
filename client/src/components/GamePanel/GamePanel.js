@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
-import { BrowserRouter, Switch, Route } from 'react-router-dom';
+import { Switch, Route } from 'react-router-dom';
 import { setHandCoockie } from '../../data/actions/generalActions';
+import { fetchStories } from '../../data/actions/storiesActions';
 
 import Navbar from '../Navbar/Navbar';
 import HeroldPage from '../pages/HeroldPage';
@@ -10,34 +11,49 @@ import MailPage from '../pages/MailPage';
 import TavernPage from '../pages/TavernPage';
 import CharakterPage from '../pages/CharakterPage';
 import SettingsPage from '../pages/SettingsPage';
+import OneSession from '../pages/OneStory';
 
 
 
-const GamePanel = ({ isLeftHanded, setHandCoockie }) => {
-    setHandCoockie();
-    return ( 
+const GamePanel = ({ stories, downloadNeed, isLeftHanded, setHandCoockie, fetchStories }) => {
+
+    
+    useEffect(() => {
+        if (downloadNeed) {
+            fetchStories();
+        }
+    }, [downloadNeed])
+
+    const storiesRoutes = stories.map(storyRoute => ((
+        <Route key={storyRoute.id} path={`/sessions/id${storyRoute.id}`} render={(routeProps) => (<OneSession {...routeProps} id={storyRoute.id} story={storyRoute} />)} />
+    )))
+
+    return (
         <section className={isLeftHanded ? "gamePanel left" : "gamePanel"}  >
             <Navbar />
             <Switch>
                 <Route exact path='/' component={HeroldPage} />
-                <Route path="/sessions" component={SessionPage} />
+                <Route exact path="/sessions" component={SessionPage} />
                 <Route path="/mails" component={MailPage} />
                 <Route path="/tavern" component={TavernPage} />
                 <Route path="/charakter" component={CharakterPage} />
                 <Route path="/settings" component={SettingsPage} />
-                {/* {sessionsRoutes} */}
+                {storiesRoutes}
                 {/* <Route path='/storyCreator' render={(routeProps) => (<StoryCreator {...routeProps} player={player}></StoryCreator>)} /> */}
             </Switch>
 
         </section>
-     );
+    );
 }
 const MapStateToProps = state => ({
-    isLeftHanded: state.player.isLeftHanded
+    isLeftHanded: state.player.isLeftHanded,
+    stories: state.stories.stories,
+    downloadNeed: state.stories.downloadNeed
 })
 const MapDispatchToProps = dispatch => {
     return {
-        setHandCoockie: () => dispatch(setHandCoockie())
+        setHandCoockie: () => dispatch(setHandCoockie()),
+        fetchStories: () => dispatch(fetchStories())
     }
 }
 
