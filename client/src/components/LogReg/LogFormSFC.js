@@ -24,9 +24,9 @@ const LogFormSFC = ({ loginClassName, msg, isLogged, logInPlayer }) => {
         }
     }, [msg])
 
-    // const loadingIndicator = () => (
-    //     <div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-    // )
+    // const loadingIndicator = () => (( 
+    // <div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+    // ))
     // const loginSubmit = () => {
     //     return (
     //         <input className='loginSubmit' type="submit" value="Zaloguj" onSubmit={submitLogin} />
@@ -38,7 +38,7 @@ const LogFormSFC = ({ loginClassName, msg, isLogged, logInPlayer }) => {
             <input className="logInput" type="text" id="login" value={login} onChange={(e) => setLogin(e.target.value)} />
             <input className="logInput" type="password" id="password" value={password} onChange={(e) => setPassword(e.target.value)} />
             { isLogged === "checking" ?
-                <div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+                <div className="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
                 :
                 <input className='loginSubmit' type="submit" value="Zaloguj" onSubmit={submitLogin} />
             }

@@ -19,7 +19,7 @@ function App({ isLogged }) {
     <BrowserRouter>
       <section className="App">
 
-        {isLogged ? <GamePanel /> : <LoginPanel />}
+        {isLogged === "logged" ? <GamePanel /> : <LoginPanel />}
 
       </section>
     </BrowserRouter>
