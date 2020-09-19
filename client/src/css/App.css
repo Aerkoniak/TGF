@@ -124,7 +124,7 @@ p.formInfo {
 
 /* NAWIGACJE */
 
-.navMob,.navburger {
+.navMob,.navburger, .return {
   position: fixed;
   right: 1vh;
 
@@ -198,6 +198,7 @@ nav.desktop {
   font-size: 18px;
 }
 
+
  /* NOTEPAD */
 
  section.notepad {
@@ -206,6 +207,141 @@ nav.desktop {
    border-top: grey 2px double;
  }
 
+/* KP */
+
+.changeNameInput {
+  padding: 5px 10px;
+  
+}
+.changeNameInput:focus {
+  outline: black 1px solid;
+}
+
+.changeNameSpan {
+  font-size: 14px;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.submitCharName{
+  border: none;
+  background-color: #fff;
+  flex-basis: 100%;
+  font-size: 16px;
+  font-family: 'Courgette', cursive;
+  padding: 30px 0 5px;
+  border-bottom: 1px solid black;
+  margin-bottom: 10px;
+  margin-left: 10px;
+  cursor: pointer;
+}
+.submitCharName:focus {
+  outline: none;
+}
+
+
+
+/* SESJE */
+
+/* STORYLINK */
+
+.storyLink {
+  display: flex;
+  margin-top: 20px;
+  font-size: 18px;
+}
+.linkAuthor {
+  flex-basis: 50%;
+}
+.linkTitle {
+  color: black;
+}
+.linkDate {
+  display: none;
+}
+a.linkTitle {
+  text-decoration: underline;
+}
+
+/* SINGLESTORY */
+
+.storyInfo {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 10px 10px 15px 15px;
+}
+.storyTitle {
+  flex-basis: 100%;
+  font-weight: bold;
+  font-size: 22px;
+}
+.storyAuthor {
+  flex-basis: 40%;
+  font-size: 18px;
+  padding-top: 5px;
+}
+.storyDate {
+  flex-basis: 60%;
+  padding-top: 5px;
+}
+.openingMsg {
+  flex-basis: 100%;
+  padding: 10px 0;
+}
+
+.showIntro {
+  font-size: 14px;
+  text-decoration: underline;
+  padding: 20px 0 0;
+  flex-basis: 100%;
+}
+
+
+.answer {
+  flex-basis: 100%;
+  text-align: center;
+  border: 1px solid black;
+  margin: 10px 0;
+}
+
+.answerForm {
+  display: flex;
+  flex-basis: 100%;
+}
+.answerForm.hidden {
+  display: none;
+}
+
+.answerField {
+  flex-basis: 80%;
+  height: 30vh;
+  padding: 5px;
+}
+.answerSubmit {
+  flex-basis: 20%;
+}
+
+.answerField:focus{
+  outline: black 2px solid;
+}
+
+.singleStory .notepad {
+  display: none;
+}
+
+/* CHAPTER */
+
+.chapter {
+  display: flex;
+  padding-bottom: 20px;
+  border-bottom: 1px solid black;
+  flex-wrap: wrap;
+}
+.chapterAuthor {
+  text-align: right;
+  flex-basis: 100%;
+  margin-top: 5px;
+}
 
 
 
@@ -379,5 +515,36 @@ nav.desktop {
     font-size: 20px;
   }
 
+  /* SESJE */
+
+  .storyLink {
+    font-size: 20px;
+  }
+  .linkAuthor {
+  flex-basis: 30%;
+  }
+  .linkTitle {
+    flex-basis: 30%;
+  }
+  .linkDate {
+    display: block;
+    flex-basis: 30%;
+  }
+  .answerField {
+    flex-basis: 90%;
+    height: 25vh;
+    padding: 10px;
+    font-size: 18px;
+  }
+  .answerSubmit {
+    flex-basis: 10%;
+  }
+
+  .showIntro {
+    padding: 10px 0;
+  }
+  .singleStory .notepad {
+    display: block;
+  }
 }
 
