@@ -174,7 +174,11 @@ p.formInfo {
   bottom: 45vh;
 }
 
-.navMob.left {
+.navMob.newMessage {
+  border-color: red;
+}
+
+.mobile.left .navMob {
   left: 1vh;
 }
 
@@ -255,6 +259,9 @@ nav.desktop {
 }
 .linkTitle {
   color: black;
+}
+.linkTitle.new {
+  color: red;
 }
 .linkDate {
   display: none;
@@ -496,6 +503,9 @@ a.linkTitle {
   .navDesk.active {
     transform: translateY(10px);
     border-bottom: 2px solid black;
+  }
+  .navDesk.newMessage {
+    border-color: red;
   }
   section.mainPage {
     padding-top: 100px;
