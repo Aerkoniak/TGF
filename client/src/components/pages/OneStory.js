@@ -1,10 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 
-import { addChapter } from '../../data/actions/storiesActions';
+import { addChapter, changeSeenInSession } from '../../data/actions/storiesActions';
 
-const OneSession = ({ story, player, addChapter }) => {
+const OneSession = ({ story, player, addChapter, changeSeenInSession }) => {
+    useEffect(() => {
+        changeSeenInSession(player.id, story.refID)
+    }, [])
 
     const [intro, showIntro] = useState(false);
     const [textareaHidden, toggleTA] = useState(true);
@@ -22,6 +25,8 @@ const OneSession = ({ story, player, addChapter }) => {
         chapter.msg = answerText;
         chapter.storyID = story.refID;
 
+        console.log(answerText)
+
         addChapter(chapter)
         setAnswerText('');
         toggleTA(true);
@@ -29,10 +34,90 @@ const OneSession = ({ story, player, addChapter }) => {
 
 
 
+    const addLineBreaks = string => string.split('\n').map((text, index) => {
+        return (
+            <React.Fragment key={`${text}-${index}`}>
+                {text}
+                <br />
+            </React.Fragment>
+        )
+    });
+
+    // const editText = string => {
+    //     if (string.includes('\n')) {
+    //         console.log("spacja");
+    //         return (
+    //             string.split('\n').map((text, index) => (
+    //                 <React.Fragment key={`${text}-${index}`}>
+    //                     {text}
+    //                     <br />
+    //                 </React.Fragment>
+    //             )
+    //             ))
+    //     }
+
+        // } else if (string.includes('<b>')) {
+        //     console.log("start pogrubienia");
+        //     return (
+        //         string.split('<b>').map((text, index) => (
+        //             <React.Fragment key={`${text}-${index}`}>
+        //                 <strong>
+        //                     {text}
+        //                 </strong>
+        //             </React.Fragment>
+        //         )
+        //         ))
+        // } else if (string.includes('</b>')) {
+        //     console.log('koniec pogrubienia');
+        //     return (
+        //         string.split('<b>').map((text, index) => (
+        //             <React.Fragment key={`${text}-${index}`}>
+        //                 <strong>
+        //                     {text}
+        //                 </strong>
+        //             </React.Fragment>
+        //         )
+        //         ))
+        // }
+    //      else {
+    //         return (
+    //             <React.Fragment>
+    //                 {string}
+    //             </React.Fragment>
+    //         )
+    //     }
+    // }
+
+
+    // const editText = (string) => (
+    //     if (string.includes('\n')) {}
+    //     string.split('\n').map((text, index) => (
+    //         <React.Fragment key={`${text}-${index}`}>
+    //             {text}
+    //             <br /> 
+    //         </React.Fragment>
+    //     )),
+    //     string.split('<b>').map((text,index) => (
+    //         <React.Fragment>
+    //             <strong>
+    //                 {text}
+    //            </strong>
+    //         </React.Fragment>
+    //     )),
+    //     string.split('</b>').map((text,index) => (
+    //         <React.Fragment>
+    //             <strong>
+    //                 {text}
+    //            </strong>
+    //         </React.Fragment>
+    //     ))
+    // )
+
     const chapters = story.chapters.map(chapter => ((
         <div className="chapter" key={chapter.id}  >
             <p className="chapterAuthor"  >{chapter.author.name}</p>
-            <p className="chapterMsg">{`${chapter.msg}`}</p>
+            <p className="chapterMsg">{addLineBreaks(chapter.msg)}</p>
+
         </div>
     ))).reverse()
 
@@ -45,6 +130,7 @@ const OneSession = ({ story, player, addChapter }) => {
                 <p className="storyDate">{story.startDate}</p>
                 <p className="showIntro" onClick={() => showIntro(!intro)}  >Kliknij by pokazać lub schować wstęp</p>
                 <p className="showIntro">Żeby pojawiła się opcja odpisu na sesję wymagane jest nadanie sobie imienia w <strong>KP</strong></p>
+
                 {player.name ? <p className="answer" onClick={() => toggleTA(!textareaHidden)} >Odpisz</p> : null}
 
                 {intro ? <p className="openingMsg">{`${story.openMsg}`}</p> : null}
@@ -52,6 +138,7 @@ const OneSession = ({ story, player, addChapter }) => {
                     <textarea className="answerField" value={answerText} onChange={(e) => setAnswerText(e.target.value)} ></textarea>
                     <input className="answerSubmit" type="submit" value="Wyślij" />
                 </form>
+
             </div>
             <div className="chapters">
                 {chapters}
@@ -71,7 +158,8 @@ const MapStateToProps = state => ({
     player: state.player.player
 })
 const MapDispatchToProps = dispatch => ({
-    addChapter: (chapter) => dispatch(addChapter(chapter))
+    addChapter: (chapter) => dispatch(addChapter(chapter)),
+    changeSeenInSession: (id, refID) => dispatch(changeSeenInSession(id, refID)),
 })
 
 export default connect(MapStateToProps, MapDispatchToProps)(OneSession);
