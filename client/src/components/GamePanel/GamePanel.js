@@ -17,7 +17,12 @@ import OneSession from '../pages/OneStory';
 
 const GamePanel = ({ stories, downloadNeed, isLeftHanded, setHandCoockie, fetchStories }) => {
 
-    
+
+    useEffect(() => {
+        fetchStories();
+        setHandCoockie()
+    }, []);
+
     useEffect(() => {
         if (downloadNeed) {
             fetchStories();
