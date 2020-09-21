@@ -56,7 +56,6 @@ app.post("/registerAccount", (req, res) => {
 app.post('/login', (req, res) => {
     let account = req.body.account;
     const { login, password } = account;
-    console.log(account);
     players.where("login", "==", `${login}`).get()
         .then(snapshot => {
             if (snapshot.size === 0) {
@@ -98,7 +97,6 @@ app.post('/stories-fetch', (req, res) => {
     stories.get()
         .then(snapshot => {
             snapshot.forEach(doc => {
-                console.log(doc.data())
                 let story = doc.data();
                 storiesArray.push(story);
             })
@@ -107,26 +105,68 @@ app.post('/stories-fetch', (req, res) => {
 })
 
 app.post('/stories-update', (req, res) => {
-    let chapter = req.body.chapter;
-    let chaptersArray = [];
-    console.log(chapter.msg)
+    console.log("stories-update");
 
-    stories.doc(chapter.storyID).get()
-        .then(doc => {
-            let story = doc.data();
-            console.log(story.chapters)
-            chaptersArray = story.chapters;
-            chaptersArray.push(chapter);
-            console.log(chaptersArray);
-            console.log(chaptersArray[6].msg);
-            res.json(chaptersArray[6].msg)
-            stories.doc(chapter.storyID).set({ chapters: chaptersArray }, { merge: true })
-                .then(ok => {
-                    if (ok.writeTime) {
-                        res.json({ saved: true })
+    if (req.body.chapter) {
+        let chapter = req.body.chapter;
+        let chaptersArray = [];
+        let spectatorsArray = [];
+
+        stories.doc(chapter.storyID).get()
+            .then(doc => {
+                let story = doc.data();
+                chaptersArray = story.chapters;
+                chaptersArray.push(chapter);
+                spectatorsArray = story.spectators
+
+                let isNewSpectator = false;
+                // Ustawiamy isSpectator na false i tworzymy obiekt spec. 
+                let spectator = {};
+                spectator.name = chapter.author.name;
+                spectator.id = chapter.author.id;
+                spectator.seen = true;
+                // Mapujemy tablicę obecnych spectatorów, jeśli jeden z nich ma to samo ID co osoba odpisująca to ustawiamy isNewSpectator na true, a jednocześnie temu samemu spectatorowi zmieniami seen na true.
+                spectatorsArray.map(spectator => {
+                    spectator.seen = false;
+                    if (spectator.id === chapter.author.id) {
+                        isNewSpectator = true;
+                        spectator.seen = true;
                     }
                 })
-        })
+                // jeśli po zmapowaniu całej tablicy isNewSpectator wciąż jest false to pushujemy go do tablicy
+                if (!isNewSpectator) {
+                    spectatorsArray.push(spectator)
+                }
+
+                stories.doc(chapter.storyID).set({ chapters: chaptersArray, spectators: spectatorsArray }, { merge: true })
+                    .then(ok => {
+                        if (ok.writeTime) {
+                            res.json({ saved: true })
+                        }
+                    })
+            })
+    } else if (req.body.seen) {
+        let { id, refID } = req.body.seen;
+        let spectatorsArray = [];
+
+        stories.doc(refID).get()
+            .then(doc => {
+                let story = doc.data();
+                spectatorsArray = story.spectators
+
+                spectatorsArray.map(spectator => {
+                    if (spectator.id === id) {
+                        spectator.seen = true;
+                    }
+                })
+                stories.doc(refID).set({ spectators: spectatorsArray }, { merge: true })
+                    .then(ok => {
+                        if (ok.writeTime) {
+                            res.json({ saved: true })
+                        }
+                    })
+            })
+    }
 })
 
 app.listen(port, () => console.log(`Listening on port ${port}`));
