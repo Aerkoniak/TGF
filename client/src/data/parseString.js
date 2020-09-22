@@ -84,6 +84,46 @@ export const parseString = (string) => {
     })
 
     // zwracamy z funkcji tablicę utworzoną na jej początku, teraz już pełną odpowiednio posegregowanych stringów, mapujemy ją i ZWRACAMY z każdego mapowanego elementu React.Fragment;
-    
+    return (
+        newArrayOfStrings.map((oneString, index) => {
+            if (oneString.normalText) {
+                return (
+                    <React.Fragment key={`${oneString}-${index}`}>
+                        {oneString.normalText}
+                        <br />
+                    </React.Fragment>
+                )
+            } else if (oneString.fullBoldText) {
+                return (
+                    <React.Fragment key={`${oneString}-${index}`}>
+                        <strong>{oneString.fullBoldText}</strong>
+                        <br />
+                    </React.Fragment>
+                )
+            } else if (oneString.boldenTextInMiddle) {
+                return (
+                    <React.Fragment key={`${oneString}-${index}`}>
+                        {oneString.beforeBoldedTag}<strong>{oneString.boldenTextInMiddle}</strong>{oneString.afterBoldedTag}
+                        <br />
+                    </React.Fragment>
+                )
+            } else if (oneString.boldTextFinish) {
+                return (
+                    <React.Fragment key={`${oneString}-${index}`}>
+                        {oneString.normalTextOpened}<strong>{oneString.boldTextFinish}</strong>
+                        <br />
+                    </React.Fragment>
+                )
+            } else if (oneString.boldenFirstText) {
+                return (
+                    <React.Fragment key={`${oneString}-${index}`}>
+                        <strong>{oneString.boldenFirstText}</strong>{oneString.normalLaterText}
+                        <br />
+                    </React.Fragment>
+                )
+            }
+
+        })
+    )
 
 }
