@@ -1,4 +1,4 @@
-const initState = { player: { login: "Aerkoniak", id: 0, name: "" , rank: 1, accountDocRef: "9cxA9hHaBFP1pWFScTFp" }, isLogged: false, isLeftHanded: false };
+const initState = { player: { login: "Aerkoniak", id: 0, name: "Ferr" , rank: 1, accountDocRef: "9cxA9hHaBFP1pWFScTFp" }, isLogged: false, isLeftHanded: false };
 
 
 const playerReducer = (state = initState, action) => {
