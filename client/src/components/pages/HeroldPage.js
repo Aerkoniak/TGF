@@ -10,6 +10,7 @@ const HeroldPage = ({ player }) => {
             <p className="test">Póki co nie ma tu wielu możliwości, lecz każdego dnia krok po kroczku coś nowego jest dodawane.</p>
             <p className="test">Ostatnio zmienił się trochę układ strony, a także dodałem możliwość nadania imienia swojej postaci w dziale <strong>KP</strong>.</p>
             <p className="test"><strong>Changelog:</strong></p>
+            <p className="test"><strong>22.09: </strong> BBcode zrobiony po łebkach, szczegóły w sesji. Odkładam go na później, bo moja psychika nie zniesie takiej walki bez efektów. Na wersję beta wystarczy. <strong>Nie zamknięcie tagu pogrubi wam całą sesję, ale nie ruszy następnych postów.</strong></p>
             <p className="test"><strong>21.09: </strong> naprawione błędne wyświetlanie się wiadomości, które pomimo "entera" wyświetlały się w 1 linii. Dodane zostały <strong>powiadomienia</strong> dla wersji komputerowej i mobilnej, choć nie odznaczają one linku w trybie natychmiastowym. Potrzebna jest jakaś aktywność, np przejście na inną zakładkę. </p>
             <p className="test"><strong>18.09: </strong>naprawiony został błąd, który "pozornie" nadawał imię, pozwalając odpisać w sesji, a nie zapisywał go w bazie danych. Błąd występował jeśli próbowało się nadać imię w tej samej sesji w której nastąpiła rejestracja konta.</p>
             <p className="test"><strong>17.09: </strong>zrobiona została podstrona obsługująca sesje, a także działające pole odpisu, bez żadnej waloryzacji póki co jednak.</p>
@@ -18,9 +19,12 @@ const HeroldPage = ({ player }) => {
             <section className="notepad">
                 <h4 className="note">Notatnik roboczy:</h4>
                 <h4 className="note">czyli spis rzeczy, które będę robił</h4>
-                <p className="test"> - BB CODE! - wysoki priorytet</p>
                 <p className="test"> - dodanie opcji autologowania opartego o cookies - średni priorytet</p>
                 <p className="test"> - usprawnienie działania powiadomień - niski priorytet</p>
+                <p className="test"> - dalszy BB CODE! - niski priorytet</p>
+                <p className="test"> - poczta? </p>
+                <p className="test"> - ciut bardziej rozbudowany kreator postaci i podgląd profili? </p>
+
             </section>
 
         </section>
