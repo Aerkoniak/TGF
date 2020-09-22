@@ -2,11 +2,20 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 
+import {parseString} from '../../data/parseString';
+
 import { addChapter, changeSeenInSession } from '../../data/actions/storiesActions';
 
 const OneSession = ({ story, player, addChapter, changeSeenInSession }) => {
+
     useEffect(() => {
-        changeSeenInSession(player.id, story.refID)
+        story.spectators.map(spectator => {
+                if (spectator.id === player.id) {
+                    if (!spectator.seen) {
+                       changeSeenInSession(player.id, story.refID)
+                    } 
+                }
+            })
     }, [])
 
     const [intro, showIntro] = useState(false);
@@ -32,6 +41,11 @@ const OneSession = ({ story, player, addChapter, changeSeenInSession }) => {
         toggleTA(true);
     }
 
+    // const string = "Cześć Misza,\nmam tu <b>pogrubiony<b> tekst,\nco z tym zrobić możesz?"
+    // const array = parseString(string)
+
+   const advancedString = "<b>Cześć<b>,\nTym razem mamy nieco jeszcze bardziej <b>zaawansowany string, który ma w sobie wszystko.\nCzy popsuje Ci on<b> funkcję?";
+    // const array = parseString(advancedString)
 
 
     const addLineBreaks = string => string.split('\n').map((text, index) => {
@@ -43,81 +57,12 @@ const OneSession = ({ story, player, addChapter, changeSeenInSession }) => {
         )
     });
 
-    // const editText = string => {
-    //     if (string.includes('\n')) {
-    //         console.log("spacja");
-    //         return (
-    //             string.split('\n').map((text, index) => (
-    //                 <React.Fragment key={`${text}-${index}`}>
-    //                     {text}
-    //                     <br />
-    //                 </React.Fragment>
-    //             )
-    //             ))
-    //     }
-
-        // } else if (string.includes('<b>')) {
-        //     console.log("start pogrubienia");
-        //     return (
-        //         string.split('<b>').map((text, index) => (
-        //             <React.Fragment key={`${text}-${index}`}>
-        //                 <strong>
-        //                     {text}
-        //                 </strong>
-        //             </React.Fragment>
-        //         )
-        //         ))
-        // } else if (string.includes('</b>')) {
-        //     console.log('koniec pogrubienia');
-        //     return (
-        //         string.split('<b>').map((text, index) => (
-        //             <React.Fragment key={`${text}-${index}`}>
-        //                 <strong>
-        //                     {text}
-        //                 </strong>
-        //             </React.Fragment>
-        //         )
-        //         ))
-        // }
-    //      else {
-    //         return (
-    //             <React.Fragment>
-    //                 {string}
-    //             </React.Fragment>
-    //         )
-    //     }
-    // }
-
-
-    // const editText = (string) => (
-    //     if (string.includes('\n')) {}
-    //     string.split('\n').map((text, index) => (
-    //         <React.Fragment key={`${text}-${index}`}>
-    //             {text}
-    //             <br /> 
-    //         </React.Fragment>
-    //     )),
-    //     string.split('<b>').map((text,index) => (
-    //         <React.Fragment>
-    //             <strong>
-    //                 {text}
-    //            </strong>
-    //         </React.Fragment>
-    //     )),
-    //     string.split('</b>').map((text,index) => (
-    //         <React.Fragment>
-    //             <strong>
-    //                 {text}
-    //            </strong>
-    //         </React.Fragment>
-    //     ))
-    // )
+    
 
     const chapters = story.chapters.map(chapter => ((
         <div className="chapter" key={chapter.id}  >
             <p className="chapterAuthor"  >{chapter.author.name}</p>
-            <p className="chapterMsg">{addLineBreaks(chapter.msg)}</p>
-
+            <p className="chapterMsg">{parseString(chapter.msg)}</p>
         </div>
     ))).reverse()
 
@@ -130,7 +75,7 @@ const OneSession = ({ story, player, addChapter, changeSeenInSession }) => {
                 <p className="storyDate">{story.startDate}</p>
                 <p className="showIntro" onClick={() => showIntro(!intro)}  >Kliknij by pokazać lub schować wstęp</p>
                 <p className="showIntro">Żeby pojawiła się opcja odpisu na sesję wymagane jest nadanie sobie imienia w <strong>KP</strong></p>
-
+                {/* <p className="test">{parseString(advancedString)}</p> */}
                 {player.name ? <p className="answer" onClick={() => toggleTA(!textareaHidden)} >Odpisz</p> : null}
 
                 {intro ? <p className="openingMsg">{`${story.openMsg}`}</p> : null}
