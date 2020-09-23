@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 
 import { setCharName } from '../../data/actions/generalActions';
 
-const CharakterCreator = ({ msg, player, setCharName }) => {
+const NameCreator = ({ msg, player, setCharName }) => {
 
     const [name, setName] = useState("");
     const [warnings, setWarnings] = useState(false);
@@ -71,4 +71,4 @@ const MapDispatchToProps = dispatch => {
     }
 }
 
-export default connect(MapStateToProps, MapDispatchToProps)(CharakterCreator);
+export default connect(MapStateToProps, MapDispatchToProps)(NameCreator);
