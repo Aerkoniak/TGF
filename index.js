@@ -55,7 +55,7 @@ app.post("/registerAccount", (req, res) => {
 
 app.post('/login', (req, res) => {
     let account = req.body.account;
-    const { login, password } = account;
+    const { login, password, lastLogged } = account;
     players.where("login", "==", `${login}`).get()
         .then(snapshot => {
             if (snapshot.size === 0) {
@@ -66,11 +66,12 @@ app.post('/login', (req, res) => {
                     if (password === document.password) {
                         let player = {};
                         player = document;
-                        delete player.password;
+                        // delete player.password;
                         delete player.repPass;
 
                         res.json({ player });
-                        console.log("Zalogowano")
+                        console.log("Zalogowano");
+                        players.doc(player.accountDocRef).set({lastLog: lastLogged}, {merge: true});
                     } else {
                         console.log("Złe hasło");
                         res.json({ msg: "Złe hasło" })
