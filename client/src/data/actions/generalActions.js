@@ -3,55 +3,101 @@ import Cookies from 'js-cookie';
 import axios from 'axios';
 
 import { createDate } from '../usefullFN';
+import { connect } from 'react-redux';
 
 export const setHandCoockie = argument => dispatch => {
     const cookie = Cookies.get('isLeftHanded');
     if (cookie === "true") {
-        dispatch({type: "TOGGLE_HAND", value: true})
+        dispatch({ type: "TOGGLE_HAND", value: true })
     }
 }
 
-export const toggleHand = ( argument ) => (dispatch) => {
+export const toggleHand = (argument) => (dispatch) => {
     Cookies.remove('isLeftHanded');
-    dispatch({type: "TOGGLE_HAND", value: argument});
-    Cookies.set('isLeftHanded', argument, {expires: 1});
+    dispatch({ type: "TOGGLE_HAND", value: argument });
+    Cookies.set('isLeftHanded', argument, { expires: 1 });
+}
+
+export const AutoLogging = argument => dispatch => {
+    console.log("Autologowanie")
+    const cookie = Cookies.get('autoLog');
+    if (cookie === "true") {
+        dispatch({ type: "TOGGLE_AUTOLOG", payload: true });
+        let account = {}
+        account.login = Cookies.get('autoLogLogin');
+        account.password = Cookies.get('autoLogPassword');
+        account.lastLogged = createDate();
+        console.log(account)
+
+        axios.post('/login', { account })
+            .then(res => {
+                let msg = false;
+                let player = false;
+                if (res.data.msg) {
+                    msg = res.data.msg;
+                    dispatch({ type: 'LOG_IN_NOT', msg })
+                } else {
+                    player = res.data.player;
+                    dispatch({ type: "LOG_IN", player })
+                }
+
+            })
+    }
+}
+
+export const toggleAutoLog = log => dispatch => {
+    Cookies.remove('autoLog');
+    Cookies.remove('autoLogLogin');
+    Cookies.remove('autoLogPassword');
+    if (log.argument) {
+        Cookies.set('autoLog', log.argument, { expires: 7 });
+        Cookies.set('autoLogLogin', log.login, { expires: 7 });
+        Cookies.set('autoLogPassword', log.pass, { expires: 7 });
+        dispatch({ type: "TOGGLE_AUTOLOG", payload: log.argument })
+    } else {
+        Cookies.remove('autoLog');
+        Cookies.remove('autoLogLogin');
+        Cookies.remove('autoLogPassword');
+        dispatch({ type: "TOGGLE_AUTOLOG", payload: log.argument })
+    }
 }
 
 
 export const createAccount = account => dispatch => {
-    dispatch({type: "LOG_IN_CHECKING"});
+    dispatch({ type: "LOG_IN_CHECKING" });
     account.registrationDay = createDate();
-    axios.post('/registerAccount', {account})
-    .then(res => {
-        let player = res.data.player;
-        dispatch({type: 'REGISTER_PLAYER', player})
-    })
+    axios.post('/registerAccount', { account })
+        .then(res => {
+            let player = res.data.player;
+            dispatch({ type: 'REGISTER_PLAYER', player })
+        })
 }
- 
+
 export const logInPlayer = account => dispatch => {
-    dispatch({type: "LOG_IN_CHECKING"});
-    axios.post('/login', {account})
-    .then(res => {
-        let msg = false;
-        let player = false;
-        if (res.data.msg) {
-            msg = res.data.msg;
-            dispatch({type:'LOG_IN_NOT', msg})
-        } else {
-            player = res.data.player;
-            dispatch({type: "LOG_IN", player})
-        }
-        
-    })
+    dispatch({ type: "LOG_IN_CHECKING" });
+    account.lastLogged = createDate();
+    axios.post('/login', { account })
+        .then(res => {
+            let msg = false;
+            let player = false;
+            if (res.data.msg) {
+                msg = res.data.msg;
+                dispatch({ type: 'LOG_IN_NOT', msg })
+            } else {
+                player = res.data.player;
+                dispatch({ type: "LOG_IN", player })
+            }
+
+        })
 }
 
 export const setCharName = character => dispatch => {
     console.log(character);
-    axios.post('/edit-account', {character})
-    .then(res => {
-        if (res.data.saved) {
-            dispatch({type: 'SET_PLAYER_NAME', character});
-            dispatch({type: 'CLEAN_MSG'})
-        }
-    })
+    axios.post('/edit-account', { character })
+        .then(res => {
+            if (res.data.saved) {
+                dispatch({ type: 'SET_PLAYER_NAME', character });
+                dispatch({ type: 'CLEAN_MSG' })
+            }
+        })
 }
