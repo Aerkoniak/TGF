@@ -66,31 +66,42 @@ app.post('/login', (req, res) => {
                     if (password === document.password) {
                         let player = {};
                         player = document;
-                        // delete player.password;
-                        delete player.repPass;
 
                         res.json({ player });
                         console.log("Zalogowano");
-                        players.doc(player.accountDocRef).set({lastLog: lastLogged}, {merge: true});
+                        players.doc(player.accountDocRef).set({ lastLog: lastLogged }, { merge: true });
                     } else {
                         console.log("Złe hasło");
                         res.json({ msg: "Złe hasło" })
                     }
                 })
             }
-        })
+        });
 })
-
 
 app.post('/edit-account', (req, res) => {
     let character = req.body.character;
 
-    players.doc(character.accountDocRef).set({ name: character.name }, { merge: true })
-        .then(ok => {
-            if (ok.writeTime) {
-                res.json({ saved: true })
-            }
-        })
+    switch (character.changed) {
+        case "name":
+            players.doc(character.accountDocRef).set({ name: character.name }, { merge: true })
+                .then(ok => {
+                    if (ok.writeTime) {
+                        res.json({ saved: true })
+                    }
+                })
+            break;
+        case "profile":
+            players.doc(character.accountDocRef).set({ profile: character.profile }, { merge: true })
+                .then(ok => {
+                    if (ok.writeTime) {
+                        res.json({ saved: true })
+                    }
+                })
+            break;
+    }
+
+
 })
 
 app.post('/stories-fetch', (req, res) => {
