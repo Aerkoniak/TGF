@@ -181,5 +181,28 @@ app.post('/stories-update', (req, res) => {
     }
 })
 
+
+app.post('/characters-fetch', (req, res) => {
+    let characters = [];
+
+    players.orderBy("id").get()
+        .then(snapshot => {
+            snapshot.forEach(doc => {
+                let data = doc.data();
+                if (data.name && data.profile) {
+                    let character = {};
+                    character.name = data.name;
+                    character.profile = data.profile;
+                    character.id = data.id;
+                    character.accountDocRef = data.accountDocRef;
+                    character.rank = data.rank;
+                    characters.push(character)
+                }
+            })
+            res.json({ characters });
+        })
+
+})
+
 app.listen(port, () => console.log(`Listening on port ${port}`));
 
