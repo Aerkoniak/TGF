@@ -1,15 +1,27 @@
-import React, { useState } from 'react';
-// import { connect } from 'react-redux'
+import React, { useState, useEffect } from 'react';
+import { connect } from 'react-redux';
+import Cookies from 'js-cookie';
+
 
 //  ClassComponents
 // import RegisterForm from './RegisterForm'
 // import LoginForm from './LoginForm'
 
+// import { parseString } from '../../data/parseString';
+import { AutoLogging } from '../../data/actions/generalActions';
+
 import LogFormSFC from './LogFormSFC'
 import RegFormSFC from './RegFormSFC'
 
 
-const LoginPanel = () => {
+const LoginPanel = ({ autoLog, AutoLogging }) => {
+
+    useEffect(() => {
+        const cookie = Cookies.get('autoLog');
+        if (cookie === "true"){
+            AutoLogging()
+        } 
+    }, [])
 
     const [isLogFormVisible, setLogVisibility] = useState(false);
     const [isRegFormVisible, setRegVisibility] = useState(false);
@@ -48,6 +60,14 @@ const LoginPanel = () => {
     );
 }
 
+const MapStateToProps = state => ({
+    autoLog: state.player.autoLog
+})
 
+const MapDispatchToProps = dispatch => {
+    return {
+        AutoLogging: () => dispatch(AutoLogging())
+    }
+}
 
-export default LoginPanel;
+export default connect(MapStateToProps, MapDispatchToProps)(LoginPanel);
