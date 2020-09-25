@@ -56,27 +56,25 @@ app.post("/registerAccount", (req, res) => {
 app.post('/login', (req, res) => {
     let account = req.body.account;
     const { login, password, lastLogged } = account;
-    players.where("login", "==", `${login}`).get()
-        .then(snapshot => {
-            if (snapshot.size === 0) {
-                res.json({ msg: "Nie ma takiego gracza." })
-            } else {
-                snapshot.forEach(doc => {
-                    const document = doc.data();
-                    if (password === document.password) {
-                        let player = {};
-                        player = document;
 
-                        res.json({ player });
+    players.get()
+        .then(snapshot => {
+            snapshot.forEach(doc => {
+                const document = doc.data();
+                let player = {};
+                player = document;
+                if (player.login === login || player.name === login) {
+                    // console.log("Imię lub login okej.");
+                    if (player.password === password) {
                         console.log("Zalogowano");
+                        res.json({ player });
                         players.doc(player.accountDocRef).set({ lastLog: lastLogged }, { merge: true });
-                    } else {
-                        console.log("Złe hasło");
-                        res.json({ msg: "Złe hasło" })
+                    } else if (player.password != password) {
+                        res.json({ msg: "Złe dane logowania" })
                     }
-                })
-            }
-        });
+                } 
+            })
+        })
 })
 
 app.post('/edit-account', (req, res) => {
