@@ -30,19 +30,22 @@ const ProfileViewer = ({ characters, fetchCharactersList }) => {
 
 
     return (
-        <div className="profileViewer">
-            <div className="playersList">
+        <>
+
+            <section className="playersList">
                 <p className="test">Lista graczy:</p>
                 <ul className="charactersList">
                     {charactersList}
                 </ul>
 
-            </div>
-            <div className="playersViewer">
+            </section>
+            <div className={character ? "playersViewer" : "playersViewer hidden"}>
+                <p className="closeViewer" onClick={() => chooseCharObj(false)}>X</p>
                 {character ? <p className="header">{character.name}</p> : null}
                 {character ? <p className="mainProfile">{character.profile}</p> : null}
             </div>
-        </div>
+
+        </>
     );
 }
 
