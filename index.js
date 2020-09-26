@@ -13,7 +13,8 @@ admin.initializeApp(dbAdmin);
 
 const db = admin.firestore()
 const players = db.collection("players");
-const stories = db.collection('stories')
+const stories = db.collection('stories');
+const mails = db.collection('mails');
 
 
 const app = express();
@@ -181,7 +182,6 @@ app.post('/stories-update', (req, res) => {
     }
 })
 
-
 app.post('/characters-fetch', (req, res) => {
     let characters = [];
 
@@ -202,6 +202,45 @@ app.post('/characters-fetch', (req, res) => {
             res.json({ characters });
         })
 
+})
+
+app.post('/mails-create', (req, res) => {
+    const message = req.body.message;
+    const { addreesse, sender, text, title } = message;
+    console.log(addreesse.id)
+
+    let newMail = message;
+    newMail.id = new Date().getTime();
+    newMail.addreesse.read = false;
+    newMail.sender.read = true;
+    newMail.between = [addreesse.id, sender.id];
+    newMail.records = [];
+    console.log(newMail);
+
+    mails.add(newMail)
+        .then((docRef) => {
+            console.log("Utworzono nowego maila: " + docRef.id);
+            mails.doc(docRef.id).update({ mailsDocRef: docRef.id });
+            res.json({ isSaved: true });
+        })
+});
+
+app.post('/mails-fetch', (req, res) => {
+    const playerID = req.body.id;
+    let mailsArray = [];
+
+    mails.where("between", 'array-contains', playerID).orderBy("id", "asc").get()
+        .then(snapshot => {
+            if (snapshot.size === 0) {
+                console.log("Nie ma maili")
+            } else {
+                snapshot.forEach(doc => {
+                    let story = doc.data();
+                    mailsArray.push(story);
+                })
+            }
+            res.json({mailsArray})
+        })
 })
 
 app.listen(port, () => console.log(`Listening on port ${port}`));
