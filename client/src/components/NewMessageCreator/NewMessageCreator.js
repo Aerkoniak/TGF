@@ -2,13 +2,17 @@ import React, { useState } from 'react';
 import { connect } from 'react-redux'
 
 import { sendMail } from '../../data/actions/mailsActions';
+import { parseString } from '../../data/parseString';
+
 
 const NewMessageCreator = ({ player, characters, sendMail }) => {
 
     const [addresseeValue, setAddressee] = useState("");
     const [titleValue, setTitle] = useState("");
     const [messageValue, setMessage] = useState("");
-    const [seachedPlayersList, setPlayersList] = useState([])
+    const [seachedPlayersList, setPlayersList] = useState([]);
+    const [answerPreview, setAnswerPreview] = useState("")
+
 
 
     const submitNewMessage = (e) => {
@@ -24,6 +28,7 @@ const NewMessageCreator = ({ player, characters, sendMail }) => {
         setAddressee("");
         setTitle("");
         setMessage("");
+        setAnswerPreview("");
     }
 
     const searchForPlayer = arg => {
@@ -46,18 +51,30 @@ const NewMessageCreator = ({ player, characters, sendMail }) => {
     ))
 
     return (
-        <form className="newMessageCreatorForm" onSubmit={submitNewMessage}>
-            <input type="text" placeholder="Adresat" className="newMessageAddressee" list="playerListSet" value={addresseeValue} onChange={(e) => {
-                setAddressee(e.target.value);
-                searchForPlayer(addresseeValue)
-            }} />
-            <datalist id="playerListSet" className="addPlayerDatalist">
-                {playerListSet}
-            </datalist>
-            <input type="text" placeholder="Tytuł" className="newMessageTitle" value={titleValue} onChange={(e) => setTitle(e.target.value)} />
-            <textarea className="newMessageTextarea" value={messageValue} onChange={(e) => setMessage(e.target.value)} ></textarea>
-            <input type="submit" value="Prześlij" className="newMessageSubmit" />
-        </form>
+        <>
+            <form className="newMessageCreatorForm" onSubmit={submitNewMessage}>
+                <input type="text" placeholder="Adresat" className="newMessageAddressee" list="playerListSet" value={addresseeValue} onChange={(e) => {
+                    setAddressee(e.target.value);
+                    searchForPlayer(addresseeValue)
+                }} />
+                <datalist id="playerListSet" className="addPlayerDatalist">
+                    {playerListSet}
+                </datalist>
+                <input type="text" placeholder="Tytuł" className="newMessageTitle" value={titleValue} onChange={(e) => setTitle(e.target.value)} />
+                <textarea className="newMessageTextarea" value={messageValue} onChange={(e) => setMessage(e.target.value)} ></textarea>
+                <button className="mailViewer" onClick={(e) => {
+                    e.preventDefault();
+                    setAnswerPreview(messageValue)
+                }}>Podgląd</button>
+                <input type="submit" value="Prześlij" className="newMessageSubmit" />
+            </form>
+            {answerPreview ? 
+                <>
+                    <span className="answerPreviewSpan">Tak będzie wyglądać Twoja wiadomość:</span>
+                    <p className="answerPreview">{parseString(answerPreview)}</p>
+                </>
+                    : null}
+        </>
     );
 }
 

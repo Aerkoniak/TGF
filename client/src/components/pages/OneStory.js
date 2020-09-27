@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 
-import {parseString} from '../../data/parseString';
+import { parseString } from '../../data/parseString';
 
 import { addChapter, changeSeenInSession } from '../../data/actions/storiesActions';
 
@@ -10,17 +10,18 @@ const OneSession = ({ story, player, addChapter, changeSeenInSession }) => {
 
     useEffect(() => {
         story.spectators.map(spectator => {
-                if (spectator.id === player.id) {
-                    if (!spectator.seen) {
-                       changeSeenInSession(player.id, story.refID)
-                    } 
+            if (spectator.id === player.id) {
+                if (!spectator.seen) {
+                    changeSeenInSession(player.id, story.refID)
                 }
-            })
+            }
+        })
     }, [])
 
     const [intro, showIntro] = useState(false);
     const [textareaHidden, toggleTA] = useState(true);
     const [answerText, setAnswerText] = useState("");
+    const [answerPreview, setAnswerPreview] = useState("")
 
     const submitAnswer = e => {
         e.preventDefault();
@@ -39,13 +40,8 @@ const OneSession = ({ story, player, addChapter, changeSeenInSession }) => {
         addChapter(chapter)
         setAnswerText('');
         toggleTA(true);
+        setAnswerPreview("");
     }
-
-    // const string = "Cześć Misza,\nmam tu <b>pogrubiony<b> tekst,\nco z tym zrobić możesz?"
-    // const array = parseString(string)
-
-   const advancedString = "<b>Cześć<b>,\nTym razem mamy nieco jeszcze bardziej <b>zaawansowany string, który ma w sobie wszystko.\nCzy popsuje Ci on<b> funkcję?";
-    // const array = parseString(advancedString)
 
 
     const addLineBreaks = string => string.split('\n').map((text, index) => {
@@ -57,7 +53,7 @@ const OneSession = ({ story, player, addChapter, changeSeenInSession }) => {
         )
     });
 
-    
+
 
     const chapters = story.chapters.map(chapter => ((
         <div className="chapter" key={chapter.id}  >
@@ -81,20 +77,25 @@ const OneSession = ({ story, player, addChapter, changeSeenInSession }) => {
                 {intro ? <p className="openingMsg">{`${story.openMsg}`}</p> : null}
                 <form className={textareaHidden ? "answerForm hidden" : "answerForm"} onSubmit={submitAnswer} >
                     <textarea className="answerField" value={answerText} onChange={(e) => setAnswerText(e.target.value)} ></textarea>
-                    <input className="answerSubmit" type="submit" value="Wyślij" />
+                    <div className="answerSubmitWrap">
+                        <input className="answerSubmit" type="submit" value="Wyślij" />
+                        <button className="answerViewer" onClick={(e) => {
+                            e.preventDefault();
+                            setAnswerPreview(answerText)
+                        }}>Podgląd</button>
+                    </div>
                 </form>
+                {answerPreview ? 
+                <>
+                    <span className="answerPreviewSpan">Tak będzie wyglądać Twoja odpowiedź:</span>
+                    <p className="answerPreview">{parseString(answerPreview)}</p>
+                </>
+                    : null}
 
             </div>
             <div className="chapters">
                 {chapters}
             </div>
-
-
-
-            <section className="notepad">
-                <h4 className="note">Notatnik roboczy:</h4>
-
-            </section>
         </section>
     );
 }
