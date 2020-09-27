@@ -7,17 +7,28 @@ import { setProfile } from '../../data/actions/generalActions';
 
 const ProfileCreator = ({ msg, player, setProfile }) => {
 
-    
+
 
     const [textAreaShown, showTextArea] = useState(false);
     const [warnings, setWarnings] = useState(false);
     const [value, setValue] = useState("");
+    const [answerPreview, setAnswerPreview] = useState("")
 
-    useEffect(()=>{
+
+    useEffect(() => {
+        if (player.profile) {
+            let oldProfile = player.profile;
+            setValue(oldProfile)
+        }
+    }, [])
+
+    useEffect(() => {
         if (msg) {
-            setWarnings(msg);
-            setValue('');
+            setWarnings(false);
+            let oldProfile = player.profile;
+            setValue(oldProfile);
             showTextArea(false);
+            setAnswerPreview("");
         }
     }, [msg])
 
@@ -51,14 +62,24 @@ const ProfileCreator = ({ msg, player, setProfile }) => {
             { textAreaShown
                 ?
                 <>
-                    <form onSubmit={submitProfile}>
+                    <form className="profileForm" onSubmit={submitProfile}>
                         <textarea className="profileArea" name="" id="" minLength="100" value={value} onChange={(e) => setValue(e.target.value)} ></textarea>
-                        <input type="submit" value="Zaktualizuj" className="submitCharName" />
+                        <button className="profileViewer" onClick={(e) => {
+                            e.preventDefault();
+                            setAnswerPreview(value)
+                        }}>Podgląd</button>
+                        <input type="submit" value="Zaktualizuj" className="submitProfile" />
                     </form>
                     <p className="test">{warnings}</p>
                 </>
                 :
                 null}
+            {answerPreview ?
+                <>
+                    <span className="answerPreviewSpan">Tak będzie wyglądać Twoja wiadomość:</span>
+                    <p className="answerPreview">{parseString(answerPreview)}</p>
+                </>
+                : null}
         </div>
     );
 }
