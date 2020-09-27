@@ -1,32 +1,26 @@
-import React, { useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 
+import ProfileViewer from '../ProfileViewer/ProfileViewer';
+
+
 const SessionPage = ({ stories, player }) => {
 
-    const [newMessage, changeMessegeState] = useState(false);
 
-    useEffect(() => {
-        stories.map(story => {
-            story.spectators.map(spectator => {
-                if (spectator.id === player.id) {
-                    if (!spectator.seen) {
-                        changeMessegeState(true)
-                    }
-                }
-            })
+    const storiesLinks = stories.map(story => {
+        let newMessage = false;
+        story.spectators.map(spec => {
+            if (spec.id === player.id && spec.seen === false) newMessage = true
         })
-    })
-
-
-    const storiesLinks = stories.map(story => (
-        <div className="storyLink" key={story.id}>
-            <p className="linkAuthor">{story.author.name}</p>
-            <Link className={newMessage ? "linkTitle new" : "linkTitle"} id={story.id} to={`/sessions/id${story.id}`}>{story.title}</Link>
-            <p className="linkDate">{story.startDate}</p>
-        </div>
-
-    ))
+        return (
+            <div className="storyLink" key={story.id}>
+                <p className="linkAuthor">{story.author.name}</p>
+                <Link className={newMessage ? "linkTitle new" : "linkTitle"} id={story.id} to={`/sessions/id${story.id}`}>{story.title}</Link>
+                <p className="linkDate">{story.startDate}</p>
+            </div>
+        )}
+    )
 
     return (
         <section className="sessionPage mainPage">
@@ -40,12 +34,8 @@ const SessionPage = ({ stories, player }) => {
 
             <p className="test"></p>
             <p className="test"></p>
-            <section className="notepad">
-                <h4 className="note">Notatnik roboczy:</h4>
-                <p className="test">Podzielone na dwa typy: sesje fabularne ogólne oraz sesje prywatne.</p>
-                <p className="test">Dla wygody czytania odpisy w sesjach wyświetlane bedą w kolejności: ostatnie u góry.</p>
-                <p className="test">Zastanówcie się jakie filtry wyświetlania i wyszukiwania sesji były fajne i przydatne.</p>
-            </section>
+            <ProfileViewer />
+
 
         </section>
     );
