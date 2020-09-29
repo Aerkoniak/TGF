@@ -239,8 +239,64 @@ app.post('/mails-fetch', (req, res) => {
                     mailsArray.push(story);
                 })
             }
-            res.json({mailsArray})
+            res.json({ mailsArray })
         })
+})
+
+app.post('/mails-update', (req, res) => {
+    if (req.body.message) {
+        const mailRecord = req.body.message;
+        let recordsArray = [];
+        let addreesse = {};
+        let sender = {};
+        mails.doc(mailRecord.mailsDocRef).get()
+            .then(doc => {
+                let mail = doc.data()
+                console.log(mail)
+                recordsArray = mail.records;
+                recordsArray.push(mailRecord);
+                if (mailRecord.author.id === mail.sender.id) {
+                    addreesse = mail.addreesse;
+                    addreesse.read = false;
+                    sender = mail.sender;
+                    sender.read = true;
+                } else if (mailRecord.author.id === mail.addreesse.id) {
+                    sender = mail.sender;
+                    sender.read = false;
+                    addreesse = mail.addreesse;
+                    addreesse.read = true;
+                }
+                mails.doc(mailRecord.mailsDocRef).set({ records: recordsArray, sender: sender, addreesse: addreesse }, { merge: true })
+                    .then(ok => {
+                        if (ok.writeTime) {
+                            res.json({ saved: true })
+                        }
+                    })
+            })
+    } else if (req.body.read) {
+        console.log("Sesja została odczytana.");
+        const { id, refID } = req.body.read;
+        let addreesse = {};
+        let sender = {};
+        mails.doc(refID).get()
+            .then(doc => {
+                let mail = doc.data()
+
+                if (id === mail.sender.id) {
+                    sender = mail.sender;
+                    sender.read = true;
+                    console.log("Nadawca zmieniony na odczytaną.");
+                    mails.doc(refID).set({ sender: sender }, { merge: true })
+                } else if (id === mail.addreesse.id) {
+                    addreesse = mail.addreesse;
+                    addreesse.read = true;
+                    console.log("Odbiorca zmieniony na odczytaną.")
+                    mails.doc(refID).set({ addreesse: addreesse }, { merge: true })
+                }
+                res.json({ saved: true })
+            })
+    }
+
 })
 
 app.listen(port, () => console.log(`Listening on port ${port}`));
