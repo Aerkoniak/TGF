@@ -2,11 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 
 import { fetchCharactersList } from '../../data/actions/generalActions';
+import {fetchMails} from '../../data/actions/mailsActions';
 
-const ProfileViewer = ({ characters, fetchCharactersList }) => {
+const ProfileViewer = ({ player, characters, fetchCharactersList, fetchMails }) => {
 
     useEffect(() => {
-        fetchCharactersList()
+        fetchCharactersList();
+        fetchMails(player.id);
     }, [])
 
     const [character, chooseCharObj] = useState(false)
@@ -40,7 +42,7 @@ const ProfileViewer = ({ characters, fetchCharactersList }) => {
 
             </section>
             <div className={character ? "playersViewer" : "playersViewer hidden"}>
-                <p className="closeViewer" onClick={() => chooseCharObj(false)}>X</p>
+                {character ? <p className="closeViewer" onClick={() => chooseCharObj(false)}>zamknij podgląd</p> : null }
                 {character ? <p className="header">{character.name}</p> : null}
                 {character ? <p className="mainProfile">{character.profile}</p> : null}
             </div>
@@ -50,12 +52,14 @@ const ProfileViewer = ({ characters, fetchCharactersList }) => {
 }
 
 const MapStateToProps = state => ({
-    characters: state.characters.characters
+    characters: state.characters.characters,
+    player: state.player.player
 })
 
 const MapDispatchToProps = dispatch => {
     return {
-        fetchCharactersList: (argument) => dispatch(fetchCharactersList(argument))
+        fetchCharactersList: (argument) => dispatch(fetchCharactersList(argument)),
+        fetchMails: (id) => dispatch(fetchMails(id))
     }
 }
 
