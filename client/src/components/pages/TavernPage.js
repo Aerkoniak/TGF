@@ -1,14 +1,55 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { NavLink, Switch, Route } from 'react-router-dom';
+import { connect } from 'react-redux';
+import { fetchTavernRooms, addTavernRecord, checkTavernRecord } from '../../data/actions/tavernActions';
 
-const TavernPage = () => {
-    return ( 
+import ProfileViewer from '../ProfileViewer/ProfileViewer';
+import TavernRoom from '../pages/TavernRoom';
+
+
+
+const TavernPage = ({ taverns, fetchTavernRooms }) => {
+
+    const [isDescActive, setActiveDesc] = useState(false);
+
+    useEffect(() => {
+        fetchTavernRooms();
+    }, [])
+
+    const tavernRoom = taverns.map(room => ((
+        <div className="tavernRoom" key={`${room.name}`} >
+            <NavLink className="tavernName" to={`/tavern/${room.name}`}><p id={`${room.name}`} >{room.name}</p></NavLink>
+            {isDescActive ? <p className="tavernDesc" id={`${room.name}`} >{room.desc}</p> : null}
+        </div>
+    )))
+
+    const tavernRoutes = taverns.map(tavernRoute => ((
+        <Route key={tavernRoute.id + tavernRoute.name} path={`/tavern/${tavernRoute.name}`} render={(routeProps) => (<TavernRoom {...routeProps} id={tavernRoute.id} room={tavernRoute} />)} />
+    )))
+
+    return (
         <section className="tavernPage mainPage">
-            <p className="test">Karczmy</p>
-            <p className="test">W praniu wyjdzie czy z tej podstrony będzie można przejść do osobnych karczmy czy też karczma będzie jedna, ale z kilkoma salami wewnątrz niej.</p>
-            <p className="test">Karczma wg. planu idealnego nie będzie się odświeżać by sprawdzić czy są nowe wiadomości, więc nie będzie problemu z kopiowaniem jej zawartości.</p>
-            <p className="test">Można dodać na wpół ukryty przycisk umożliwiający zresztą skopiowanie wpisu jednym kliknięciem tak jak na wielu innych stronach można kopiować numery czy co tam deweloper sobie wymyśli.</p>
+            <div className="tavernsRooms">
+            <span className="toggleActiveDesc" onClick={() => setActiveDesc(!isDescActive)}>Rozwiń opisy</span>
+                {tavernRoom}
+            </div>
+
+            <Switch>
+                {tavernRoutes}
+            </Switch>
+
+            <ProfileViewer />
         </section>
-     );
+    );
 }
- 
-export default TavernPage;
+const MapStateToProps = state => ({
+    taverns: state.taverns.taverns,
+})
+
+const MapDispatchToProps = dispatch => {
+    return {
+        fetchTavernRooms: () => dispatch(fetchTavernRooms()),
+    }
+}
+
+export default connect(MapStateToProps, MapDispatchToProps)(TavernPage);
