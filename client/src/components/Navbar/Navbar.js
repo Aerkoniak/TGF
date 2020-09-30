@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
-import { NavLink } from 'react-router-dom';
+import { NavLink, Link } from 'react-router-dom';
 import { fetchMails } from '../../data/actions/mailsActions';
 
 import { fetchStories } from '../../data/actions/storiesActions';
 
-const Navbar = ({ stories, isLeftHanded, fetchStories, player, mails }) => {
+const Navbar = ({ stories, isLeftHanded, fetchStories, player, mails, taverns }) => {
 
     // każdy z link wymaga osobnej zmiennej wskazującej, ze doszła jakas nowa wiadomość lub sesja. 
 
@@ -26,15 +26,17 @@ const Navbar = ({ stories, isLeftHanded, fetchStories, player, mails }) => {
         })
     }, [stories]);
 
-    useEffect(()=> {
+    useEffect(() => {
         mails.map(mail => {
             if (player.id === mail.addreesse.id && !mail.addreesse.read) changeMailRecordStatus(true)
             else if (player.id === mail.sender.id && !mail.sender.read) changeMailRecordStatus(true)
             else changeMailRecordStatus(false)
         })
     }, [mails])
-  
 
+    const tavernSubLinks = taverns.map((tavern, index) => ((
+    <span key={tavern + index} className="subLink"><Link to={`/tavern/${tavern.name}`}>{tavern.name}</Link></span>
+    )))
 
     return (
         <>
@@ -51,7 +53,9 @@ const Navbar = ({ stories, isLeftHanded, fetchStories, player, mails }) => {
                 <NavLink to="/" exact className="navDesk">Herold</NavLink>
                 <NavLink to="/sessions" className={newSessionChapter ? "navDesk newMessage" : "navDesk"}>Sesje</NavLink>
                 <NavLink to="/mails" className={newMailRecord ? "navDesk newMessage" : "navDesk"}>Poczta</NavLink>
-                <NavLink to="/tavern" className="navDesk">Karczmy</NavLink>
+                <NavLink to="/tavern" className="navDesk tavern">Karczmy
+               {tavernSubLinks}
+                </NavLink>
                 <NavLink to="/charakter" className="navDesk">Karta Postaci</NavLink>
                 <NavLink to="/settings" className="navDesk">Ustawienia</NavLink>
             </nav>
@@ -64,6 +68,7 @@ const mapStateToProps = state => ({
     stories: state.stories.stories,
     player: state.player.player,
     mails: state.mails.mails,
+    taverns: state.taverns.taverns,
 })
 
 const MapDispatchToProps = dispatch => {
