@@ -24,11 +24,62 @@ body, #root {
 }
 
 .gamePanel {
-  padding: 10px 55px 0 10px;
+  padding: 0 55px 0 10px;
 }
 .gamePanel.left {
-  padding: 10px 10px 0 55px;
+  padding: 0 10px 0 55px;
 }
+
+
+/* RICHEDITOR */
+
+
+
+.notranslate.public-DraftEditor-content{
+  padding: 5px;
+  min-height: 30vh;
+  font-family: 'Open Sans', sans-serif;
+}
+.richEditorWrap{
+  margin-bottom: 50px;
+
+}
+
+.richEditor{
+  margin: 10px 0 20px;
+  border: 1px solid black;
+  width: 100%;
+  min-height: 30vh;
+}
+
+.styleButtons {
+  display: flex;
+  flex-wrap: wrap;
+  border-bottom: 2px solid black;
+  border-top: 1px solid black;
+}
+
+.fontButtons {
+  flex-basis: 50%;
+  padding: 10px;
+  background-color: #fff;
+  border: none;
+}
+.fontButtons:nth-of-type(3), .fontButtons:nth-of-type(4) {
+  border-top: 1px solid grey;
+}
+.fontButtons:nth-of-type(1), .fontButtons:nth-of-type(3) {
+  border-right: 1px solid grey;
+}
+
+.styleButtons .answerSubmit {
+  background-color: grey;
+  color: white;
+  flex-basis: 100%;
+  padding: 10px;
+  font-size: 18px;
+}
+
 
 /* LOGINPANEL */
 
@@ -211,6 +262,203 @@ nav.desktop {
    border-top: grey 2px double;
  }
 
+
+
+/* MAILPAGE */
+
+.newMessageCreatorButton {
+  font-family: 'Open Sans', sans-serif;
+  font-size: 16px;
+  background-color: transparent;
+  padding: 5px 10px;
+  margin: 20px 0;
+  outline: none;
+}
+
+.newMessageCreatorForm {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.newMessageAddressee, .newMessageTitle {
+  flex-basis: 100%;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 16px;
+  padding: 5px 5px;
+  outline: none;
+  margin-top: 10px;
+}
+.newMessageAddressee:focus-within, .newMessageTitle:focus-within {
+  outline: 1px solid black;
+}
+.newMessageTextarea {
+  flex-basis: 100%;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 16px;
+  outline: none;
+  padding: 5px 5px;
+  overflow: visible;
+  min-height: 20vh;
+  margin-top: 10px;
+}
+.newMessageTextarea:focus-within {
+  outline: 1px solid black;
+}
+.newMessageSubmit, .mailViewer{
+  flex-basis: 50%;
+  font-family: 'Open Sans', sans-serif;
+  background-color: transparent;
+  font-size: 16px;
+  padding: 5px 5px;
+  border: 2px solid grey;
+  margin-top: 10px;
+  text-decoration: underline;
+  margin-bottom: 25px;
+}
+
+.oneMail {
+  border-bottom: 2px solid black;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+}
+.mailDate, .mailAuthor {
+  padding-top: 5px;
+}
+
+
+/* SINGLEMAIL Page */
+/* styles taken from single Story */
+
+.openingMail{
+  padding: 10px 0 0 15px
+}
+.mailReplyButton {
+  width: calc(100% - 15px);
+  background-color: #fff;
+  margin: 0 0 20px 15px;
+  padding: 5px;
+}
+
+.mailForm{
+  display: flex;
+  flex-wrap: wrap;
+  padding-left: 15px;
+}
+.mailForm textarea {
+  flex-basis: 100%;
+  height: 20vh;
+  padding: 10px;
+  font-size: 18px;
+}
+
+.mailPreview{
+  padding-left: 15px;
+}
+
+.mailRecord{
+  border-bottom: 1px solid grey;
+  margin-bottom: 20px;
+  padding-left: 15px;
+}
+
+/* TAVERNS */
+
+.tavernsRooms {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.toggleActiveDesc {
+  text-align: center;
+}
+
+.tavernRoom {
+  flex-basis: 40%;
+  cursor: pointer;
+  padding: 0 10px;
+}
+.tavernName{
+  text-decoration: none;
+  display: inline-block;
+  font-weight: bold;
+  margin: 20px 0 10px;
+  font-size: 18px;
+  transition: 0.3s;
+  color: grey;
+  border-bottom: 2px solid white;
+}
+.tavernName.active {
+  /* transform: translateX(30px); */
+  color: black;
+  border-bottom: 2px solid black;
+}
+
+.activeRoom { 
+  border-top: 1px solid grey;
+  margin-top: 30px;
+  padding: 10px 10px;
+}
+
+.activeRoomName{
+  text-decoration: underline;
+  text-align: center;
+  padding: 20px 0 10px;
+}
+
+.sendReply {
+  display: block;
+  font-family: 'Open Sans', sans-serif;
+  background-color: #fff;
+  border: 1px solid grey;
+  padding: 10px 20px;
+  font-size: 18px;
+  margin: 20px auto 10px;
+  outline: non;
+}
+
+.tavernForm{
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.tavernTA {
+  flex-basis: 100%;
+  height: 20vh;
+  margin-top: 20px;
+  outline: black;
+  padding: 5px;
+  font-size: 16px;
+  font-family: 'Open Sans', sans-serif;
+}
+.tavernSubmit {
+  flex-basis: 100%;
+  background-color: #fff;
+  padding: 5px;
+  font-size: 18px;
+  border: 1px solid black;
+  border-bottom: 2px solid black;
+}
+
+.tavernRecords{
+  padding: 0 15px;
+}
+.tavernRecord {
+  margin-bottom: 20px;
+  border-bottom: 1px solid grey ;
+}
+.tavernAuthor {
+  font-size: 17px;
+}
+.replyTime {
+  display: block;
+  font-size: 12px;
+  padding-bottom: 20px;
+}
+.tavernMess {
+  padding-bottom: 10px;
+}
+
 /* KP */
 
 .changeNameInput {
@@ -244,6 +492,80 @@ nav.desktop {
 }
 
 
+/* PROFIL */
+
+.profileForm {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.profileArea {
+  flex-basis: 100%;
+  /* width: 50%; */
+  height: 30vh;
+  margin-top: 20px;
+  padding: 5px;
+}
+.changeProfileSpan {
+  padding-left: 10px;
+  font-size: 14px;
+  text-decoration: underline;
+  cursor: pointer;
+}
+.profile {
+  margin-top: 20px;
+}
+
+.profileViewer, .submitProfile {
+  flex-basis: 100%;
+  font-family: 'Open Sans', sans-serif;
+  background-color: transparent;
+  font-size: 16px;
+  padding: 5px 5px;
+  border: 1px solid grey;
+  margin-top: 10px;
+  text-decoration: underline;
+  margin-bottom: 10px;
+}
+
+
+/* VIEWER */
+
+.playersList {
+  margin: 20px 0;
+  text-align: center;
+  border-bottom: 1px solid grey;
+  border-top: 2px double grey;
+}
+.playersList .test {
+  margin-bottom: 20px;
+}
+
+.playersViewer {
+  flex-basis: 70%;
+  padding-left: 15px;
+}
+.playersViewer .header {
+  font-weight: bold;
+  text-align: center;
+  margin: 0 0 15px 0;
+  border-bottom: 1px solid grey;
+  padding-bottom: 5px;
+}
+
+.charactersList {
+  list-style: none;
+}
+.characterListElement {
+  padding: 5px 0;
+  cursor: pointer;
+}
+
+.closeViewer {
+  text-align: center;
+  padding: 20px 0;
+  text-decoration: underline;
+}
 
 /* SESJE */
 
@@ -259,6 +581,7 @@ nav.desktop {
 }
 .linkTitle {
   color: black;
+  font-size: 18px;
 }
 .linkTitle.new {
   color: red;
@@ -283,12 +606,12 @@ a.linkTitle {
   font-size: 22px;
 }
 .storyAuthor {
-  flex-basis: 40%;
+  flex-basis: 100%;
   font-size: 18px;
   padding-top: 5px;
 }
 .storyDate {
-  flex-basis: 60%;
+  flex-basis: 100%;
   padding-top: 5px;
 }
 .openingMsg {
@@ -324,8 +647,25 @@ a.linkTitle {
   height: 30vh;
   padding: 5px;
 }
-.answerSubmit {
-  flex-basis: 20%;
+.answerSubmitWrap{
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+.answerSubmit, .answerViewer {
+  flex-basis: 50%;
+  background-color: #fff;
+  border: 1px solid gray;
+  outline: none;
+}
+
+.answerPreviewSpan{
+  padding: 10px 0;
+  flex-basis: 100%;
+}
+
+.answerPreview {
+  padding: 10px 0;
 }
 
 .answerField:focus{
@@ -340,16 +680,38 @@ a.linkTitle {
 
 .chapter {
   display: flex;
-  padding-bottom: 20px;
-  border-bottom: 1px solid black;
   flex-wrap: wrap;
+  padding: 0 0 20px 15px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid black;
 }
 .chapterAuthor {
   text-align: right;
   flex-basis: 100%;
   margin-top: 5px;
+  font-size: 20px;
+}
+.replyDate {
+  flex-basis: 100%;
+  text-align: right;
+  padding-top: 5px;
 }
 
+.chapterMsg{
+  flex-basis: 100%;
+  margin-top: 25px;
+  padding: 0 10px;
+}
+
+/* SETTINGS PAGE */
+
+.desktopSetting {
+  display: none;
+}
+.settingsLabel {
+  display: inline-block;
+  padding: 5px 10px 0 0;
+}
 
 
 /* LOADING INDICATOR */
@@ -450,6 +812,76 @@ a.linkTitle {
 /* QUERIES */
 
 @media (min-width: 1280px) {
+  .gamePanel {
+    padding: 0;
+  }
+  .gamePanel.left {
+    padding: 0;
+  }
+
+  .test {
+    padding: 10px 0 0;
+    font-size: 18px;
+  }
+  .test.next{
+    padding: 10px 0 0 50px;
+  }
+
+  /* RICHEDITOR */
+
+  .richEditor{
+    border: 1px solid black;
+    width: 76vw;
+    position: relative;
+    min-height: 20vh;
+  }
+  
+  .notranslate.public-DraftEditor-content{
+    min-height: 20vh;
+    width: 100%;
+  }
+
+  .styleButtons {
+    position: relative;
+    bottom: 0;
+    left: 0;
+    display: flex;
+    border-bottom: 2px solid black;
+    border-top: 1px solid black;
+  }
+
+  .fontButtons:nth-of-type(3), .fontButtons:nth-of-type(4) {
+    border-top: none
+  }
+  .fontButtons:nth-of-type(1), .fontButtons:nth-of-type(3) {
+    border-right: none;
+  }
+  .fontButtons {
+    background-color: #fff;
+    cursor: pointer;
+    border: none;
+    flex-basis: 25%;
+    border-left: 1px solid grey;
+    transition: 0.3s;
+  }
+ .fontButtons:nth-of-type(1) {
+  border-left: none
+ }
+ .styleButtons .answerSubmit {
+   cursor: pointer;
+   transition: 0.3s;
+   background-color: #444;
+ }
+ .fontButtons:hover{
+  background-color: #ccc;
+}
+.fontButtons:focus-within {
+  outline: none;
+}
+ .styleButtons .answerSubmit:hover {
+  background-color: #999;
+ }
+
   /* LOGINPANEL */
   p.formInfo {
     text-align: left;
@@ -476,19 +908,20 @@ a.linkTitle {
 
 
   /* NAWIGACJA */
-  nav.mobile {
-    display: none;
-  }
 
-  .navSettings {
+
+  nav.mobile {
     display: none;
   }
 
   nav.desktop {
     display: flex;
     position: fixed;
-    margin-left: 20%;
+    top: 0;
+    left: 20vw;
     width: 80%;
+    height: 100px;
+    background-color: #fff;
   }
   .navDesk {
     flex-basis: 10%;
@@ -507,12 +940,50 @@ a.linkTitle {
   .navDesk.newMessage {
     border-color: red;
   }
-  section.mainPage {
-    padding-top: 100px;
-    padding-left: calc(20vw + 50px);
+  .navDesk.tavern {
+    position: relative;
+  }
+  .subLink {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    transition: 0.2s;
+    opacity: 0;
+    font-size: 16px;
+
+  }
+  .navDesk.tavern:hover .subLink:nth-last-of-type(1) {
+    transform: translateY(100%);
+    opacity: 1;
+    background-color: #fff;
+  }
+  .navDesk.tavern:hover .subLink:nth-last-of-type(2){
+    transform: translateY(200%);
+    opacity: 1;
+    background-color: #fff;
+  }
+  .navDesk.tavern:hover .subLink:nth-last-of-type(3){
+    transform: translateY(300%);
+    opacity: 1;
+    background-color: #fff;
+  }
+  .navDesk.tavern .subLink a {
+    text-decoration: none;
+    color: black;
+  }
+  .navDesk.tavern .subLink a:hover {
+    text-decoration: underline;
   }
 
-  /* NOTEPAD */
+  section.mainPage {
+    padding-top: 100px;
+    padding-left: calc(20vw + 20px);
+    padding-right: 20px;
+  }
+
+  /* PLAYERVIEWER */
 
   section.notepad, section.notepadDesktop {
     position: absolute;
@@ -523,6 +994,35 @@ a.linkTitle {
   }
   .note {
     font-size: 20px;
+  }
+
+  .playersList {
+    position: fixed;
+    top: 20vh;
+    left: 0;
+    width: 20vw;
+    padding-left: 15px;
+    border: none;
+    text-align: left;
+  }
+
+  .playersViewer {
+    position: fixed;
+    top: 100px;
+    left: 20vw;
+    background-color: #fff;
+    width: 80vw;
+    min-height: calc(100vh - 110px);
+    padding: 20px;
+    padding-right: 50px;
+  }
+  .playersViewer.hidden {
+    display: none;
+  }
+
+  .closeViewer{
+    cursor: pointer;
+    text-align: left;
   }
 
   /* SESJE */
@@ -546,8 +1046,42 @@ a.linkTitle {
     padding: 10px;
     font-size: 18px;
   }
-  .answerSubmit {
+ 
+  .answerSubmitWrap{
+    display: flex;
+    flex-direction: column;
+    height: 100%;
     flex-basis: 10%;
+  }
+  .answerSubmit, .answerViewer {
+    flex-basis: 50%;
+    background-color: #fff;
+    border: 1px solid gray;
+    outline: none;
+  }
+  .answerPreviewSpan{
+    padding: 10px 0;
+    flex-basis: 100%;
+  }
+  .answerPreview {
+    padding: 10px 0;
+  }
+
+  .chapterAuthor {
+    text-align: left;
+    flex-basis: 30%;
+    margin-top: 5px;
+  }
+  .replyDate {
+    text-align: left;
+    flex-basis: 30%;
+    padding-top: 5px;
+  }
+  
+  .chapterMsg{
+    flex-basis: 100%;
+    margin-top: 25px;
+    padding: 0;
   }
 
   .showIntro {
@@ -555,6 +1089,76 @@ a.linkTitle {
   }
   .singleStory .notepad {
     display: block;
+  }
+
+  /* MAILS PAGE */
+
+  .oneMail{
+    margin-bottom: 20px;
+  }
+
+  .mailDate{
+    padding-top: 20px;
+    padding-bottom: 10px;
+  }
+  .mailDate,.mailAuthor {
+    font-size: 18px;
+  }
+
+  /* SETTINGS PAGE */
+
+  .desktopSetting {
+    display: block;
+  }
+
+  .settingsLabel {
+    display: inline-block;
+    padding: 15px 10px 0 0;
+    font-size: 20px;
+  }
+
+  .mobileSettings {
+    display: none;
+  }
+
+  /* KARCZMY */
+
+  .tavernsRooms {
+    flex-direction: row;
+    flex-wrap: wrap;
+    /* justify-content: space-around; */
+  }
+  .toggleActiveDesc {
+    flex-basis: 100%;
+    text-align: left;
+    padding-left: 10px;
+  }
+  .tavernRoom {
+    flex-basis: 30%;
+    padding: 0;
+  }
+  .activeRoom{
+    padding: 0 ;
+  }
+  .tavernRecords {
+    padding: 0 ;
+  }
+
+
+  /* KARTA POSTACI */
+
+  .profile {
+    margin-top: 20px;
+    font-size: 20px;
+  }
+
+  .characterListElement {
+    padding: 10px 0;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+  .characterListElement:hover {
+    transform: translateX(20px);
   }
 }
 
