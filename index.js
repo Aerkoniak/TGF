@@ -81,7 +81,8 @@ app.post('/login', (req, res) => {
 })
 
 app.post('/edit-account', (req, res) => {
-    let character = req.body.character;
+    let character = req.body.newCharacter;
+    console.log(character);
 
     switch (character.changed) {
         case "name":
@@ -120,8 +121,8 @@ app.post('/stories-fetch', (req, res) => {
 app.post('/stories-update', (req, res) => {
     console.log("stories-update");
 
-    if (req.body.chapter) {
-        let chapter = req.body.chapter;
+    if (req.body.newChapter) {
+        let chapter = req.body.newChapter;
         let chaptersArray = [];
         let spectatorsArray = [];
 
@@ -205,7 +206,7 @@ app.post('/characters-fetch', (req, res) => {
 })
 
 app.post('/mails-create', (req, res) => {
-    const message = req.body.message;
+    const message = req.body.newMessage;
     const { addreesse, sender, text, title } = message;
     console.log(addreesse.id)
 
@@ -244,8 +245,8 @@ app.post('/mails-fetch', (req, res) => {
 })
 
 app.post('/mails-update', (req, res) => {
-    if (req.body.message) {
-        const mailRecord = req.body.message;
+    if (req.body.newMessage) {
+        const mailRecord = req.body.newMessage;
         let recordsArray = [];
         let addreesse = {};
         let sender = {};
