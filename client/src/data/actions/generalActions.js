@@ -19,7 +19,7 @@ export const toggleHand = (argument) => (dispatch) => {
 }
 
 export const AutoLogging = argument => dispatch => {
-    console.log("Autologowanie")
+    // console.log("Autologowanie")
     const cookie = Cookies.get('autoLog');
     if (cookie === "true") {
         dispatch({ type: "TOGGLE_AUTOLOG", payload: true });
@@ -27,7 +27,7 @@ export const AutoLogging = argument => dispatch => {
         account.login = Cookies.get('autoLogLogin');
         account.password = Cookies.get('autoLogPassword');
         account.lastLogged = createDate();
-        console.log(account)
+        // console.log(account)
 
         axios.post('/login', { account })
             .then(res => {
@@ -93,11 +93,40 @@ export const logInPlayer = account => dispatch => {
 
 export const setCharName = character => dispatch => {
     console.log(character);
+    character.changed = "name";
     axios.post('/edit-account', { character })
         .then(res => {
             if (res.data.saved) {
+                delete character.changed;
                 dispatch({ type: 'SET_PLAYER_NAME', character });
                 dispatch({ type: 'CLEAN_MSG' })
             }
+        })
+}
+
+export const setProfile = character => dispatch => {
+
+    const newCharacter = character.player;
+    newCharacter.changed = "profile";
+    newCharacter.profile = character.text;
+
+    axios.post('/edit-account', { newCharacter })
+        .then(res => {
+            if (res.data.saved) {
+                console.log("zapisano");
+                delete newCharacter.changed;
+                dispatch({ type: 'SET_PLAYER_PROFILE', newCharacter });
+                dispatch({ type: 'CLEAN_MSG' })
+            }
+        })
+}
+
+export const fetchCharactersList = argument => dispatch => {
+  
+    dispatch({ type: "FETCH_CHAR_START" });
+    axios.post('/characters-fetch')
+        .then(res => {
+            let payload = res.data.characters;
+            dispatch({ type: "FETCH_CHAR_SUCCESS", payload })
         })
 }
