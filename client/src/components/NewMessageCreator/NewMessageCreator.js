@@ -3,6 +3,9 @@ import { connect } from 'react-redux'
 
 import { sendMail } from '../../data/actions/mailsActions';
 import { parseString } from '../../data/parseString';
+import RichEditor from '../RichEditor/RichEditor'
+import parse from 'html-react-parser';
+
 
 
 const NewMessageCreator = ({ player, characters, sendMail }) => {
@@ -17,19 +20,25 @@ const NewMessageCreator = ({ player, characters, sendMail }) => {
 
     const submitNewMessage = (e) => {
         e.preventDefault();
-        let message = {};
-        message.addreesse = seachedPlayersList[0];
-        delete message.addreesse.profile;
-        message.sender = player;
-        delete message.sender.login;
-        message.title = titleValue;
-        message.startText = messageValue;
-        sendMail(message);
+        // let message = {};
+        // message.addreesse = seachedPlayersList[0];
+        // delete message.addreesse.profile;
+        // message.sender = player;
+        // delete message.sender.login;
+        // delete message.sender.password;
+        // delete message.sender.repPass;
+        // delete message.sender.profile;
+        // delete message.sender.lastLog;
+        // message.title = titleValue;
+        // message.startText = messageValue;
+        // sendMail(message);
         setAddressee("");
         setTitle("");
         setMessage("");
         setAnswerPreview("");
     }
+
+
 
     const searchForPlayer = arg => {
         let charactersArray = characters;
@@ -61,19 +70,10 @@ const NewMessageCreator = ({ player, characters, sendMail }) => {
                     {playerListSet}
                 </datalist>
                 <input type="text" placeholder="Tytuł" className="newMessageTitle" value={titleValue} onChange={(e) => setTitle(e.target.value)} />
-                <textarea className="newMessageTextarea" value={messageValue} onChange={(e) => setMessage(e.target.value)} ></textarea>
-                <button className="mailViewer" onClick={(e) => {
-                    e.preventDefault();
-                    setAnswerPreview(messageValue)
-                }}>Podgląd</button>
-                <input type="submit" value="Prześlij" className="newMessageSubmit" />
+                
+                <RichEditor action={sendMail} addreesse={seachedPlayersList[0]} player={player} title={titleValue} />
+              
             </form>
-            {answerPreview ? 
-                <>
-                    <span className="answerPreviewSpan">Tak będzie wyglądać Twoja wiadomość:</span>
-                    <p className="answerPreview">{parseString(answerPreview)}</p>
-                </>
-                    : null}
         </>
     );
 }

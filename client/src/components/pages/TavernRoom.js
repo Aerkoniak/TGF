@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
-import { fetchTavernRooms, addTavernRecord, checkTavernRecord } from '../../data/actions/tavernActions';
-import { parseString } from '../../data/parseString';
-import { db } from '../../data/firebase/firebaseConfig';
+import { fetchTavernRooms, addTavernRecord } from '../../data/actions/tavernActions';
+// import { parseString } from '../../data/parseString';
+import { tavernDB } from '../../data/firebase/firebaseConfig';
+
+import parse from 'html-react-parser';
+import RichEditor from '../RichEditor/RichEditor';
 
 
 
@@ -14,7 +17,7 @@ const TavernRoom = ({ player, room, addTavernRecord, fetchTavernRooms }) => {
     }, [])
 
     useEffect(() => {
-        db.collection('tavern').doc(`${room.name}`)
+        tavernDB.doc(`${room.name}`)
             .onSnapshot(doc => {
                 let data = doc.data();
                 fetchTavernRooms();
@@ -26,14 +29,14 @@ const TavernRoom = ({ player, room, addTavernRecord, fetchTavernRooms }) => {
 
     const submitTavernRecord = (e) => {
         e.preventDefault();
-        let tavernRecord = {};
-        let author = {};
-        author.name = player.name;
-        author.id = player.id;
-        tavernRecord.author = author;
-        tavernRecord.text = value;
-        tavernRecord.room = room.name;
-        addTavernRecord(tavernRecord);
+        // let tavernRecord = {};
+        // let author = {};
+        // author.name = player.name;
+        // author.id = player.id;
+        // tavernRecord.author = author;
+        // tavernRecord.text = value;
+        // tavernRecord.room = room.name;
+        // addTavernRecord(tavernRecord);
         setValue("");
         toggleForm(!isFormActive)
     }
@@ -42,7 +45,7 @@ const TavernRoom = ({ player, room, addTavernRecord, fetchTavernRooms }) => {
         <div className="tavernRecord" key={`${index}${record.name}`}>
             <p className="tavernAuthor">{record.author.name}</p>
             <span className="replyTime">{record.replyDate}</span>
-            <p className="tavernMess">{parseString(record.text)}</p>
+            <div className="tavernMess">{parse(record.text)}</div>
         </div>
     ))).reverse()
 
@@ -55,8 +58,9 @@ const TavernRoom = ({ player, room, addTavernRecord, fetchTavernRooms }) => {
                 <button className="sendReply" onClick={() => toggleForm(!isFormActive)}>Odpisz</button>
                 {isFormActive ?
                     <form className="tavernForm" onSubmit={submitTavernRecord}>
-                        <textarea className="tavernTA" value={value} onChange={(e) => setValue(e.target.value)} ></textarea>
-                        <input className="tavernSubmit" value="Odpisz" type="submit" />
+                        <RichEditor action={addTavernRecord} place={room} player={player} />
+                        {/* <textarea className="tavernTA" value={value} onChange={(e) => setValue(e.target.value)} ></textarea>
+                        <input className="tavernSubmit" value="Odpisz" type="submit" /> */}
                     </form>
                     : null}
 
@@ -78,7 +82,6 @@ const MapDispatchToProps = dispatch => {
     return {
         fetchTavernRooms: () => dispatch(fetchTavernRooms()),
         addTavernRecord: (tavernRecord) => dispatch(addTavernRecord(tavernRecord)),
-        checkTavernRecord: (activeRoom) => dispatch(checkTavernRecord(activeRoom))
     }
 }
 

@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 
-import { parseString } from '../../data/parseString';
+// import { parseString } from '../../data/parseString';
 import { setProfile } from '../../data/actions/generalActions';
+import parse from 'html-react-parser';
+import RichEditor from '../RichEditor/RichEditor';
 
 
 const ProfileCreator = ({ msg, player, setProfile }) => {
@@ -34,15 +36,6 @@ const ProfileCreator = ({ msg, player, setProfile }) => {
 
     const submitProfile = e => {
         e.preventDefault();
-        let character = {};
-        character = player;
-
-        if (value.length < 10) {
-            setWarnings("Zbyt krótki profil. Minimum 50 znaków.")
-        } else {
-            character.profile = value;
-            setProfile(character)
-        }
     }
 
     return (
@@ -51,7 +44,7 @@ const ProfileCreator = ({ msg, player, setProfile }) => {
                 ?
                 <>
                     <p className="test">Twój profil:<span className="changeProfileSpan" onClick={() => showTextArea(!textAreaShown)} >Zmień profil</span></p>
-                    <p className="profile">{parseString(player.profile)}</p>
+                    <div className="profile">{parse(player.profile)}</div>
                 </>
                 :
                 <>
@@ -63,23 +56,12 @@ const ProfileCreator = ({ msg, player, setProfile }) => {
                 ?
                 <>
                     <form className="profileForm" onSubmit={submitProfile}>
-                        <textarea className="profileArea" name="" id="" minLength="100" value={value} onChange={(e) => setValue(e.target.value)} ></textarea>
-                        <button className="profileViewer" onClick={(e) => {
-                            e.preventDefault();
-                            setAnswerPreview(value)
-                        }}>Podgląd</button>
-                        <input type="submit" value="Zaktualizuj" className="submitProfile" />
+                        <RichEditor action={setProfile} oldProfile={value} player={player} />
                     </form>
                     <p className="test">{warnings}</p>
                 </>
                 :
                 null}
-            {answerPreview ?
-                <>
-                    <span className="answerPreviewSpan">Tak będzie wyglądać Twoja wiadomość:</span>
-                    <p className="answerPreview">{parseString(answerPreview)}</p>
-                </>
-                : null}
         </div>
     );
 }

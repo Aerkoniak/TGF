@@ -1,12 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
+import parse from 'html-react-parser';
 
-import { parseString } from '../../data/parseString';
+// import { parseString } from '../../data/parseString';
 
-import { addChapter, changeSeenInSession } from '../../data/actions/storiesActions';
+import { addChapter, changeSeenInSession, fetchStories } from '../../data/actions/storiesActions';
+import { storiesDB } from '../../data/firebase/firebaseConfig'
+import RichEditor from '../RichEditor/RichEditor'
 
-const OneSession = ({ story, player, addChapter, changeSeenInSession }) => {
+
+const OneSession = ({ story, player, addChapter, changeSeenInSession, fetchStories }) => {
 
     useEffect(() => {
         story.spectators.map(spectator => {
@@ -17,6 +21,13 @@ const OneSession = ({ story, player, addChapter, changeSeenInSession }) => {
             }
         })
     }, [])
+    useEffect(() => {
+        storiesDB.doc(`${story.refID}`)
+            .onSnapshot(doc => {
+                let data = doc.data();
+                fetchStories()
+            })
+    }, [])
 
     const [intro, showIntro] = useState(false);
     const [textareaHidden, toggleTA] = useState(true);
@@ -25,40 +36,28 @@ const OneSession = ({ story, player, addChapter, changeSeenInSession }) => {
 
     const submitAnswer = e => {
         e.preventDefault();
-        let chapter = {};
-        let author = {};
-        author.name = player.name;
-        author.id = player.id;
-        author.rank = player.rank;
-
-        chapter.author = author;
-        chapter.msg = answerText;
-        chapter.storyID = story.refID;
-
-        console.log(answerText)
-
-        addChapter(chapter)
+        
         setAnswerText('');
         toggleTA(true);
-        setAnswerPreview("");
     }
 
 
-    const addLineBreaks = string => string.split('\n').map((text, index) => {
-        return (
-            <React.Fragment key={`${text}-${index}`}>
-                {text}
-                <br />
-            </React.Fragment>
-        )
-    });
+    // const addLineBreaks = string => string.split('\n').map((text, index) => {
+    //     return (
+    //         <React.Fragment key={`${text}-${index}`}>
+    //             {text}
+    //             <br />
+    //         </React.Fragment>
+    //     )
+    // });
 
 
 
     const chapters = story.chapters.map(chapter => ((
         <div className="chapter" key={chapter.id}  >
             <p className="chapterAuthor"  >{chapter.author.name}</p>
-            <p className="chapterMsg">{parseString(chapter.msg)}</p>
+            <p className="replyDate">{chapter.replyDate}</p>
+            <div className="chapterMsg">{parse(chapter.msg)}</div>
         </div>
     ))).reverse()
 
@@ -76,22 +75,9 @@ const OneSession = ({ story, player, addChapter, changeSeenInSession }) => {
 
                 {intro ? <p className="openingMsg">{`${story.openMsg}`}</p> : null}
                 <form className={textareaHidden ? "answerForm hidden" : "answerForm"} onSubmit={submitAnswer} >
-                    <textarea className="answerField" value={answerText} onChange={(e) => setAnswerText(e.target.value)} ></textarea>
-                    <div className="answerSubmitWrap">
-                        <input className="answerSubmit" type="submit" value="Wyślij" />
-                        <button className="answerViewer" onClick={(e) => {
-                            e.preventDefault();
-                            setAnswerPreview(answerText)
-                        }}>Podgląd</button>
-                    </div>
+                    <RichEditor action={addChapter} place={story} player={player} />
                 </form>
-                {answerPreview ? 
-                <>
-                    <span className="answerPreviewSpan">Tak będzie wyglądać Twoja odpowiedź:</span>
-                    <p className="answerPreview">{parseString(answerPreview)}</p>
-                </>
-                    : null}
-
+                
             </div>
             <div className="chapters">
                 {chapters}
@@ -106,6 +92,7 @@ const MapStateToProps = state => ({
 const MapDispatchToProps = dispatch => ({
     addChapter: (chapter) => dispatch(addChapter(chapter)),
     changeSeenInSession: (id, refID) => dispatch(changeSeenInSession(id, refID)),
+    fetchStories: () => dispatch(fetchStories())
 })
 
 export default connect(MapStateToProps, MapDispatchToProps)(OneSession);
