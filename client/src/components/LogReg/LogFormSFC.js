@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import { logInPlayer } from '../../data/actions/generalActions';
+import { signInFirebase } from '../../data/firebase/firebaseActions';
 
 
 
-const LogFormSFC = ({ loginClassName, msg, isLogged, logInPlayer }) => {
+const LogFormSFC = ({ loginClassName, msg, isLogged, logInPlayer, signInFirebase }) => {
 
     const [login, setLogin] = useState("");
     const [password, setPassword] = useState("");
@@ -14,8 +15,8 @@ const LogFormSFC = ({ loginClassName, msg, isLogged, logInPlayer }) => {
         e.preventDefault();
         let account = {};
         account.login = login;
-        account.password = password;
-        logInPlayer(account);
+        // logInPlayer(account);
+        signInFirebase(login, password, account)
     }
 
     useEffect(() => {
@@ -35,6 +36,7 @@ const LogFormSFC = ({ loginClassName, msg, isLogged, logInPlayer }) => {
 
     return (
         <form className={loginClassName} onSubmit={submitLogin}>
+
             <input className="logInput" type="text" id="login" value={login} onChange={(e) => setLogin(e.target.value)} />
             <input className="logInput" type="password" id="password" value={password} onChange={(e) => setPassword(e.target.value)} />
             { isLogged === "checking" ?
@@ -56,7 +58,8 @@ const MapStateToProps = state => ({
 
 const MapDispatchToProps = (dispatch) => {
     return {
-        logInPlayer: (account) => dispatch(logInPlayer(account))
+        logInPlayer: (account) => dispatch(logInPlayer(account)),
+        signInFirebase: (email, password, account) => dispatch(signInFirebase(email, password, account)),
     }
 }
 
