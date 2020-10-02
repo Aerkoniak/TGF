@@ -1,14 +1,24 @@
 import React, { useState, useEffect } from 'react'
 import { connect } from 'react-redux';
-import { createAccount } from '../../data/actions/generalActions'
+import { createAccount } from '../../data/actions/generalActions';
+import {createDate} from '../../data/usefullFN'
 
-const RegFormSFC = ({ regClassName, isLogged, createAccount }) => {
+import { Firebase } from '../../data/firebase/firebaseConfig';
+import { createFirebaseAccount, signInFirebase } from '../../data/firebase/firebaseActions';
+
+
+
+
+
+const RegFormSFC = ({ regClassName, isLogged, createAccount, createFirebaseAccount,signInFirebase }) => {
 
     const [login, setLogin] = useState("");
     const [password, setPassword] = useState("");
     const [repPass, setRepPass] = useState("");
     const [information, setInformation] = useState("");
     const [warnings, setWarnings] = useState(false);
+
+    
 
     const submitForm = e => {
         e.preventDefault();
@@ -31,12 +41,14 @@ const RegFormSFC = ({ regClassName, isLogged, createAccount }) => {
         } else {
             isFormOk = true;
             account.login = login;
-            account.password = password;
-            account.repPass = repPass;
+            account.registrationDay = createDate();
+
         }
 
         if (isFormOk) {
-            createAccount(account);
+            // createAccount(account);
+            console.log(account)
+            createFirebaseAccount(account, login, password)
             setInformation("Twoje konto jest zakładane");
             setWarnings(true)
         }
@@ -45,9 +57,9 @@ const RegFormSFC = ({ regClassName, isLogged, createAccount }) => {
 
     return (
         <form className={regClassName} onSubmit={submitForm} >
-            <input className="regInput" type="text" id="login" value={login} onChange={(e) => setLogin(e.target.value)} />
-            <input className="regInput" type="password" id="pass" value={password} onChange={(e) => setPassword(e.target.value)} />
-            <input className="regInput" type="password" id="repPass" value={repPass} onChange={(e) => setRepPass(e.target.value)} />
+            <input className="regInput" type="text" id="login" placeholder="Wybierz swój login" value={login} onChange={(e) => setLogin(e.target.value)} />
+            <input className="regInput" type="password" id="pass" placeholder="Podaj hasło" value={password} onChange={(e) => setPassword(e.target.value)} />
+            <input className="regInput" type="password" id="repPass" placeholder="Powtórz hasło" value={repPass} onChange={(e) => setRepPass(e.target.value)} />
             { isLogged === "checking" ?
                 <div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
                 :
@@ -69,7 +81,8 @@ const MapStateToProps = state => ({
 
 const MapDispatchToProps = (dispatch) => {
     return {
-        createAccount: (account) => dispatch(createAccount(account))
+        createAccount: (account) => dispatch(createAccount(account)),
+        createFirebaseAccount: (account, email, password) => dispatch(createFirebaseAccount(account, email, password)),
     }
 }
 
