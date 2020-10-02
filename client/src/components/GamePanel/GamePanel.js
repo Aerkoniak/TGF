@@ -1,10 +1,14 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import { Switch, Route } from 'react-router-dom';
 
 import { setHandCoockie } from '../../data/actions/generalActions';
 import { fetchStories } from '../../data/actions/storiesActions';
 import { fetchMails } from '../../data/actions/mailsActions';
+import { fetchTavernRooms } from '../../data/actions/tavernActions';
+
+import { storiesDB } from '../../data/firebase/firebaseConfig'
+
 
 import Navbar from '../Navbar/Navbar';
 import HeroldPage from '../pages/HeroldPage';
@@ -18,13 +22,15 @@ import OneMail from '../pages/OneMail';
 
 
 
-const GamePanel = ({ player, stories, mails, downloadNeed, isLeftHanded, setHandCoockie, fetchStories, fetchMails }) => {
+const GamePanel = ({ player, stories, mails, downloadNeed, isLeftHanded, setHandCoockie, fetchStories, fetchMails, fetchTavernRooms }) => {
 
+  
 
     useEffect(() => {
         fetchStories();
         setHandCoockie();
         fetchMails(player.id);
+        fetchTavernRooms()
     }, []);
 
     useEffect(() => {
@@ -34,9 +40,13 @@ const GamePanel = ({ player, stories, mails, downloadNeed, isLeftHanded, setHand
         }
     }, [downloadNeed])
 
-    const storiesRoutes = stories.map(storyRoute => ((
-        <Route key={storyRoute.id} path={`/sessions/id${storyRoute.id}`} render={(routeProps) => (<OneSession {...routeProps} id={storyRoute.id} story={storyRoute} />)} />
-    )))
+
+    const storiesRoutes = stories.map(storyRoute => {
+        return (
+                <Route key={storyRoute.id} path={`/sessions/id${storyRoute.id}`} render={(routeProps) => (<OneSession {...routeProps} id={storyRoute.id} story={storyRoute} />)} />
+        )
+    })
+
 
     const mailsRoutes = mails.map(mailRoute => ((
         <Route key={mailRoute.id} path={`/mails/id${mailRoute.id}`} render={(routeProps) => (<OneMail {...routeProps} id={mailRoute.id} mail={mailRoute} />)} />
@@ -72,7 +82,8 @@ const MapDispatchToProps = dispatch => {
     return {
         setHandCoockie: () => dispatch(setHandCoockie()),
         fetchStories: () => dispatch(fetchStories()),
-        fetchMails: (id) => dispatch(fetchMails(id))
+        fetchMails: (id) => dispatch(fetchMails(id)),
+        fetchTavernRooms: () => dispatch(fetchTavernRooms())
     }
 }
 
