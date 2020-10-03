@@ -1,11 +1,11 @@
-import { db } from '../firebase/firebaseConfig';
+import { tavernDB } from '../firebase/firebaseConfig';
 import { createDate } from '../usefullFN';
 
 
 export const fetchTavernRooms = () => dispatch => {
     let taverns = []
     dispatch({ type: "FETCH_TAVERN_START" });
-    db.collection('tavern').orderBy("id", "asc").get()
+    tavernDB.orderBy("id", "asc").get()
         .then(snapshot => {
             snapshot.forEach(doc => {
                 let room = doc.data();
@@ -16,28 +16,27 @@ export const fetchTavernRooms = () => dispatch => {
 }
 
 export const addTavernRecord = (tavernRecord) => dispatch => {
-    tavernRecord.replyDate = createDate();
-    dispatch({ type: "ADD_TAVERN_RECORD_START" });
+    console.log(tavernRecord);
+    const newRecord = {}
+    newRecord.replyDate = createDate();
+    // dispatch({ type: "ADD_TAVERN_RECORD_START" });
     let recordsArray = [];
-    db.collection('tavern').doc(`${tavernRecord.room}`).get()
+
+    let author = {};
+    author.name = tavernRecord.player.name;
+    author.id = tavernRecord.player.id;
+    author.rank = tavernRecord.player.rank;
+
+    newRecord.author = author;
+    newRecord.text = tavernRecord.text;
+    newRecord.room = tavernRecord.place.name;
+
+    tavernDB.doc(`${newRecord.room}`).get()
         .then(doc => {
             let room = doc.data();
             recordsArray = room.records;
-            recordsArray.push(tavernRecord);
-            db.collection('tavern').doc(`${tavernRecord.room}`).set({ records: recordsArray }, { merge: true });
+            recordsArray.push(newRecord);
+            tavernDB.doc(`${newRecord.room}`).set({ records: recordsArray }, { merge: true });
         })
 }
 
-export const checkTavernRecord = (activeRoom) => dispatch => {
-    console.log(activeRoom)
-    db.collection('tavern').doc(`${activeRoom.name}`).get()
-        .then(doc => {
-            let room = doc.data();
-            if (room.records.length === activeRoom.records.length) {
-                console.log("Bazy są takie same")
-            }
-            else if (room.records.length < activeRoom.records.length) {
-                console.log("W bazie danych jest nowsza wersja.")
-            }
-        })
-}
