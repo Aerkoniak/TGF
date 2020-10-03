@@ -3,10 +3,25 @@ import { createDate } from '../usefullFN';
 
 
 export const sendMail = message => dispatch => {
-    message.startDate = createDate();
-    // message.id = new Date().getTime();
+
     console.log(message);
-    axios.post('/mails-create', { message })
+
+    const newMessage = {}
+    newMessage.startDate = createDate();
+    let sender = {}
+    let addreesse = {}
+    sender.name = message.player.name;
+    sender.id = message.player.id;
+    sender.rank = message.player.rank;
+    addreesse.name = message.addreesse.name;
+    addreesse.id = message.addreesse.id;
+    addreesse.rank = message.addreesse.rank;
+    newMessage.sender = sender;
+    newMessage.addreesse = addreesse;
+    newMessage.startText = message.text
+    newMessage.title = message.title
+
+    axios.post('/mails-create', { newMessage })
         .then(res => {
             if (res.data.isSaved) {
                 dispatch({ type: 'DOWNLOAD_NEED', payload: true });
@@ -14,15 +29,30 @@ export const sendMail = message => dispatch => {
                 dispatch({ type: 'CLEAN_MSG' });
             }
         })
+    dispatch({ type: 'CLEAN_MSG' });
 }
 
 export const sendMailReply = message => dispatch => {
-    message.replyDate = createDate();
-    // console.log(message);
-    axios.post('/mails-update', { message })
+    const newMessage = {}
+    newMessage.replyDate = createDate();
+
+    let newChapter = {};
+    let author = {}
+    newMessage.replyDate = createDate();
+    newMessage.id = new Date().getTime();
+
+    newMessage.msg = message.text;
+    newMessage.mailsDocRef = message.place.mailsDocRef;
+    author.name = message.player.name;
+    author.id = message.player.id;
+    author.rank = message.player.rank;
+    newMessage.author = author;
+
+
+    axios.post('/mails-update', { newMessage })
         .then(res => {
             if (res.data.saved) {
-                let id = message.author.id
+                let id = newMessage.author.id
                 axios.post('/mails-fetch', { id })
                     .then(res => {
                         let mails = res.data.mailsArray;
@@ -32,7 +62,7 @@ export const sendMailReply = message => dispatch => {
         })
 }
 
-export const changeSeenInMail  = (id, refID) => dispatch => {
+export const changeSeenInMail = (id, refID) => dispatch => {
     let read = {};
     read.id = id;
     read.refID = refID;
@@ -40,7 +70,6 @@ export const changeSeenInMail  = (id, refID) => dispatch => {
 }
 
 export const fetchMails = id => dispatch => {
-    console.log(id)
     dispatch({ type: 'MAIL_FETCH_START' });
     axios.post('/mails-fetch', { id })
         .then(res => {
