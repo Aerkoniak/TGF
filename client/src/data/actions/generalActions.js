@@ -5,6 +5,10 @@ import axios from 'axios';
 import { createDate } from '../usefullFN';
 import { connect } from 'react-redux';
 
+import firebase from 'firebase/app';
+import 'firebase/auth';
+
+
 export const setHandCoockie = argument => dispatch => {
     const cookie = Cookies.get('isLeftHanded');
     if (cookie === "true") {
@@ -18,7 +22,7 @@ export const toggleHand = (argument) => (dispatch) => {
     Cookies.set('isLeftHanded', argument, { expires: 1 });
 }
 
-export const AutoLogging = argument => dispatch => {
+export const AutoLogging = () => dispatch => {
     // console.log("Autologowanie")
     const cookie = Cookies.get('autoLog');
     if (cookie === "true") {
@@ -28,20 +32,48 @@ export const AutoLogging = argument => dispatch => {
         account.password = Cookies.get('autoLogPassword');
         account.lastLogged = createDate();
         // console.log(account)
+        firebase.auth().signInWithEmailAndPassword(account.login, account.password).catch(error => {
+            const errorCode = error.code;
+            const errorMessage = error.message;
+            console.log(`Błąd o numerze ${errorCode} o treści ${errorMessage}`);
+        })
 
-        axios.post('/login', { account })
-            .then(res => {
-                let msg = false;
-                let player = false;
-                if (res.data.msg) {
-                    msg = res.data.msg;
-                    dispatch({ type: 'LOG_IN_NOT', msg })
-                } else {
-                    player = res.data.player;
-                    dispatch({ type: "LOG_IN", player })
+        firebase.auth().onAuthStateChanged(function (user) {
+            if (user) {
+                const user = firebase.auth().currentUser;
+                if (user) {
+                    account.lastLogged = createDate();
+                    axios.post('/login', { account })
+                        .then(res => {
+                            let msg = false;
+                            let player = false;
+                            if (res.data.msg) {
+                                msg = res.data.msg;
+                                dispatch({ type: 'LOG_IN_NOT', msg })
+                            } else {
+                                player = res.data.player;
+                                dispatch({ type: "LOG_IN", player })
+                            }
+                        })
                 }
+            }
+        })
 
-            })
+
+
+        // axios.post('/login', { account })
+        //     .then(res => {
+        //         let msg = false;
+        //         let player = false;
+        //         if (res.data.msg) {
+        //             msg = res.data.msg;
+        //             dispatch({ type: 'LOG_IN_NOT', msg })
+        //         } else {
+        //             player = res.data.player;
+        //             dispatch({ type: "LOG_IN", player })
+        //         }
+
+        //     })
     }
 }
 
@@ -66,6 +98,8 @@ export const toggleAutoLog = log => dispatch => {
 export const createAccount = account => dispatch => {
     dispatch({ type: "LOG_IN_CHECKING" });
     account.registrationDay = createDate();
+    delete account.password;
+    delete account.repPass;
     axios.post('/registerAccount', { account })
         .then(res => {
             let player = res.data.player;
@@ -104,25 +138,24 @@ export const setCharName = character => dispatch => {
         })
 }
 
-export const setProfile = character => dispatch => {
+export const setProfile = char => dispatch => {
 
-    const newCharacter = character.player;
-    newCharacter.changed = "profile";
-    newCharacter.profile = character.text;
-
-    axios.post('/edit-account', { newCharacter })
+    const character = char.player;
+    character.changed = "profile";
+    character.profile = char.text;
+    dispatch({ type: 'CLEAN_MSG' })
+    axios.post('/edit-account', { character })
         .then(res => {
             if (res.data.saved) {
-                console.log("zapisano");
-                delete newCharacter.changed;
-                dispatch({ type: 'SET_PLAYER_PROFILE', newCharacter });
+                delete character.changed
+                dispatch({ type: 'SET_PLAYER_PROFILE', character });
                 dispatch({ type: 'CLEAN_MSG' })
             }
         })
 }
 
 export const fetchCharactersList = argument => dispatch => {
-  
+
     dispatch({ type: "FETCH_CHAR_START" });
     axios.post('/characters-fetch')
         .then(res => {
