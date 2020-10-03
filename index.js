@@ -32,9 +32,10 @@ app.use(bodyParser.json());
 app.post("/registerAccount", (req, res) => {
     let account = req.body.account;
     account.rank = 5;
+    account.profile = "";
     players.get()
         .then(snapshot => {
-            let size = snapshot.size;
+            let size = snapshot.size + 1;
             account.id = size;
             players.add(account)
                 .then(docRef => {
@@ -44,8 +45,6 @@ app.post("/registerAccount", (req, res) => {
                             if (ok.writeTime) {
                                 let player = {};
                                 player = account;
-                                delete player.password;
-                                delete player.repPass;
 
                                 res.json({ player });
                             }
@@ -64,25 +63,21 @@ app.post('/login', (req, res) => {
             } else {
                 snapshot.forEach(doc => {
                     const document = doc.data();
-                    if (password === document.password) {
-                        let player = {};
-                        player = document;
 
-                        res.json({ player });
-                        console.log("Zalogowano");
-                        players.doc(player.accountDocRef).set({ lastLog: lastLogged }, { merge: true });
-                    } else {
-                        console.log("Złe hasło");
-                        res.json({ msg: "Złe hasło" })
-                    }
+                    let player = {};
+                    player = document;
+
+                    res.json({ player });
+                    console.log("Zalogowano");
+                    players.doc(player.accountDocRef).set({ lastLog: lastLogged }, { merge: true });
+
                 })
             }
         });
 })
 
 app.post('/edit-account', (req, res) => {
-    let character = req.body.newCharacter;
-    console.log(character);
+    let character = req.body.character;
 
     switch (character.changed) {
         case "name":
