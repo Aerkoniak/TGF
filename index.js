@@ -222,21 +222,51 @@ app.post('/mails-create', (req, res) => {
 });
 
 app.post('/mails-fetch', (req, res) => {
-    const playerID = req.body.id;
+    const playerLogin = req.body.login;
     let mailsArray = [];
 
-    mails.where("between", 'array-contains', playerID).orderBy("id", "asc").get()
+    players.where("login", "==", `${playerLogin}`).get()
         .then(snapshot => {
             if (snapshot.size === 0) {
-                console.log("Nie ma maili")
+                res.json({ msg: "Nie ma takiego gracza." })
             } else {
                 snapshot.forEach(doc => {
-                    let story = doc.data();
-                    mailsArray.push(story);
+                    const document = doc.data();
+                    let playerID = document.id;
+                    mails.where("between", 'array-contains', playerID).orderBy("id", "asc").get()
+                        .then(snapshot => {
+                            if (snapshot.size === 0) {
+                                console.log("Nie ma maili")
+                            } else {
+                                snapshot.forEach(doc => {
+                                    let story = doc.data();
+                                    mailsArray.push(story);
+                                })
+                            }
+                            res.json({ mailsArray })
+                        })
                 })
             }
-            res.json({ mailsArray })
         })
+
+    // if (playerID === undefined) {
+    //     console.log("Nie moge pobrać maili")
+    //     res.json({ failed: true })
+    // } else {
+    //     mails.where("between", 'array-contains', playerID).orderBy("id", "asc").get()
+    //         .then(snapshot => {
+    //             if (snapshot.size === 0) {
+    //                 console.log("Nie ma maili")
+    //             } else {
+    //                 snapshot.forEach(doc => {
+    //                     let story = doc.data();
+    //                     mailsArray.push(story);
+    //                 })
+    //             }
+    //             res.json({ mailsArray })
+    //         })
+    // }
+
 })
 
 app.post('/mails-update', (req, res) => {
@@ -270,7 +300,6 @@ app.post('/mails-update', (req, res) => {
                     })
             })
     } else if (req.body.read) {
-        console.log("Sesja została odczytana.");
         const { id, refID } = req.body.read;
         let addreesse = {};
         let sender = {};
