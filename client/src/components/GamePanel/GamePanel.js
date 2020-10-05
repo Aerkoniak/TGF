@@ -1,13 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
-import { Switch, Route } from 'react-router-dom';
+import { Switch, Route, Redirect } from 'react-router-dom';
+import { auth } from '../../data/firebase/firebaseConfig'
 
-import { setHandCoockie } from '../../data/actions/generalActions';
+
+import { setHandCoockie, logInPlayer } from '../../data/actions/generalActions';
 import { fetchStories } from '../../data/actions/storiesActions';
 import { fetchMails } from '../../data/actions/mailsActions';
 import { fetchTavernRooms } from '../../data/actions/tavernActions';
 
-import { storiesDB } from '../../data/firebase/firebaseConfig'
+// import { storiesDB } from '../../data/firebase/firebaseConfig'
+// import { mailsDB } from '../../data/firebase/firebaseConfig'
+
 
 
 import Navbar from '../Navbar/Navbar';
@@ -19,19 +23,29 @@ import CharakterPage from '../pages/CharakterPage';
 import SettingsPage from '../pages/SettingsPage';
 import OneSession from '../pages/OneStory';
 import OneMail from '../pages/OneMail';
+import LogOutPage from '../pages/LogOutPage';
 
 
 
-const GamePanel = ({ player, stories, mails, downloadNeed, isLeftHanded, setHandCoockie, fetchStories, fetchMails, fetchTavernRooms }) => {
+const GamePanel = ({ player, stories, mails, downloadNeed, isLeftHanded, setHandCoockie, fetchStories, fetchMails, fetchTavernRooms, logInPlayer }) => {
 
-  
+    const [redirectToLogOut, setLogOutRedirect] = useState(false)
 
     useEffect(() => {
-        fetchStories();
-        setHandCoockie();
-        fetchMails(player.id);
-        fetchTavernRooms()
-    }, []);
+        auth.onAuthStateChanged(function (user) {
+            if (user) {
+                let account = {}
+                account.login = user.email;
+                logInPlayer(account);
+                fetchStories();
+                setHandCoockie();
+                fetchTavernRooms();
+                fetchMails(user.email);
+            } else {
+                setLogOutRedirect(!redirectToLogOut)
+            }
+        })
+    }, [])
 
     useEffect(() => {
         if (downloadNeed) {
@@ -43,7 +57,7 @@ const GamePanel = ({ player, stories, mails, downloadNeed, isLeftHanded, setHand
 
     const storiesRoutes = stories.map(storyRoute => {
         return (
-                <Route key={storyRoute.id} path={`/sessions/id${storyRoute.id}`} render={(routeProps) => (<OneSession {...routeProps} id={storyRoute.id} story={storyRoute} />)} />
+            <Route key={storyRoute.id} path={`/sessions/id${storyRoute.id}`} render={(routeProps) => (<OneSession {...routeProps} id={storyRoute.id} story={storyRoute} />)} />
         )
     })
 
@@ -63,10 +77,14 @@ const GamePanel = ({ player, stories, mails, downloadNeed, isLeftHanded, setHand
                 <Route path="/tavern" component={TavernPage} />
                 <Route path="/charakter" component={CharakterPage} />
                 <Route path="/settings" component={SettingsPage} />
+                <Route path='/logout' component={LogOutPage} />
+
+
                 {storiesRoutes}
                 {mailsRoutes}
                 {/* <Route path='/storyCreator' render={(routeProps) => (<StoryCreator {...routeProps} player={player}></StoryCreator>)} /> */}
             </Switch>
+            {redirectToLogOut ? <Redirect to="/logout" /> : null}
 
         </section>
     );
@@ -83,7 +101,8 @@ const MapDispatchToProps = dispatch => {
         setHandCoockie: () => dispatch(setHandCoockie()),
         fetchStories: () => dispatch(fetchStories()),
         fetchMails: (id) => dispatch(fetchMails(id)),
-        fetchTavernRooms: () => dispatch(fetchTavernRooms())
+        fetchTavernRooms: () => dispatch(fetchTavernRooms()),
+        logInPlayer: (account) => dispatch(logInPlayer(account))
     }
 }
 
