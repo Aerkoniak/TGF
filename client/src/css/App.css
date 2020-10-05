@@ -1,9 +1,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Courgette&family=Open+Sans:wght@300&display=swap');
-
+@import '../css/animations.css';
 /* font-family: 'Courgette', cursive;  
 font-family: 'Open Sans', sans-serif;*/
 
 /* Główne elementy strony */
+
 * {
   margin: 0;
   padding: 0;
@@ -31,65 +32,37 @@ body, #root {
 }
 
 
-/* RICHEDITOR */
-
-
-
-.notranslate.public-DraftEditor-content{
-  padding: 5px;
-  min-height: 30vh;
-  font-family: 'Open Sans', sans-serif;
-}
-.richEditorWrap{
-  margin-bottom: 50px;
-
-}
-
-.richEditor{
-  margin: 10px 0 20px;
-  border: 1px solid black;
-  width: 100%;
-  min-height: 30vh;
-}
-
-.styleButtons {
-  display: flex;
-  flex-wrap: wrap;
-  border-bottom: 2px solid black;
-  border-top: 1px solid black;
-}
-
-.fontButtons {
-  flex-basis: 50%;
-  padding: 10px;
-  background-color: #fff;
-  border: none;
-}
-.fontButtons:nth-of-type(3), .fontButtons:nth-of-type(4) {
-  border-top: 1px solid grey;
-}
-.fontButtons:nth-of-type(1), .fontButtons:nth-of-type(3) {
-  border-right: 1px solid grey;
-}
-
-.styleButtons .answerSubmit {
-  background-color: grey;
-  color: white;
-  flex-basis: 100%;
-  padding: 10px;
-  font-size: 18px;
-}
-
-
 /* LOGINPANEL */
 
 p.loadPage {
   text-align: center;
-  padding-top: 50px;
+  transition: 0.3s;
+  transition-delay: 0.2s;
 }
+
+.loadPage.gameName {
+  font-size: 30px;
+  padding-top: 100px;
+  padding-bottom: 20px;
+}
+
+.loadPage.gameName.formVisible {
+  padding-top: 50px;
+  transform: scale(0.75);
+
+}
+.loadPage.gameDesc.hidden {
+  opacity: 0;
+}
+
 p.formInfo {
-  text-align: center;
+  text-align: left;
   font-size: 15px;
+  padding: 5px 0;
+}
+.formInfo.header {
+  font-weight: bold;
+  font-size: 16px;
 }
 
 .logPanel {
@@ -97,9 +70,12 @@ p.formInfo {
   bottom: 10vh;
 
   display: flex;
+  flex-wrap: wrap;
   align-items: flex-end;
   width: 100vw;
-  height: 60vh;
+  height: 70vh;
+  /* background-color: #ccc; */
+
 }
 
 .logPanel .login, .logPanel .reg {
@@ -126,31 +102,38 @@ p.formInfo {
 
 .loginForm {
   position: absolute;
-  top: 0;
+  top: 20vh;
   left: 0;
-  width: 50vw;
+  width: 100vw;
   display: flex;
   flex-wrap: wrap;
-  padding-left: 15px;
+  padding: 15px;
+  transition: 0.2s;
+  transition-delay: 0.2s ;
 }
 .registerForm {
   position: absolute;
   top: 0;
-  left: 50%;
-  width: 50vw;
+  left: 0;
+  width: 100vw;
   display: flex;
   flex-wrap: wrap;
-  padding-right: 15px;
+  padding: 15px;
+  transition: 0.2s;
+  transition-delay: 0.2s ;
 }
 
 .loginForm.hidden, .registerForm.hidden {
- display: none;
+ transform: scale(0);
+ transition: 0.2s;
+ transition-delay: 0.2s ;
 }
 
 .regInput, .logInput {
   width: 100%;
   font-size: 14px;
   padding: 5px 0 5px 5px;
+  border: 1px solid black;
 }
 .regInput:focus, .logInput:focus {
   outline-color: black;
@@ -163,7 +146,7 @@ p.formInfo {
   font-size: 16px;
   font-family: 'Courgette', cursive;
   padding: 30px 0 5px;
-  border-bottom: 1px solid black;
+  border-bottom: 2px solid black;
   margin-bottom: 10px;
 }
 .registerSubmit:focus, .loginSubmit:focus {
@@ -171,6 +154,17 @@ p.formInfo {
 }
 .loginSubmit {
   padding-top: 60px;
+}
+
+
+section.logOut{
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  background-color: #fff;
+  /* transform: translateY(-10vh); */
 }
 
 /* NAWIGACJE */
@@ -251,6 +245,192 @@ nav.desktop {
 .test {
   padding: 10px 0 0;
   font-size: 18px;
+}
+
+/* RICHEDITOR */
+
+.notranslate.public-DraftEditor-content{
+  padding: 5px;
+  min-height: 30vh;
+  font-family: 'Open Sans', sans-serif;
+}
+
+.richEditorWrap{
+  margin-bottom: 50px;
+
+}
+
+.richEditor{
+  margin: 10px 0 20px;
+  border: 1px solid black;
+  width: 100%;
+  min-height: 30vh;
+}
+
+.styleButtons {
+  display: flex;
+  flex-wrap: wrap;
+  border-bottom: 2px solid black;
+  border-top: 1px solid black;
+}
+
+.fontButtons {
+  flex-basis: 50%;
+  padding: 10px;
+  background-color: #fff;
+  border: none;
+}
+.fontButtons:nth-of-type(3), .fontButtons:nth-of-type(4) {
+  border-top: 1px solid grey;
+}
+.fontButtons:nth-of-type(1), .fontButtons:nth-of-type(3) {
+  border-right: 1px solid grey;
+}
+
+.styleButtons .answerSubmit {
+  background-color: grey;
+  color: white;
+  flex-basis: 100%;
+  padding: 10px;
+  font-size: 18px;
+}
+
+
+/* SESJE */
+
+/* STORYLINK */
+
+.storyLink {
+  display: flex;
+  margin-top: 20px;
+  font-size: 18px;
+}
+.linkAuthor {
+  flex-basis: 50%;
+}
+.linkTitle {
+  color: black;
+  font-size: 18px;
+}
+.linkTitle.new {
+  color: red;
+}
+.linkDate {
+  display: none;
+}
+a.linkTitle {
+  text-decoration: underline;
+}
+
+
+/* SINGLESTORY */
+
+.storyInfo {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 10px 10px 15px 15px;
+}
+.storyTitle {
+  flex-basis: 100%;
+  font-weight: bold;
+  font-size: 22px;
+}
+.storyAuthor {
+  flex-basis: 100%;
+  font-size: 18px;
+  padding-top: 5px;
+}
+.storyDate {
+  flex-basis: 100%;
+  padding-top: 5px;
+}
+.openingMsg {
+  flex-basis: 100%;
+  padding: 10px 0;
+}
+
+.showIntro {
+  font-size: 14px;
+  text-decoration: underline;
+  padding: 20px 0 0;
+  flex-basis: 100%;
+}
+
+
+.answer {
+  flex-basis: 100%;
+  text-align: center;
+  border: 1px solid black;
+  margin: 10px 0;
+}
+
+.answerForm {
+  display: flex;
+  flex-basis: 100%;
+}
+.answerForm.hidden {
+  display: none;
+}
+
+.answerField {
+  flex-basis: 80%;
+  height: 30vh;
+  padding: 5px;
+}
+.answerSubmitWrap{
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+.answerSubmit, .answerViewer {
+  flex-basis: 50%;
+  background-color: #fff;
+  border: 1px solid gray;
+  outline: none;
+}
+
+.answerPreviewSpan{
+  padding: 10px 0;
+  flex-basis: 100%;
+}
+
+.answerPreview {
+  padding: 10px 0;
+}
+
+.answerField:focus{
+  outline: black 2px solid;
+}
+
+.singleStory .notepad {
+  display: none;
+}
+
+/* CHAPTER */
+
+.chapter {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 0 0 20px 15px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid black;
+}
+.chapterAuthor {
+  text-align: right;
+  flex-basis: 100%;
+  margin-top: 5px;
+  font-size: 20px;
+}
+.replyDate {
+  flex-basis: 100%;
+  text-align: right;
+  padding-top: 5px;
+}
+
+.chapterMsg{
+  flex-basis: 100%;
+  margin-top: 25px;
+  padding: 0 10px;
 }
 
 
@@ -567,141 +747,7 @@ nav.desktop {
   text-decoration: underline;
 }
 
-/* SESJE */
 
-/* STORYLINK */
-
-.storyLink {
-  display: flex;
-  margin-top: 20px;
-  font-size: 18px;
-}
-.linkAuthor {
-  flex-basis: 50%;
-}
-.linkTitle {
-  color: black;
-  font-size: 18px;
-}
-.linkTitle.new {
-  color: red;
-}
-.linkDate {
-  display: none;
-}
-a.linkTitle {
-  text-decoration: underline;
-}
-
-/* SINGLESTORY */
-
-.storyInfo {
-  display: flex;
-  flex-wrap: wrap;
-  padding: 10px 10px 15px 15px;
-}
-.storyTitle {
-  flex-basis: 100%;
-  font-weight: bold;
-  font-size: 22px;
-}
-.storyAuthor {
-  flex-basis: 100%;
-  font-size: 18px;
-  padding-top: 5px;
-}
-.storyDate {
-  flex-basis: 100%;
-  padding-top: 5px;
-}
-.openingMsg {
-  flex-basis: 100%;
-  padding: 10px 0;
-}
-
-.showIntro {
-  font-size: 14px;
-  text-decoration: underline;
-  padding: 20px 0 0;
-  flex-basis: 100%;
-}
-
-
-.answer {
-  flex-basis: 100%;
-  text-align: center;
-  border: 1px solid black;
-  margin: 10px 0;
-}
-
-.answerForm {
-  display: flex;
-  flex-basis: 100%;
-}
-.answerForm.hidden {
-  display: none;
-}
-
-.answerField {
-  flex-basis: 80%;
-  height: 30vh;
-  padding: 5px;
-}
-.answerSubmitWrap{
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-}
-.answerSubmit, .answerViewer {
-  flex-basis: 50%;
-  background-color: #fff;
-  border: 1px solid gray;
-  outline: none;
-}
-
-.answerPreviewSpan{
-  padding: 10px 0;
-  flex-basis: 100%;
-}
-
-.answerPreview {
-  padding: 10px 0;
-}
-
-.answerField:focus{
-  outline: black 2px solid;
-}
-
-.singleStory .notepad {
-  display: none;
-}
-
-/* CHAPTER */
-
-.chapter {
-  display: flex;
-  flex-wrap: wrap;
-  padding: 0 0 20px 15px;
-  margin-bottom: 20px;
-  border-bottom: 1px solid black;
-}
-.chapterAuthor {
-  text-align: right;
-  flex-basis: 100%;
-  margin-top: 5px;
-  font-size: 20px;
-}
-.replyDate {
-  flex-basis: 100%;
-  text-align: right;
-  padding-top: 5px;
-}
-
-.chapterMsg{
-  flex-basis: 100%;
-  margin-top: 25px;
-  padding: 0 10px;
-}
 
 /* SETTINGS PAGE */
 
@@ -713,102 +759,32 @@ a.linkTitle {
   padding: 5px 10px 0 0;
 }
 
+.autologWrap {
+  padding: 10px 0;
+}
 
-/* LOADING INDICATOR */
-
-.lds-roller {
+.autologLabel {
   display: inline-block;
-  position: relative;
-  width: 80px;
-  height: 80px;
-  margin: 0 auto;
+  text-align: left;
 }
-.lds-roller div {
-  animation: lds-roller 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
-  transform-origin: 40px 40px;
+.autologPass {
+  padding: 5px;
 }
-.lds-roller div:after {
-  content: " ";
-  display: block;
-  position: absolute;
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: #000;
-  margin: -4px 0 0 -4px;
+.confirmAutolog {
+  font-size: 16px;
+  padding: 5px;
+  background-color: #fff;
+  border: none;
+  margin-left: 10px;
+  border-bottom: 1px solid black;
+  cursor: pointer;
 }
-.lds-roller div:nth-child(1) {
-  animation-delay: -0.036s;
+.confirmAutolog:focus-within {
+  outline: none;
 }
-.lds-roller div:nth-child(1):after {
-  top: 63px;
-  left: 63px;
+.logOutUtility {
+  cursor: pointer;
 }
-.lds-roller div:nth-child(2) {
-  animation-delay: -0.072s;
-}
-.lds-roller div:nth-child(2):after {
-  top: 68px;
-  left: 56px;
-}
-.lds-roller div:nth-child(3) {
-  animation-delay: -0.108s;
-}
-.lds-roller div:nth-child(3):after {
-  top: 71px;
-  left: 48px;
-}
-.lds-roller div:nth-child(4) {
-  animation-delay: -0.144s;
-}
-.lds-roller div:nth-child(4):after {
-  top: 72px;
-  left: 40px;
-}
-.lds-roller div:nth-child(5) {
-  animation-delay: -0.18s;
-}
-.lds-roller div:nth-child(5):after {
-  top: 71px;
-  left: 32px;
-}
-.lds-roller div:nth-child(6) {
-  animation-delay: -0.216s;
-}
-.lds-roller div:nth-child(6):after {
-  top: 68px;
-  left: 24px;
-}
-.lds-roller div:nth-child(7) {
-  animation-delay: -0.252s;
-}
-.lds-roller div:nth-child(7):after {
-  top: 63px;
-  left: 17px;
-}
-.lds-roller div:nth-child(8) {
-  animation-delay: -0.288s;
-}
-.lds-roller div:nth-child(8):after {
-  top: 56px;
-  left: 12px;
-}
-@keyframes lds-roller {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
-}
-
-/* 
-
-<div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-
-*/
-
-
 /* QUERIES */
 
 @media (min-width: 1280px) {
@@ -827,62 +803,17 @@ a.linkTitle {
     padding: 10px 0 0 50px;
   }
 
-  /* RICHEDITOR */
-
-  .richEditor{
-    border: 1px solid black;
-    width: 76vw;
-    position: relative;
-    min-height: 20vh;
-  }
-  
-  .notranslate.public-DraftEditor-content{
-    min-height: 20vh;
-    width: 100%;
-  }
-
-  .styleButtons {
-    position: relative;
-    bottom: 0;
-    left: 0;
-    display: flex;
-    border-bottom: 2px solid black;
-    border-top: 1px solid black;
-  }
-
-  .fontButtons:nth-of-type(3), .fontButtons:nth-of-type(4) {
-    border-top: none
-  }
-  .fontButtons:nth-of-type(1), .fontButtons:nth-of-type(3) {
-    border-right: none;
-  }
-  .fontButtons {
-    background-color: #fff;
-    cursor: pointer;
-    border: none;
-    flex-basis: 25%;
-    border-left: 1px solid grey;
-    transition: 0.3s;
-  }
- .fontButtons:nth-of-type(1) {
-  border-left: none
- }
- .styleButtons .answerSubmit {
-   cursor: pointer;
-   transition: 0.3s;
-   background-color: #444;
- }
- .fontButtons:hover{
-  background-color: #ccc;
-}
-.fontButtons:focus-within {
-  outline: none;
-}
- .styleButtons .answerSubmit:hover {
-  background-color: #999;
- }
 
   /* LOGINPANEL */
+
+  .loadPage.gameName {
+    font-size: 36px;
+  }
+
+  .loadPage.gameDesc {
+    font-size: 22px;
+  }
+
   p.formInfo {
     text-align: left;
     font-size: 15px;
@@ -895,9 +826,9 @@ a.linkTitle {
 
   .loginForm {
     width: 30vw;
-    top: 20%;
-    left: 45vw;
-    transform: translateX(-100%);
+    top: 40%;
+    left: 15vw;
+    /* transform: translateX(-100%); */
   }
   .registerForm {
     width: 30vw;
@@ -905,7 +836,15 @@ a.linkTitle {
     left: 55vw;
   }
 
-
+  section.logOut{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background-color: #fff;
+    transform: translateY(-10vh);
+  }
 
   /* NAWIGACJA */
 
@@ -982,6 +921,61 @@ a.linkTitle {
     padding-left: calc(20vw + 20px);
     padding-right: 20px;
   }
+
+  /* RICHEDITOR */
+
+  .richEditor{
+    border: 1px solid black;
+    width: 76vw;
+    position: relative;
+    min-height: 20vh;
+  }
+  
+  .notranslate.public-DraftEditor-content{
+    min-height: 20vh;
+    width: 100%;
+  }
+
+  .styleButtons {
+    position: relative;
+    bottom: 0;
+    left: 0;
+    display: flex;
+    border-bottom: 2px solid black;
+    border-top: 1px solid black;
+  }
+
+  .fontButtons:nth-of-type(3), .fontButtons:nth-of-type(4) {
+    border-top: none
+  }
+  .fontButtons:nth-of-type(1), .fontButtons:nth-of-type(3) {
+    border-right: none;
+  }
+  .fontButtons {
+    background-color: #fff;
+    cursor: pointer;
+    border: none;
+    flex-basis: 25%;
+    border-left: 1px solid grey;
+    transition: 0.3s;
+  }
+ .fontButtons:nth-of-type(1) {
+  border-left: none
+ }
+ .styleButtons .answerSubmit {
+   cursor: pointer;
+   transition: 0.3s;
+   background-color: #444;
+ }
+ .fontButtons:hover{
+  background-color: #ccc;
+}
+.fontButtons:focus-within {
+  outline: none;
+}
+ .styleButtons .answerSubmit:hover {
+  background-color: #999;
+ }
 
   /* PLAYERVIEWER */
 
@@ -1105,21 +1099,6 @@ a.linkTitle {
     font-size: 18px;
   }
 
-  /* SETTINGS PAGE */
-
-  .desktopSetting {
-    display: block;
-  }
-
-  .settingsLabel {
-    display: inline-block;
-    padding: 15px 10px 0 0;
-    font-size: 20px;
-  }
-
-  .mobileSettings {
-    display: none;
-  }
 
   /* KARCZMY */
 
@@ -1160,5 +1139,23 @@ a.linkTitle {
   .characterListElement:hover {
     transform: translateX(20px);
   }
+
+  /* SETTINGS PAGE */
+
+  .desktopSetting {
+    display: block;
+  }
+
+  .settingsLabel {
+    display: inline-block;
+    padding: 15px 10px 0 0;
+    font-size: 20px;
+  }
+
+  .mobileSettings {
+    display: none;
+  }
+
+  
 }
 
