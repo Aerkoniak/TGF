@@ -69,11 +69,17 @@ export const changeSeenInMail = (id, refID) => dispatch => {
     axios.post('/mails-update', { read })
 }
 
-export const fetchMails = id => dispatch => {
+export const fetchMails = login => dispatch => {
     dispatch({ type: 'MAIL_FETCH_START' });
-    axios.post('/mails-fetch', { id })
+    axios.post('/mails-fetch', { login })
         .then(res => {
-            let mails = res.data.mailsArray;
-            dispatch({ type: 'MAIL_FETCH_COMPLETE', mails });
+            if (res.data.failed) {
+                dispatch({ type: 'MAIL_FETCH_FAILED' })
+            } else if (res.data.mailsArray) {
+                let mails = res.data.mailsArray;
+                console.log(mails)
+                dispatch({ type: 'MAIL_FETCH_COMPLETE', mails });
+            }
+
         })
 }

@@ -58,6 +58,7 @@ export const signInFirebase = (email, password, account) => dispatch => {
                     if (user) {
                         const user = firebase.auth().currentUser;
                         if (user) {
+                            console.log(user)
                             account.lastLogged = createDate();
                             axios.post('/login', { account })
                                 .then(res => {

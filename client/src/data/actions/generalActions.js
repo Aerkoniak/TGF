@@ -32,48 +32,36 @@ export const AutoLogging = () => dispatch => {
         account.password = Cookies.get('autoLogPassword');
         account.lastLogged = createDate();
         // console.log(account)
-        firebase.auth().signInWithEmailAndPassword(account.login, account.password).catch(error => {
-            const errorCode = error.code;
-            const errorMessage = error.message;
-            console.log(`Błąd o numerze ${errorCode} o treści ${errorMessage}`);
-        })
-
-        firebase.auth().onAuthStateChanged(function (user) {
-            if (user) {
-                const user = firebase.auth().currentUser;
-                if (user) {
-                    account.lastLogged = createDate();
-                    axios.post('/login', { account })
-                        .then(res => {
-                            let msg = false;
-                            let player = false;
-                            if (res.data.msg) {
-                                msg = res.data.msg;
-                                dispatch({ type: 'LOG_IN_NOT', msg })
-                            } else {
-                                player = res.data.player;
-                                dispatch({ type: "LOG_IN", player })
+        firebase.auth().signInWithEmailAndPassword(account.login, account.password)
+            .then(res => {
+                if (res.operationType === "signIn") {
+                    firebase.auth().onAuthStateChanged(function (user) {
+                        if (user) {
+                            const user = firebase.auth().currentUser;
+                            if (user) {
+                                account.lastLogged = createDate();
+                                axios.post('/login', { account })
+                                    .then(res => {
+                                        let msg = false;
+                                        let player = false;
+                                        if (res.data.msg) {
+                                            msg = res.data.msg;
+                                            dispatch({ type: 'LOG_IN_NOT', msg })
+                                        } else {
+                                            player = res.data.player;
+                                            dispatch({ type: "LOG_IN", player })
+                                        }
+                                    })
                             }
-                        })
+                        }
+                    })
                 }
-            }
-        })
-
-
-
-        // axios.post('/login', { account })
-        //     .then(res => {
-        //         let msg = false;
-        //         let player = false;
-        //         if (res.data.msg) {
-        //             msg = res.data.msg;
-        //             dispatch({ type: 'LOG_IN_NOT', msg })
-        //         } else {
-        //             player = res.data.player;
-        //             dispatch({ type: "LOG_IN", player })
-        //         }
-
-        //     })
+            })
+            .catch(error => {
+                const errorCode = error.code;
+                const errorMessage = error.message;
+                console.log(`Błąd o numerze ${errorCode} o treści ${errorMessage}`);
+            })
     }
 }
 
@@ -82,6 +70,7 @@ export const toggleAutoLog = log => dispatch => {
     Cookies.remove('autoLogLogin');
     Cookies.remove('autoLogPassword');
     if (log.argument) {
+        console.log(log)
         Cookies.set('autoLog', log.argument, { expires: 7 });
         Cookies.set('autoLogLogin', log.login, { expires: 7 });
         Cookies.set('autoLogPassword', log.pass, { expires: 7 });
@@ -162,4 +151,8 @@ export const fetchCharactersList = argument => dispatch => {
             let payload = res.data.characters;
             dispatch({ type: "FETCH_CHAR_SUCCESS", payload })
         })
+}
+
+export const setRefreshToken = token => dispatch => {
+    dispatch({ type: "SET_REFRESH_TOKEN", token });
 }
