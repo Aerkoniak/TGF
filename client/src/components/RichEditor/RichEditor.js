@@ -6,6 +6,13 @@ import 'draft-js/dist/Draft.css';
 import htmlToText from 'html-to-text';
 import parse from 'html-react-parser';
 import htmlToDraft from 'html-to-draftjs';
+import Datetime from 'react-datetime';
+import moment from 'moment';
+import 'moment/locale/pl'
+import "react-datetime/css/react-datetime.css";
+
+import { connect } from 'react-redux';
+// import NextTurnDate from '../NextTurnDate/NextTurnDate';
 
 
 
@@ -13,7 +20,12 @@ import htmlToDraft from 'html-to-draftjs';
 class RichEditor extends React.Component {
     constructor(props) {
         super(props);
-        this.state = { editorState: EditorState.createEmpty() };
+        this.state = {
+            editorState: EditorState.createEmpty(),
+            isAuthor: false,
+            dateValue: null,
+            yesterday: moment().subtract(1, 'day'),
+        };
         this.onChange = editorState => this.setState({ editorState });
         this.handleKeyCommand = this.handleKeyCommand.bind(this);
     }
@@ -25,7 +37,7 @@ class RichEditor extends React.Component {
             const contentState = ContentState.createFromBlockArray(contentBlocks, entityMap);
             this.setState({
                 editorState: EditorState.createWithContent(contentState)
-            })
+            });
         }
     }
 
@@ -67,9 +79,9 @@ class RichEditor extends React.Component {
         e.preventDefault()
         this.onChange(RichUtils.toggleInlineStyle(this.state.editorState, 'STRIKETHROUGH'));
     }
-   
 
-    convtoRaw = (e) => {
+
+    submitRichEditor = (e) => {
         // e.preventDefault();
         const rawContentState = convertToRaw(this.state.editorState.getCurrentContent());
         const hashConfig = {
@@ -81,48 +93,83 @@ class RichEditor extends React.Component {
             hashConfig,
         );
 
+        if (this.props.storyCreator) {
+            let story = this.props.storyCreator.newStory
+            story.openMsg = markup;
+        }
 
         let messageObject = {};
         messageObject.text = markup;
         messageObject.player = this.props.player;
         messageObject.place = this.props.place;
+
         if (this.props.title && this.props.addreesse) {
             messageObject.title = this.props.title;
             messageObject.addreesse = this.props.addreesse
         }
-        console.log(messageObject.text.length)
-        console.log(messageObject.text)
+        
         if (messageObject.text.length < 15) {
             return
         } else if (messageObject.text.length >= 15) {
-            this.props.action(messageObject)
+            this.props.action(messageObject);
+            this.setState({
+                editorState: EditorState.createEmpty(),
+            })
         }
-       
+
     }
 
+    // isDateValid = (current) => {
+    //     return current.isAfter( this.state.yesterday );
+    // }
+    // _onInputChange = e => {
+	// 	if ( !this.callHandler( this.props.inputProps.onChange, e ) ) return;
+
+	// 	const value = e.target ? e.target.value : e;
+	// 	const localMoment = this.localMoment( value, this.getFormat('datetime') );
+	// 	let update = { inputValue: value };
+
+	// 	if ( localMoment.isValid() ) {
+	// 		update.selectedDate = localMoment;
+	// 		update.viewDate = localMoment.clone().startOf('month');
+	// 	}
+	// 	else {
+	// 		update.selectedDate = null;
+	// 	}
+
+	// 	this.setState( update, () => {
+	// 		this.props.onChange( localMoment.isValid() ? localMoment : this.state.inputValue );
+	// 	});
+	// }
 
     render() {
         return (
             <div className="richEditorWrap">
-                <form action="" className="richEditor" onSubmit={this.convtoRaw}>
+                
+                <form action="" className="richEditor" onSubmit={this.submitRichEditor}>
                     <Editor
                         editorState={this.state.editorState}
                         handleKeyCommand={this.handleKeyCommand}
                         keyBindingFn={this.myKeyBindingFn}
                         onChange={this.onChange}
                         customStyleMap={this.styleMap}
+                        placeholder={this.props.placeholder ? this.props.placeholder : null}
                     />
                     <div className="styleButtons">
-                    <button className="fontButtons" onClick={this._onBoldClick.bind(this)}>Pogrubienie</button>
-                    <button className="fontButtons" onClick={this._onItalicClick.bind(this)}>Kursywa</button>
-                    <button className="fontButtons" onClick={this._onUnderlineClick.bind(this)}>Podkreślenie</button>
-                    <button className="fontButtons" onClick={this._onLineThrough.bind(this)}>Przekreślenie</button>
-                    <input className="answerSubmit" type="submit" value="Wyślij" onSubmit={this.convtoRaw} />
-                </div>
+                        <button className="fontButtons" onClick={this._onBoldClick.bind(this)}>Pogrubienie</button>
+                        <button className="fontButtons" onClick={this._onItalicClick.bind(this)}>Kursywa</button>
+                        <button className="fontButtons" onClick={this._onUnderlineClick.bind(this)}>Podkreślenie</button>
+                        <button className="fontButtons" onClick={this._onLineThrough.bind(this)}>Przekreślenie</button>
+                        <input className="answerSubmit" type="submit" value="Wyślij" onSubmit={this.submitRichEditor} />
+                    </div>
                 </form>
             </div>
         );
     }
 }
 
-export default RichEditor
+const MapStateToProps = state => ({
+    player: state.player.player
+})
+
+export default connect(MapStateToProps)(RichEditor)
