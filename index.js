@@ -96,6 +96,19 @@ app.post('/edit-account', (req, res) => {
                     }
                 })
             break;
+        case 'rank':
+            players.doc(character.accountDocRef).set({ rank: character.newRank }, { merge: true })
+                .then(ok => {
+                    if (ok.writeTime) {
+                        // res.json({ saved: true })
+                        players.doc(character.accountDocRef).get()
+                            .then(doc => {
+                                let player = doc.data()
+                                res.json({ saved: true, player })
+
+                            })
+                    }
+                })
     }
 
 
@@ -114,9 +127,9 @@ app.post('/stories-fetch', (req, res) => {
 })
 
 app.post('/stories-update', (req, res) => {
-    console.log("stories-update");
+    const { newChapter, seen, deleteChapter, createStory } = req.body;
 
-    if (req.body.newChapter) {
+    if (newChapter) {
         let chapter = req.body.newChapter;
         let chaptersArray = [];
         let spectatorsArray = [];
@@ -124,37 +137,49 @@ app.post('/stories-update', (req, res) => {
         stories.doc(chapter.storyID).get()
             .then(doc => {
                 let story = doc.data();
-                chaptersArray = story.chapters;
-                chaptersArray.push(chapter);
-                spectatorsArray = story.spectators
 
-                let isNewSpectator = false;
-                // Ustawiamy isSpectator na false i tworzymy obiekt spec. 
-                let spectator = {};
-                spectator.name = chapter.author.name;
-                spectator.id = chapter.author.id;
-                spectator.seen = true;
-                // Mapujemy tablicę obecnych spectatorów, jeśli jeden z nich ma to samo ID co osoba odpisująca to ustawiamy isNewSpectator na true, a jednocześnie temu samemu spectatorowi zmieniami seen na true.
-                spectatorsArray.map(spectator => {
-                    spectator.seen = false;
-                    if (spectator.id === chapter.author.id) {
-                        isNewSpectator = true;
-                        spectator.seen = true;
-                    }
-                })
-                // jeśli po zmapowaniu całej tablicy isNewSpectator wciąż jest false to pushujemy go do tablicy
-                if (!isNewSpectator) {
-                    spectatorsArray.push(spectator)
-                }
+                if (!story.openMsg) {
+                    stories.doc(chapter.storyID).set({ openMsg: chapter.msg, isReady: true }, { merge: true })
+                        .then(ok => {
+                            if (ok.writeTime) {
+                                res.json({ saved: true })
+                            }
+                        })
+                } else {
 
-                stories.doc(chapter.storyID).set({ chapters: chaptersArray, spectators: spectatorsArray }, { merge: true })
-                    .then(ok => {
-                        if (ok.writeTime) {
-                            res.json({ saved: true })
+                    chaptersArray = story.chapters;
+                    chaptersArray.push(chapter);
+                    spectatorsArray = story.spectators
+
+                    let isNewSpectator = false;
+                    // Ustawiamy isSpectator na false i tworzymy obiekt spec. 
+                    let spectator = {};
+                    spectator.name = chapter.author.name;
+                    spectator.id = chapter.author.id;
+                    spectator.seen = true;
+                    // Mapujemy tablicę obecnych spectatorów, jeśli jeden z nich ma to samo ID co osoba odpisująca to ustawiamy isNewSpectator na true, a jednocześnie temu samemu spectatorowi zmieniami seen na true.
+                    spectatorsArray.map(spectator => {
+                        spectator.seen = false;
+                        if (spectator.id === chapter.author.id) {
+                            isNewSpectator = true;
+                            spectator.seen = true;
                         }
                     })
+                    // jeśli po zmapowaniu całej tablicy isNewSpectator wciąż jest false to pushujemy go do tablicy
+                    if (!isNewSpectator) {
+                        spectatorsArray.push(spectator)
+                    }
+
+                    stories.doc(chapter.storyID).set({ chapters: chaptersArray, spectators: spectatorsArray }, { merge: true })
+                        .then(ok => {
+                            if (ok.writeTime) {
+                                res.json({ saved: true })
+                            }
+                        })
+
+                }
             })
-    } else if (req.body.seen) {
+    } else if (seen) {
         let { id, refID } = req.body.seen;
         let spectatorsArray = [];
 
@@ -174,6 +199,39 @@ app.post('/stories-update', (req, res) => {
                             res.json({ saved: true })
                         }
                     })
+            })
+    } else if (deleteChapter) {
+        let { chapterIndex, refID } = req.body.deleteChapter;
+        let chapters = [];
+        stories.doc(refID).get()
+            .then(doc => {
+                let story = doc.data();
+                chapters = story.chapters;
+                chapters.splice(chapterIndex, 1);
+                stories.doc(refID).set({ chapters: chapters }, { merge: true })
+                    .then(ok => {
+                        if (ok.writeTime) {
+                            res.json({ saved: true })
+                        }
+                    })
+            })
+    } else if (createStory) {
+
+        let story = req.body.createStory;
+        story.id = new Date().getTime();
+        let spectator = {};
+        spectator.name = story.author.name;
+        spectator.id = story.author.id;
+        spectator.seen = true;
+        story.spectators = [];
+        story.spectators.push(spectator);
+        story.chapters = [];
+        story.isReady = false;
+        console.log(story);
+        stories.add(story)
+            .then((docRef) => {
+                stories.doc(docRef.id).update({ refID: docRef.id });
+                res.json({ id: story.id });
             })
     }
 })
@@ -215,7 +273,6 @@ app.post('/mails-create', (req, res) => {
 
     mails.add(newMail)
         .then((docRef) => {
-            console.log("Utworzono nowego maila: " + docRef.id);
             mails.doc(docRef.id).update({ mailsDocRef: docRef.id });
             res.json({ isSaved: true });
         })
