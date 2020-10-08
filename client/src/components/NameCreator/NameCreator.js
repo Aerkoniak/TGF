@@ -30,10 +30,10 @@ const NameCreator = ({ msg, player, setCharName }) => {
 
 
     return (
-        <div className="charCreator">
+        <div className="nameCreator">
             { player.name ?
                 <>
-                    <p className="test">Imię Twojej postaci to: {player.name}. <span className="changeNameSpan" onClick={() => toggleIsNameOk(!isNameOk)} >Zmień imię.</span></p>
+                    <p className="test">Imię Twojej postaci to: {player.name} <span className="changeNameSpan" onClick={() => toggleIsNameOk(!isNameOk)} >Zmień imię</span></p>
                 </>
                 :
                 <>

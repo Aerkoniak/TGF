@@ -42,8 +42,8 @@ const LoginPanel = ({ autoLog, AutoLogging }) => {
 
     return (
         <section className="loginPanel">
-            <p className="loadPage">Oude Aard</p>
-            <p className="loadPage">Tekstowa Gra Fabularna</p>
+            <p className={isLogFormVisible || isRegFormVisible ? "loadPage gameName formVisible" : "loadPage gameName" } >Oude Aard</p>
+            <p className={isLogFormVisible || isRegFormVisible ? "loadPage gameDesc hidden" : "loadPage gameDesc"} >Twoja Tekstowa Gra Fabularna</p>
 
             <div className="logPanel">
                 <div className="login" >

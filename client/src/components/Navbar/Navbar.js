@@ -35,7 +35,7 @@ const Navbar = ({ stories, isLeftHanded, fetchStories, player, mails, taverns })
     }, [mails])
 
     const tavernSubLinks = taverns.map((tavern, index) => ((
-    <span key={tavern + index} className="subLink"><Link to={`/tavern/${tavern.name}`}>{tavern.name}</Link></span>
+    <p key={tavern + index} className="subLink"><Link to={`/tavern/${tavern.name}`}>{tavern.name}</Link></p>
     )))
 
     return (

@@ -13,10 +13,10 @@ const MailPage = ({ mails, msg, player }) => {
     const [newMessage, writeNewMessage] = useState(false)
 
     useEffect(() => {
-        if (msg) {
+        if (newMessage) {
             writeNewMessage(false)
         }
-    }, [msg])
+    }, [mails])
 
     // const mailList = mails.map(mail => ((
     //     <div className="oneMail" key={mail.id}>

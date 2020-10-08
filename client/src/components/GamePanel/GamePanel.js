@@ -50,9 +50,11 @@ const GamePanel = ({ player, stories, mails, downloadNeed, isLeftHanded, setHand
     useEffect(() => {
         if (downloadNeed) {
             fetchStories();
-            fetchMails(player.id);
+            fetchMails(player.login);
         }
     }, [downloadNeed])
+
+
 
 
     const storiesRoutes = stories.map(storyRoute => {
