@@ -12,6 +12,7 @@ const dbAdmin = require('./firebaseAdmin');
 admin.initializeApp(dbAdmin);
 
 const db = admin.firestore()
+db.settings({ ignoreUndefinedProperties: true })
 const players = db.collection("players");
 const stories = db.collection('stories');
 const mails = db.collection('mails');
@@ -139,7 +140,7 @@ app.post('/stories-update', (req, res) => {
                 let story = doc.data();
 
                 if (!story.openMsg) {
-                    stories.doc(chapter.storyID).set({ openMsg: chapter.msg, isReady: true }, { merge: true })
+                    stories.doc(chapter.storyID).set({ openMsg: chapter.msg, isReady: true, nextTurn: chapter.nextTurn }, { merge: true })
                         .then(ok => {
                             if (ok.writeTime) {
                                 res.json({ saved: true })
@@ -170,12 +171,23 @@ app.post('/stories-update', (req, res) => {
                         spectatorsArray.push(spectator)
                     }
 
-                    stories.doc(chapter.storyID).set({ chapters: chaptersArray, spectators: spectatorsArray }, { merge: true })
-                        .then(ok => {
-                            if (ok.writeTime) {
-                                res.json({ saved: true })
-                            }
-                        })
+                    if (story.author.id === chapter.author.id) {
+                        stories.doc(chapter.storyID).set({ chapters: chaptersArray, spectators: spectatorsArray, nextTurn: chapter.nextTurn }, { merge: true })
+                            .then(ok => {
+                                if (ok.writeTime) {
+                                    res.json({ saved: true })
+                                }
+                            })
+                    } else {
+                        stories.doc(chapter.storyID).set({ chapters: chaptersArray, spectators: spectatorsArray }, { merge: true })
+                            .then(ok => {
+                                if (ok.writeTime) {
+                                    res.json({ saved: true })
+                                }
+                            })
+                    }
+
+
 
                 }
             })
