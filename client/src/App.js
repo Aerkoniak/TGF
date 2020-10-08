@@ -48,7 +48,7 @@ function App({ isLogged, player, setRefreshToken }) {
         </Switch>
 
         {redirectToHerold ? <Redirect to="/" /> : null}
-        {redirectToLogOut ? <Redirect to="/logout" /> : null}
+        {redirectToLogOut ? <Redirect to="/login" /> : null}
 
 
       </section>
