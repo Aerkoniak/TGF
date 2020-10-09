@@ -26,6 +26,8 @@ body, #root {
 
 .gamePanel {
   padding: 0 55px 0 10px;
+  min-width: 100%;
+  min-height: 100%;
 }
 .gamePanel.left {
   padding: 0 10px 0 55px;
@@ -98,6 +100,11 @@ p.formInfo {
 .logSent, .regSent {
   font-family: 'Courgette', cursive;
   font-size: 16px;
+  cursor: pointer;
+}
+.logSent:hover, .regSent:hover {
+text-decoration: underline;
+
 }
 
 .loginForm {
@@ -157,14 +164,19 @@ p.formInfo {
 }
 
 
-section.logOut{
+section.logOutPage{
   position: absolute;
+  text-align: center;
   width: 100%;
   height: 100%;
   top: 0;
   left: 0;
   background-color: #fff;
   /* transform: translateY(-10vh); */
+}
+
+.logOutinfo {
+  margin: 50px 0;
 }
 
 /* NAWIGACJE */
@@ -239,7 +251,7 @@ nav.desktop {
 }
 
 .mainPage {
-  text-align: justify;
+  text-align: left;
 }
 
 .test {
@@ -257,7 +269,21 @@ nav.desktop {
 
 .richEditorWrap{
   margin-bottom: 50px;
+}
 
+.nextTurnLabel{
+  display: block;
+  padding-bottom: 10px;
+}
+.nextTurnSpan {
+  display: block;
+  padding-top: 10px;
+}
+.nextTurnSpan.ok {
+  color: green;
+}
+.nextTurnSpan.notOk {
+  color:red
 }
 
 .richEditor{
@@ -334,6 +360,7 @@ a.linkTitle {
   flex-basis: 100%;
   font-weight: bold;
   font-size: 22px;
+  margin-bottom: 15px;
 }
 .storyAuthor {
   flex-basis: 100%;
@@ -366,11 +393,33 @@ a.linkTitle {
 
 .answerForm {
   display: flex;
+  flex-wrap: wrap;
   flex-basis: 100%;
 }
 .answerForm.hidden {
   display: none;
 }
+
+.nextTurnDate {
+  font-size: 20px;
+}
+
+.nextTurnDateSpan {
+  display: block;
+  padding-bottom: 5px;
+}
+
+.nextTurnWrap {
+  width: 40vw;
+}
+.rdt {
+  display: inline-block;
+  padding-left: 20px;
+}
+
+/* input.form-control {
+  width: 40vw;
+} */
 
 .answerField {
   flex-basis: 80%;
@@ -406,9 +455,70 @@ a.linkTitle {
   display: none;
 }
 
+.creator {
+  display: inline-block;
+  margin: 20px 0;
+  padding: 10px 20px;
+  font-size: 20px;
+  background-color: #fff;
+  color: grey;
+  border: 2px solid grey;
+  text-decoration: none;
+  transition: 0.2s;
+  cursor: pointer;
+}
+.creator:hover {
+  color: black;
+  border-color: black;
+}
+.creator:focus-within {
+  outline: none;
+}
+
+.storyCreator {
+  padding-bottom: 20px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid black;
+}
+
+.createStory {
+  margin: 10px 0;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.titleForStory {
+  margin-bottom: 10px;
+}
+.titleForStoryInput{
+  flex-basis: 100%;
+  padding: 5px;
+}
+.titleForStoryInput:focus-within{
+  outline: black;
+}
+.placeLabel {
+  margin-top: 15px;
+}
+.placeSelect{
+  margin-top: 10px;
+  margin-left: 15px;
+  padding: 5px;
+}
+.newStorySubmit{
+  flex-basis: 100%;
+  background-color: #fff;
+  color: grey;
+  border: 2px solid grey;
+  padding: 5px;
+  margin-top: 10px;
+  font-size: 18px;
+}
+
 /* CHAPTER */
 
 .chapter {
+  position: relative;
   display: flex;
   flex-wrap: wrap;
   padding: 0 0 20px 15px;
@@ -433,6 +543,25 @@ a.linkTitle {
   padding: 0 10px;
 }
 
+.deleteChapter {
+  position: absolute;
+  top: 5%;
+  left: 10%;
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  text-align: center;
+  line-height: 16px;
+  border: 2px solid grey;
+  cursor: pointer;
+}
+.deleteChapter.tavern {
+  left: 90%;
+}
+.deleteChapter:hover {
+  background-color: #aaa;
+  color: white;
+}
 
  /* NOTEPAD */
 
@@ -626,6 +755,7 @@ a.linkTitle {
 .tavernRecord {
   margin-bottom: 20px;
   border-bottom: 1px solid grey ;
+  position: relative;
 }
 .tavernAuthor {
   font-size: 17px;
@@ -671,6 +801,44 @@ a.linkTitle {
   outline: none;
 }
 
+.wrapCreator {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  flex-direction: row; }
+
+  .creatorLabel {
+    display: block;
+    font-size: 18px;
+    padding: 10px 0;
+  }
+
+  .submitCreatorField{
+    margin: 0 0 10px 10px;
+    font-size: 16px;
+    background-color: #fff;
+    border: 1px solid black;
+  }
+  .creatorSelect, .submitCreatorField {
+    padding: 5px
+  }
+
+  .confirmCreator {
+    padding: 5px 10px;
+    font-size: 18px;
+    margin: 10px auto 20px;
+  }
+
+  .infoCreator p {
+    margin: 10px 0;
+  }
+
+  .baseStats{
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
 
 /* PROFIL */
 
@@ -756,7 +924,7 @@ a.linkTitle {
 }
 .settingsLabel {
   display: inline-block;
-  padding: 5px 10px 0 0;
+  padding: 10px 10px 0 0;
 }
 
 .autologWrap {
@@ -784,12 +952,39 @@ a.linkTitle {
 }
 .logOutUtility {
   cursor: pointer;
+  font-size: 16px;
+  margin: 10px 0;
+  transition: 0.3s;
 }
+.logOutUtility:hover {
+  text-decoration: underline;
+}
+
+.setRank {
+  margin: 20px 0;
+}
+.rankLabel {
+  padding-right: 10px;
+}
+.rankSubmit {
+  font-size: 16px;
+  width: 100%;
+  background-color: #fff;
+  border: none;
+  padding: 15px 0 5px;
+  border-bottom: 1px solid grey;
+}
+.rankSubmit:focus-within{
+  outline: none;
+}
+
 /* QUERIES */
 
 @media (min-width: 1280px) {
   .gamePanel {
     padding: 0;
+    min-width: 100%;
+    min-height: 100vh;
   }
   .gamePanel.left {
     padding: 0;
@@ -920,6 +1115,7 @@ a.linkTitle {
     padding-top: 100px;
     padding-left: calc(20vw + 20px);
     padding-right: 20px;
+    min-height: 100vh;
   }
 
   /* RICHEDITOR */
@@ -989,8 +1185,9 @@ a.linkTitle {
   .note {
     font-size: 20px;
   }
-
-  .playersList {
+  /* .playersList w media to Sidebar */
+  .sideBar {
+    font-family: 'Open Sans', sans-serif;
     position: fixed;
     top: 20vh;
     left: 0;
@@ -998,6 +1195,39 @@ a.linkTitle {
     padding-left: 15px;
     border: none;
     text-align: left;
+  }
+  .playersList {
+    top: 25vh;
+  }
+  .sideBar.inStory {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  .sideBarOverlap {
+    flex-basis: 50%;
+    text-align: center;
+    cursor: pointer;
+    border-bottom: 2px solid black;
+    padding-bottom: 5px;
+  }
+  .sideBarOverlap:nth-of-type(1){
+    border-right: 2px solid black;
+  }
+  .sideBarOverlap.active {
+    border-bottom: 2px solid white;
+  }
+
+  .sideBarLabel {
+    display: inline-block;
+    font-weight: bold;
+    margin-top: 20px;
+  }
+  .storyPlayers {
+    list-style: none;
+  }
+  .playerInStory {
+    padding-left: 5px;
+    padding-top: 5px;
   }
 
   .playersViewer {
@@ -1034,6 +1264,9 @@ a.linkTitle {
     display: block;
     flex-basis: 30%;
   }
+  .nextTurnDateSpan{
+    flex-basis: 100%;
+  }
   .answerField {
     flex-basis: 90%;
     height: 25vh;
@@ -1053,13 +1286,7 @@ a.linkTitle {
     border: 1px solid gray;
     outline: none;
   }
-  .answerPreviewSpan{
-    padding: 10px 0;
-    flex-basis: 100%;
-  }
-  .answerPreview {
-    padding: 10px 0;
-  }
+  
 
   .chapterAuthor {
     text-align: left;
@@ -1140,6 +1367,28 @@ a.linkTitle {
     transform: translateX(20px);
   }
 
+  .characterCreator {
+    min-height: calc(100vh - 100px);
+  }
+  .noCharacter {
+    padding-bottom: 10px;
+  }
+  .wrapCreator {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    min-height: calc(100vh - 133px);
+  }
+  
+  .submitCreator{
+    flex-basis: 40%;
+  }
+  .infoCreator {
+    flex-basis: 60%;
+    border-left: 1px solid black;
+    padding: 0 20px 0 20px;
+  }
+
   /* SETTINGS PAGE */
 
   .desktopSetting {
@@ -1148,14 +1397,22 @@ a.linkTitle {
 
   .settingsLabel {
     display: inline-block;
-    padding: 15px 10px 0 0;
+    padding: 20px 10px 0 0;
     font-size: 20px;
+  }
+
+  .logOutUtility {
+    font-size: 18px;
+    padding: 20px 10px 0 0;
   }
 
   .mobileSettings {
     display: none;
   }
-
+  .rankSubmit {
+    width: auto;
+    margin-left: 20px;
+  }
   
 }
 
