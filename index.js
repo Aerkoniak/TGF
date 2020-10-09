@@ -81,6 +81,15 @@ app.post('/edit-account', (req, res) => {
     let character = req.body.character;
 
     switch (character.changed) {
+        case "character":
+            players.doc(character.accountDocRef).set({ name: character.name, age: character.age, race: character.race, class: character.class }, { merge: true })
+                .then(ok => {
+                    if (ok.writeTime) {
+                        res.json({ saved: true })
+                    }
+                })
+
+            break;
         case "name":
             players.doc(character.accountDocRef).set({ name: character.name }, { merge: true })
                 .then(ok => {
