@@ -3,8 +3,10 @@ import { Link } from 'react-router-dom'
 
 const LogOutPage = () => {
     return (
-        <section className="mainPage logOut">
-            <h2>Nie jesteś zalogowany</h2>
+        <section className="logOutPage">
+            <p className="loadPage gameName" >Oude Aard</p>
+            <p className="loadPage gameDesc" >Twoja Tekstowa Gra Fabularna</p>
+            <p className="logOutinfo">Poprawnie się wylogowałeś.</p>
             <Link to="/login">Kliknij tutaj by się zalogować</Link>
         </section>
     );
