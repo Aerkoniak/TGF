@@ -57,7 +57,15 @@ const RegFormSFC = ({ regClassName, isLogged, createAccount, createFirebaseAccou
 
     return (
         <form className={regClassName} onSubmit={submitForm} >
-            <input className="regInput" type="text" id="login" placeholder="Wybierz swój login" value={login} onChange={(e) => setLogin(e.target.value)} />
+            {warnings ? <p>{information}</p> :
+                <div className="info">
+                    <p className="formInfo header">Regulamin rejestracji:</p>
+                    <p className="formInfo">Po rejestracji należy zweryfikować adres e-mail.</p>
+                    <p className="formInfo header">ale weryfikacja NIE DZIAŁA - jeszcze</p>
+                    <p className="formInfo">Drugi punkt regulaminu, na który nie mam pomysłu.</p>
+                    <p className="formInfo">Trzeci punkt regulaminu, w którym również nie wiem co wsadzić.</p>
+                </div>}
+            <input className="regInput" type="text" id="login" placeholder="Podaj swój e-mail" value={login} onChange={(e) => setLogin(e.target.value)} />
             <input className="regInput" type="password" id="pass" placeholder="Podaj hasło" value={password} onChange={(e) => setPassword(e.target.value)} />
             <input className="regInput" type="password" id="repPass" placeholder="Powtórz hasło" value={repPass} onChange={(e) => setRepPass(e.target.value)} />
             { isLogged === "checking" ?
@@ -66,11 +74,6 @@ const RegFormSFC = ({ regClassName, isLogged, createAccount, createFirebaseAccou
                 <input className="registerSubmit" type="submit" value="Zarejestruj" onSubmit={submitForm} />
             }
             {/* <input className="registerSubmit" type="submit" value="Zarejestruj" onSubmit={submitForm} /> */}
-            {warnings ? <p>{information}</p> :
-                <div className="info">
-                    <p className="formInfo">Mail jest niepotrzebny do rejestracji.</p>
-                    <p className="formInfo">Logować będzie można się nickiem, jak i nazwą postaci (po wypełnieniu kreatora).</p>
-                </div>}
         </form>
     );
 }
