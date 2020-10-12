@@ -20,22 +20,12 @@ const NewMessageCreator = ({ player, characters, sendMail }) => {
 
     const submitNewMessage = (e) => {
         e.preventDefault();
-        // let message = {};
-        // message.addreesse = seachedPlayersList[0];
-        // delete message.addreesse.profile;
-        // message.sender = player;
-        // delete message.sender.login;
-        // delete message.sender.password;
-        // delete message.sender.repPass;
-        // delete message.sender.profile;
-        // delete message.sender.lastLog;
-        // message.title = titleValue;
-        // message.startText = messageValue;
-        // sendMail(message);
+
         setAddressee("");
         setTitle("");
         setMessage("");
         setAnswerPreview("");
+        setPlayersList([]);
     }
 
 
