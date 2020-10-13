@@ -9,7 +9,8 @@ const initState = {
         { id: "Wojownik", name: "Wojownicy", desc: "", baseAbilities: ["Walka - wybrana", "Blok", "Coś"] },
         { id: "Łotrzyk", name: "Łotrzykowie", desc: "", baseAbilities: ["Uniki", "Kradzież", "Otwieranie zamków"] },
         { id: "Rzemieślnik", name: "Rzemieślnicy", desc: "", baseAbilities: ["Dziedzina - wybrana", "Targowanie", "Wycena"] },
-    ]
+    ],
+    done: false,
 };
 
 const creatorReducer = (state = initState, action) => {
@@ -18,10 +19,21 @@ const creatorReducer = (state = initState, action) => {
             return {
                 ...state
             };
+        case "RESET_CHARACTER_START":
+            return {
+                ...state
+            }
         case "SET_CHARACTER_COMPLETE":
             return {
                 ...state,
-                player: action.character
+                player: action.character,
+                done: true,
+            };
+            case "RESET_CHARACTER_COMPLETE":
+            return {
+                ...state,
+                player: action.character,
+                done: false,
             };
 
         default:
