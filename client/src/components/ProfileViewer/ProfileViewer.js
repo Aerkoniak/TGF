@@ -2,7 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 
 import { fetchCharactersList } from '../../data/actions/generalActions';
-import {fetchMails} from '../../data/actions/mailsActions';
+import { fetchMails } from '../../data/actions/mailsActions';
+import parse from 'html-react-parser';
+
 
 const ProfileViewer = ({ player, characters, fetchCharactersList, fetchMails }) => {
 
@@ -15,7 +17,6 @@ const ProfileViewer = ({ player, characters, fetchCharactersList, fetchMails }) 
 
     const chooseCharacter = e => {
         let pickedChar = e.target.id;
-        console.log(pickedChar);
         characters.map(character => {
             if (pickedChar === character.name) {
                 chooseCharObj(character)
@@ -30,21 +31,53 @@ const ProfileViewer = ({ player, characters, fetchCharactersList, fetchMails }) 
     )))
 
 
+    const checkRang = (player) => {
+        switch (player.rank) {
+            case 0:
+                return (
+                    <p className="rank">Administrator</p>
+                )
+                break;
+            case 2:
+                return (
+                    <p className="rank">Mistrz Gry</p>
+                )
+                break;
+            case 3:
+                return (
+                    <p className="rank">Mieszkaniec</p>
+                )
+                break;
+            case 4:
+                return (
+                    <p className="rank">Przybysz</p>
+                )
+                break;
+
+            default:
+                break;
+        }
+    }
 
     return (
         <>
-
-            <section className="playersList">
-                <p className="test">Lista graczy:</p>
+            <section className="sideBar playersList">
                 <ul className="charactersList">
                     {charactersList}
                 </ul>
 
             </section>
             <div className={character ? "playersViewer" : "playersViewer hidden"}>
-                {character ? <p className="closeViewer" onClick={() => chooseCharObj(false)}>zamknij podgląd</p> : null }
-                {character ? <p className="header">{character.name}</p> : null}
-                {character ? <p className="mainProfile">{character.profile}</p> : null}
+                {character ? <p className="closeViewer" onClick={() => chooseCharObj(false)}>zamknij podgląd</p> : null}
+                {character ? <div className="header">
+                    <p className="header">{character.name}</p>
+                    <p className="header">{checkRang(character)}</p>
+                    <p className="header">Rasa: {character.race}</p>
+                    <p className="header">Wiek: {character.age}</p>
+                    <p className="header">Klasa: {character.class}</p>
+                </div> : null}
+
+                {character ? <div className="mainProfile">{parse(character.profile)}</div> : null}
             </div>
 
         </>
