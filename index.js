@@ -264,13 +264,9 @@ app.post('/characters-fetch', (req, res) => {
         .then(snapshot => {
             snapshot.forEach(doc => {
                 let data = doc.data();
-                if (data.name && data.profile) {
+                if (data.name && data.race && data.class && data.age && data.profile) {
                     let character = {};
-                    character.name = data.name;
-                    character.profile = data.profile;
-                    character.id = data.id;
-                    character.accountDocRef = data.accountDocRef;
-                    character.rank = data.rank;
+                    character = data;
                     characters.push(character)
                 }
             })
