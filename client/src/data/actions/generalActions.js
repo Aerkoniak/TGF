@@ -128,7 +128,6 @@ export const setCharName = character => dispatch => {
 }
 
 export const setProfile = char => dispatch => {
-
     const character = char.player;
     character.changed = "profile";
     character.profile = char.text;
@@ -139,6 +138,23 @@ export const setProfile = char => dispatch => {
                 delete character.changed
                 dispatch({ type: 'SET_PLAYER_PROFILE', character });
                 dispatch({ type: 'CLEAN_MSG' })
+            }
+        })
+}
+
+export const setRank = char => dispatch => {
+    dispatch({ type: 'CLEAN_MSG' });
+    const character = char;
+    character.changed = "rank";
+
+    axios.post('/edit-account', { character })
+        .then(res => {
+            if (res.data.saved) {
+                console.log(res.data.player);
+                let character = res.data.player;
+                dispatch({ type: 'SET_PLAYER_PROFILE', character });
+                dispatch({ type: 'SET_MSG', msg: "Ranga ustawiona." });
+
             }
         })
 }
