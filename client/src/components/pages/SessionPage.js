@@ -3,7 +3,7 @@ import { Link, Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
 
 import ProfileViewer from '../ProfileViewer/ProfileViewer';
-import StoryCreator from '../StoriesCreator/StoriesCreator';
+import StoriesCreator from '../StoriesCreator/StoriesCreator';
 
 
 const SessionPage = ({ stories, player, id }) => {
@@ -22,20 +22,20 @@ const SessionPage = ({ stories, player, id }) => {
         }
     }, [id])
 
-    const storiesLinks = stories.map(story => {
-        let newMessage = false;
-        story.spectators.map(spec => {
-            if (spec.id === player.id && spec.seen === false) newMessage = true
-        })
-        return (
-            <div className="storyLink" key={story.id}>
-                <p className="linkAuthor">{story.author.name}</p>
-                <Link className={newMessage ? "linkTitle new" : "linkTitle"} id={story.id} to={`/sessions/id${story.id}`}>{story.title}</Link>
-                <p className="linkDate">{story.startDate}</p>
-            </div>
-        )
-    }
-    ).reverse()
+    // const storiesLinks = stories.map(story => {
+    //     let newMessage = false;
+    //     story.spectators.map(spec => {
+    //         if (spec.id === player.id && spec.seen === false) newMessage = true
+    //     })
+    //     return (
+    //         <div className="storyLink" key={story.id}>
+    //             <p className="linkAuthor">{story.author.name}</p>
+    //             <Link className={newMessage ? "linkTitle new" : "linkTitle"} id={story.id} to={`/sessions/id${story.id}`}>{story.title}</Link>
+    //             <p className="linkDate">{story.startDate}</p>
+    //         </div>
+    //     )
+    // }
+    // ).reverse()
 
     const mainStories = storiesArray.map(story => {
         if (!story.isReady) return null
@@ -48,7 +48,7 @@ const SessionPage = ({ stories, player, id }) => {
                 <div className="storyLink" key={story.id}>
                     <p className="linkAuthor">{story.author.name}</p>
                     <Link className={newMessage ? "linkTitle new" : "linkTitle"} id={story.id} to={`/sessions/id${story.id}`}>{story.title}</Link>
-                    <p className="linkDate">{story.startDate}</p>
+                    <p className="linkDate">{story.nextTurn}</p>
                 </div>
             )
         }
@@ -64,7 +64,7 @@ const SessionPage = ({ stories, player, id }) => {
                 <div className="storyLink" key={story.id}>
                     <p className="linkAuthor">{story.author.name}</p>
                     <Link className={newMessage ? "linkTitle new" : "linkTitle"} id={story.id} to={`/sessions/id${story.id}`}>{story.title}</Link>
-                    <p className="linkDate">{story.startDate}</p>
+                    <p className="linkDate">{story.nextTurn}</p>
                 </div>
             )
         }
@@ -80,7 +80,7 @@ const SessionPage = ({ stories, player, id }) => {
                 <div className="storyLink" key={story.id}>
                     <p className="linkAuthor">{story.author.name}</p>
                     <Link className={newMessage ? "linkTitle new" : "linkTitle"} id={story.id} to={`/sessions/id${story.id}`}>{story.title}</Link>
-                    <p className="linkDate">{story.startDate}</p>
+                    <p className="linkDate">{story.nextTurn}</p>
                 </div>
             )
         }
@@ -88,16 +88,17 @@ const SessionPage = ({ stories, player, id }) => {
 
     return (
         <section className="sessionPage mainPage">
+            <div className="privateSessions"><Link to="/sessions/prive">Sesje prywatne</Link></div>
             {player.rank <= 2 ? <button className="newStory creator" onClick={(e) => {
                 e.preventDefault();
                 setActiveForCreator(!storyCreatorActive)
-            }} >Stwórz nową sesję</button> : null}
-            {storyCreatorActive ? <StoryCreator /> : null}
+            }} >Stwórz nową sesję globalną</button> : null}
+            {storyCreatorActive ? <StoriesCreator /> : null}
             <h2 className="test">Dział sesji globalnych:</h2>
             <div className="storyLink">
                 <p className="linkAuthor">Autor sesji:</p>
                 <p className="linkTitle">Tytuł:</p>
-                <p className="linkDate">Założona:</p>
+                <p className="linkDate">Termin:</p>
             </div>
             <div className="mainStories">
                 <h3 className="test">Sesje organizacyjne:</h3>
