@@ -25,6 +25,7 @@ const CharacterCreator = ({ creator, player, setCharacter }) => {
 
 
     const setRace = e => {
+        setRaceOk(false)
         setRaceValue(e.target.value)
         creator.races.map(race => {
             if (race.id === e.target.value) {
@@ -34,6 +35,7 @@ const CharacterCreator = ({ creator, player, setCharacter }) => {
         })
     }
     const setClass = e => {
+        setClassOk(false)
         setClassValue(e.target.value)
         creator.classes.map(clas => {
             if (clas.id === e.target.value) {
@@ -60,6 +62,24 @@ const CharacterCreator = ({ creator, player, setCharacter }) => {
             <label htmlFor="">{ability}</label>
         </li>
     )))
+
+    const setAge = e => {
+        let age = e.target.value;
+        setAgeOk(false);
+        if (age < 16) {
+            setWarnings('Minimalny wiek dla postaci to 16 lat.');
+        } else if (raceValue === "Człowiek" && age > 80) {
+            setWarnings('Ludzie nie dożywają więcej niż 90 lat, więc wiek grywalny kończy się na 80 latach.');
+        } else if (raceValue === "Długowieczny" && age > 140) {
+            setWarnings('Długowieczni nie dożywają więcej niż 160 lat, więc wiek grywalny kończy się na 140 latach.');
+        } else if ((raceValue === "Elf" || raceValue === "Krasnolud") && age > 120) {
+            setWarnings('Elfowie i Krasnoludy nie dożywają więcej niż 140 lat, więc wiek grywalny kończy się na 120 latach.');
+        } else {
+            setAgeOk(true);
+            setAgeValue(age);
+            setWarnings("");
+        }
+    }
 
     const confirmCharacterCreation = (e) => {
         e.preventDefault();
@@ -110,10 +130,10 @@ const CharacterCreator = ({ creator, player, setCharacter }) => {
                     {player.age ? <p className="test">Wiek: <span className="kp">{player.age}</span> lat</p> :
                         <div>
                             <label className="creatorLabel" htmlFor="age">Wybierz swój wiek:</label>
-                            <input type="number" id="age" min="16" max="80" className="changeNameInput" value={ageValue} onChange={(e) => setAgeValue(e.target.value)} />
+                            <input type="number" id="age" min="16" className="changeNameInput" value={ageValue} onChange={setAge} />
                             <button className="submitCreatorField" onClick={e => {
                                 e.preventDefault();
-                                if (ageValue) setAgeOk(true)
+                                // setAge(ageValue);
 
                             }}>Potwierdź</button>
                             {isAgeOk ? <p>ok</p> : null}
