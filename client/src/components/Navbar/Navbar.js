@@ -35,13 +35,12 @@ const Navbar = ({ stories, isLeftHanded, fetchStories, player, mails, taverns })
     }, [mails])
 
     const tavernSubLinks = taverns.map((tavern, index) => ((
-    <p key={tavern + index} className="subLink"><Link to={`/tavern/${tavern.name}`}>{tavern.name}</Link></p>
+        <p key={tavern + index} className="subLink"><Link to={`/tavern/${tavern.name}`}>{tavern.name}</Link></p>
     )))
 
     return (
         <>
             <nav className={isLeftHanded ? "mobile left" : "mobile"} onClick={fetchStories} >
-                {/* <button className="navburger"><i className="fas fa-bars"></i></button> */}
                 <NavLink exact className="navMob" to="/">H</NavLink>
                 <NavLink className={newSessionChapter ? "navMob newMessage" : "navMob"} to="/sessions">S</NavLink>
                 <NavLink className={newMailRecord ? "navMob newMessage" : "navMob"} to="/mails">P</NavLink>
@@ -51,10 +50,12 @@ const Navbar = ({ stories, isLeftHanded, fetchStories, player, mails, taverns })
             </nav>
             <nav className="desktop" onClick={fetchStories}>
                 <NavLink to="/" exact className="navDesk">Herold</NavLink>
-                <NavLink to="/sessions" className={newSessionChapter ? "navDesk newMessage" : "navDesk"}>Sesje</NavLink>
+                <NavLink to="/sessions" className={newSessionChapter ? "navDesk sessions newMessage" : "navDesk sessions"}>Sesje
+                <p className="subLink"><Link to="/sessions/prive" >Sesje prywatne</Link></p>
+                </NavLink>
                 <NavLink to="/mails" className={newMailRecord ? "navDesk newMessage" : "navDesk"}>Poczta</NavLink>
                 <NavLink to="/tavern" className="navDesk tavern">Karczmy
-               {tavernSubLinks}
+                    {tavernSubLinks}
                 </NavLink>
                 <NavLink to="/charakter" className="navDesk">Karta Postaci</NavLink>
                 <NavLink to="/settings" className="navDesk">Ustawienia</NavLink>
