@@ -16,6 +16,7 @@ db.settings({ ignoreUndefinedProperties: true })
 const players = db.collection("players");
 const stories = db.collection('stories');
 const mails = db.collection('mails');
+const priveStories = db.collection('stories-prive');
 
 
 const app = express();
@@ -398,5 +399,79 @@ app.post('/mails-update', (req, res) => {
 
 })
 
+app.post('/stories/prive-create', (req, res) => {
+    let story = req.body.story;
+
+    let priveStory = {};
+    let author = {};
+    author.id = story.author.id;
+    author.name = story.author.name;
+    author.rank = story.author.rank;
+    priveStory.author = author;
+    priveStory.title = story.title;
+    priveStory.id = new Date().getTime();
+    priveStory.chapters = [];
+
+    let players = [];
+
+    let spectator = {};
+    spectator.name = story.author.name;
+    spectator.id = story.author.id;
+    spectator.seen = true;
+    players.push(spectator);
+
+    story.players.map(playerInside => {
+        let spectator = {};
+        spectator.id = playerInside.id;
+        spectator.name = playerInside.name;
+        spectator.seen = false;
+        players.push(spectator)
+    });
+
+    priveStory.players = players;
+    priveStory.openMsg = story.text;
+    priveStory.startDate = story.startDate;
+    priveStory.nextTurn = story.nextTurn;
+    let between = []
+    players.map(player => {
+        between.push(player.id);
+    })
+    priveStory.between = between;
+
+    priveStories.add(priveStory)
+        .then((docRef) => {
+            priveStories.doc(docRef.id).update({ refID: docRef.id });
+            let id = priveStory.id;
+            res.json({ id: id })
+        })
+
+})
+
+app.post('/stories/prive-fetch', (req, res) => {
+    let mail = req.body.mail;
+    let priveStoriesArray = []
+
+
+    players.where('login', "==", `${mail}`).get()
+        .then(snapshot => {
+            snapshot.forEach(doc => {
+                let player = doc.data();
+                let playerID = player.id;
+
+                priveStories.where('between', 'array-contains', playerID).orderBy('id', 'asc').get()
+                    .then(snapshot => {
+                        snapshot.forEach(doc => {
+                            let story = doc.data()
+                            priveStoriesArray.push(story);
+                        })
+                        console.log(priveStoriesArray);
+                        res.json({ saved: true, priveStoriesArray })
+                    })
+            })
+
+
+        })
+
+})
 app.listen(port, () => console.log(`Listening on port ${port}`));
 
