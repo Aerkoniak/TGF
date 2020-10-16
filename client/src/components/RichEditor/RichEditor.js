@@ -23,8 +23,8 @@ class RichEditor extends React.Component {
         this.state = {
             editorState: EditorState.createEmpty(),
             isAuthor: false,
-            dateValue: null,
-            yesterday: moment().subtract(1, 'day'),
+            dateValue: "",
+            timeValue: "",
         };
         this.onChange = editorState => this.setState({ editorState });
         this.handleKeyCommand = this.handleKeyCommand.bind(this);
@@ -97,7 +97,7 @@ class RichEditor extends React.Component {
             let story = this.props.storyCreator.newStory
             story.openMsg = markup;
         }
-
+        
         let messageObject = {};
         messageObject.text = markup;
         messageObject.player = this.props.player;
@@ -107,7 +107,18 @@ class RichEditor extends React.Component {
             messageObject.title = this.props.title;
             messageObject.addreesse = this.props.addreesse
         }
-        
+        if (this.props.priveStoryCreator) {
+            // usuwam zbędne messageObjecty, a potem dodaje tytuł przekazany w propsie.
+            delete messageObject.place;
+            delete messageObject.player;
+            messageObject.title = this.props.title;
+            messageObject.players = this.props.playersInSession;
+            messageObject.author = this.props.player;
+        }
+        if (this.props.isAuthor) {
+            messageObject.nextTurn = `${this.state.dateValue}, ${this.state.timeValue}`
+        }
+
         if (messageObject.text.length < 15) {
             return
         } else if (messageObject.text.length >= 15) {
@@ -123,29 +134,38 @@ class RichEditor extends React.Component {
     //     return current.isAfter( this.state.yesterday );
     // }
     // _onInputChange = e => {
-	// 	if ( !this.callHandler( this.props.inputProps.onChange, e ) ) return;
+    // 	if ( !this.callHandler( this.props.inputProps.onChange, e ) ) return;
 
-	// 	const value = e.target ? e.target.value : e;
-	// 	const localMoment = this.localMoment( value, this.getFormat('datetime') );
-	// 	let update = { inputValue: value };
+    // 	const value = e.target ? e.target.value : e;
+    // 	const localMoment = this.localMoment( value, this.getFormat('datetime') );
+    // 	let update = { inputValue: value };
 
-	// 	if ( localMoment.isValid() ) {
-	// 		update.selectedDate = localMoment;
-	// 		update.viewDate = localMoment.clone().startOf('month');
-	// 	}
-	// 	else {
-	// 		update.selectedDate = null;
-	// 	}
+    // 	if ( localMoment.isValid() ) {
+    // 		update.selectedDate = localMoment;
+    // 		update.viewDate = localMoment.clone().startOf('month');
+    // 	}
+    // 	else {
+    // 		update.selectedDate = null;
+    // 	}
 
-	// 	this.setState( update, () => {
-	// 		this.props.onChange( localMoment.isValid() ? localMoment : this.state.inputValue );
-	// 	});
-	// }
+    // 	this.setState( update, () => {
+    // 		this.props.onChange( localMoment.isValid() ? localMoment : this.state.inputValue );
+    // 	});
+    // }
 
     render() {
         return (
             <div className="richEditorWrap">
-                
+                {this.props.isAuthor ? <div className="nextTurn">
+                    <label className="nextTurnLabel" htmlFor="">Ustaw termin końca tury: </label>
+                    <input type="date" value={this.state.dateValue} onChange={(e) => this.setState({
+                        dateValue: e.target.value,
+                    })} />
+                    <input type="time" value={this.state.timeValue} onChange={(e) => this.setState({
+                        timeValue: e.target.value,
+                    })} />
+                    {this.state.dateValue && this.state.timeValue ? <span className="nextTurnSpan ok" >okej</span> : <span className="nextTurnSpan notOk">nie ustawiono</span> }
+                </div> : null}
                 <form action="" className="richEditor" onSubmit={this.submitRichEditor}>
                     <Editor
                         editorState={this.state.editorState}
