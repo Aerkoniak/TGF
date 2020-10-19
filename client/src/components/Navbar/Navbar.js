@@ -5,26 +5,40 @@ import { fetchMails } from '../../data/actions/mailsActions';
 
 import { fetchStories } from '../../data/actions/storiesActions';
 
-const Navbar = ({ stories, isLeftHanded, fetchStories, player, mails, taverns }) => {
+const Navbar = ({ stories, priveStories, isLeftHanded, fetchStories, player, mails, taverns }) => {
 
     // każdy z link wymaga osobnej zmiennej wskazującej, ze doszła jakas nowa wiadomość lub sesja. 
 
     const [newSessionChapter, changeSessionChapterStatus] = useState(false);
+    const [newChapterInPrive, changePriveChapterStatus] = useState(false);
     const [newMailRecord, changeMailRecordStatus] = useState(false);
 
     useEffect(() => {
+        let counter = 0;
         stories.map(story => {
             story.spectators.map(spectator => {
-                if (spectator.id === player.id) {
-                    if (!spectator.seen) {
-                        changeSessionChapterStatus(true)
-                    } else {
-                        changeSessionChapterStatus(false)
-                    }
+                if (spectator.id === player.id && !spectator.seen) {
+                    counter++
                 }
             })
-        })
+        });
+        if (counter > 0) changeSessionChapterStatus(true)
+        else changeSessionChapterStatus(false)
+
     }, [stories]);
+
+    useEffect(() => {
+        let counter = 0;
+        priveStories.map(story => {
+            story.spectators.map(spectator => {
+                if (spectator.id === player.id && !spectator.seen) {
+                    counter++
+                } 
+            })
+        });
+        if (counter > 0) changePriveChapterStatus(true)
+        else changePriveChapterStatus(false)
+    }, [priveStories])
 
     useEffect(() => {
         mails.map(mail => {
@@ -42,7 +56,7 @@ const Navbar = ({ stories, isLeftHanded, fetchStories, player, mails, taverns })
         <>
             <nav className={isLeftHanded ? "mobile left" : "mobile"} onClick={fetchStories} >
                 <NavLink exact className="navMob" to="/">H</NavLink>
-                <NavLink className={newSessionChapter ? "navMob newMessage" : "navMob"} to="/sessions">S</NavLink>
+                <NavLink className={newSessionChapter || newChapterInPrive ? "navMob newMessage" : "navMob"} to="/sessions">S</NavLink>
                 <NavLink className={newMailRecord ? "navMob newMessage" : "navMob"} to="/mails">P</NavLink>
                 <NavLink className="navMob" to="/tavern">K</NavLink>
                 <NavLink className="navMob" to="/charakter">KP</NavLink>
@@ -50,8 +64,8 @@ const Navbar = ({ stories, isLeftHanded, fetchStories, player, mails, taverns })
             </nav>
             <nav className="desktop" onClick={fetchStories}>
                 <NavLink to="/" exact className="navDesk">Herold</NavLink>
-                <NavLink to="/sessions" className={newSessionChapter ? "navDesk sessions newMessage" : "navDesk sessions"}>Sesje
-                <p className="subLink"><Link to="/sessions/prive" >Sesje prywatne</Link></p>
+                <NavLink to="/sessions" className={newSessionChapter || newChapterInPrive ? "navDesk sessions newMessage" : "navDesk sessions"}>Sesje
+                <p className={newChapterInPrive ? "subLink prive new" : "subLink"}><Link to="/sessions/prive" >Sesje prywatne</Link></p>
                 </NavLink>
                 <NavLink to="/mails" className={newMailRecord ? "navDesk newMessage" : "navDesk"}>Poczta</NavLink>
                 <NavLink to="/tavern" className="navDesk tavern">Karczmy
@@ -67,6 +81,7 @@ const Navbar = ({ stories, isLeftHanded, fetchStories, player, mails, taverns })
 const mapStateToProps = state => ({
     isLeftHanded: state.player.isLeftHanded,
     stories: state.stories.stories,
+    priveStories: state.stories.priveStories,
     player: state.player.player,
     mails: state.mails.mails,
     taverns: state.taverns.taverns,
