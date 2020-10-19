@@ -27,12 +27,14 @@ const OneMail = ({ mail, player, sendMailReply, changeSeenInMail, fetchMails }) 
     }, [])
 
     useEffect(() => {
-        mailsDB.doc(`${mail.mailsDocRef}`)
+      const unsubscribe =  mailsDB.doc(`${mail.mailsDocRef}`)
             .onSnapshot(doc => {
                 let data = doc.data();
-                console.log(data)
                 fetchMails(player.id)
             })
+            return function cleanup() {
+                unsubscribe()
+            }
     }, [])
 
     const [mailReplyValue, setMailValue] = useState("");
@@ -93,7 +95,7 @@ const OneMail = ({ mail, player, sendMailReply, changeSeenInMail, fetchMails }) 
                 {mailsChapters}
             </div>
             <p className="storyAuthor">{mail.sender.name}</p>
-            <p className="openingMail">{mail.startText}</p>
+            <p className="openingMail">{parse(mail.startText)}</p>
         </section>
     );
 }
