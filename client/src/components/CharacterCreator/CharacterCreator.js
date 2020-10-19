@@ -66,7 +66,10 @@ const CharacterCreator = ({ creator, player, setCharacter }) => {
     const setAge = e => {
         let age = e.target.value;
         setAgeOk(false);
-        if (age < 16) {
+        if (raceValue === "" || !isRaceOk) {
+            setWarnings('Musisz mieć wybraną rasę by móc wybrać wiek.');
+        }
+        else if (age < 16) {
             setWarnings('Minimalny wiek dla postaci to 16 lat.');
         } else if (raceValue === "Człowiek" && age > 80) {
             setWarnings('Ludzie nie dożywają więcej niż 90 lat, więc wiek grywalny kończy się na 80 latach.');
@@ -115,6 +118,7 @@ const CharacterCreator = ({ creator, player, setCharacter }) => {
                         <div>
                             <label className="creatorLabel" htmlFor="race">Wybierz swoją rasę:</label>
                             <select className="creatorSelect" name="" id="race" value={raceValue} onChange={setRace}>
+                                <option value=""></option>
                                 {raceOptions}
                             </select>
                             <button className="submitCreatorField" onClick={e => {
@@ -144,6 +148,7 @@ const CharacterCreator = ({ creator, player, setCharacter }) => {
                         <div>
                             <label className="creatorLabel" htmlFor="class">Wybierz swoją klasę:</label>
                             <select className="creatorSelect" name="" id="class" value={classValue} onChange={setClass}>
+                                <option value=""></option>
                                 {classOptions}
                             </select>
                             <button className="submitCreatorField" onClick={e => {
@@ -166,6 +171,7 @@ const CharacterCreator = ({ creator, player, setCharacter }) => {
                     {raceObject ? <p>Rasy:</p> : null}
                     {raceObject ? <div>
                         <h3 className="name">{raceObject.name}</h3>
+                        <p className="desc">{raceObject.desc}</p>
                         <p className="desc">Lorem ipsum dolor sit amet consectetur adipisicing elit. Odit eum et iste molestiae ullam, aspernatur, ut, dicta deleniti ratione ea molestias perspiciatis. Dolor in eos labore magnam beatae, eaque vero!</p>
                         <p>Bazowe statystyki:</p>
                         <ul className="baseStats" >
