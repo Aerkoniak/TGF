@@ -412,28 +412,28 @@ app.post('/stories/prive-create', (req, res) => {
     priveStory.id = new Date().getTime();
     priveStory.chapters = [];
 
-    let players = [];
+    let spectators = [];
 
     let spectator = {};
     spectator.name = story.author.name;
     spectator.id = story.author.id;
     spectator.seen = true;
-    players.push(spectator);
+    spectators.push(spectator);
 
     story.players.map(playerInside => {
         let spectator = {};
         spectator.id = playerInside.id;
         spectator.name = playerInside.name;
         spectator.seen = false;
-        players.push(spectator)
+        spectators.push(spectator)
     });
 
-    priveStory.players = players;
+    priveStory.spectators = spectators;
     priveStory.openMsg = story.text;
     priveStory.startDate = story.startDate;
     priveStory.nextTurn = story.nextTurn;
     let between = []
-    players.map(player => {
+    spectators.map(player => {
         between.push(player.id);
     })
     priveStory.between = between;
@@ -464,8 +464,7 @@ app.post('/stories/prive-fetch', (req, res) => {
                             let story = doc.data()
                             priveStoriesArray.push(story);
                         })
-                        console.log(priveStoriesArray);
-                        res.json({ saved: true, priveStoriesArray })
+                        res.json({ saved: true, priveStoriesArray });
                     })
             })
 
@@ -473,5 +472,179 @@ app.post('/stories/prive-fetch', (req, res) => {
         })
 
 })
+
+app.post('/stories/prive-update', (req, res) => {
+    const { newChapter, seen, deleteChapter, deletedPlayer, addedPlayer } = req.body;
+
+    if (seen) {
+        let { id, refID } = req.body.seen;
+        let spectatorsArray = [];
+
+        priveStories.doc(refID).get()
+            .then(doc => {
+                let story = doc.data();
+                spectatorsArray = story.spectators
+
+                spectatorsArray.map(spectator => {
+                    if (spectator.id === id) {
+                        spectator.seen = true;
+                    }
+                })
+                priveStories.doc(refID).set({ spectators: spectatorsArray }, { merge: true })
+                    .then(ok => {
+                        if (ok.writeTime) {
+                            console.log("seen")
+                            res.json({ saved: true })
+                        }
+                    })
+            })
+    } else if (newChapter) {
+        let chapter = req.body.newChapter;
+        let chaptersArray = [];
+        let spectatorsArray = [];
+
+        priveStories.doc(chapter.storyID).get()
+            .then(doc => {
+                let story = doc.data();
+
+                if (!story.openMsg) {
+                    priveStories.doc(chapter.storyID).set({ openMsg: chapter.msg, isReady: true, nextTurn: chapter.nextTurn }, { merge: true })
+                        .then(ok => {
+                            if (ok.writeTime) {
+                                res.json({ saved: true })
+                            }
+                        })
+                } else {
+                    chaptersArray = story.chapters;
+                    chaptersArray.push(chapter);
+                    spectatorsArray = story.spectators
+
+                    let isNewSpectator = false;
+                    // Ustawiamy isSpectator na false i tworzymy obiekt spec. 
+                    let spectator = {};
+                    spectator.name = chapter.author.name;
+                    spectator.id = chapter.author.id;
+                    spectator.seen = true;
+                    // Mapujemy tablicę obecnych spectatorów, jeśli jeden z nich ma to samo ID co osoba odpisująca to ustawiamy isNewSpectator na true, a jednocześnie temu samemu spectatorowi zmieniami seen na true.
+                    spectatorsArray.map(spectator => {
+                        spectator.seen = false;
+                        if (spectator.id === chapter.author.id) {
+                            isNewSpectator = true;
+                            spectator.seen = true;
+                        }
+                    })
+                    // jeśli po zmapowaniu całej tablicy isNewSpectator wciąż jest false to pushujemy go do tablicy
+                    if (!isNewSpectator) {
+                        spectatorsArray.push(spectator)
+                    }
+
+                    if (story.author.id === chapter.author.id) {
+                        priveStories.doc(chapter.storyID).set({ chapters: chaptersArray, spectators: spectatorsArray, nextTurn: chapter.nextTurn }, { merge: true })
+                            .then(ok => {
+                                if (ok.writeTime) {
+                                    res.json({ saved: true })
+                                }
+                            })
+                    } else {
+                        priveStories.doc(chapter.storyID).set({ chapters: chaptersArray, spectators: spectatorsArray }, { merge: true })
+                            .then(ok => {
+                                if (ok.writeTime) {
+                                    res.json({ saved: true })
+                                }
+                            })
+                    }
+
+
+
+                }
+            })
+    } else if (deleteChapter) {
+        let { chapterIndex, refID } = req.body.deleteChapter;
+        let chapters = [];
+        priveStories.doc(refID).get()
+            .then(doc => {
+                let story = doc.data();
+                chapters = story.chapters;
+                chapters.splice(chapterIndex, 1);
+                priveStories.doc(refID).set({ chapters: chapters }, { merge: true })
+                    .then(ok => {
+                        if (ok.writeTime) {
+                            res.json({ saved: true })
+                        }
+                    })
+            })
+    } else if (deletedPlayer) {
+        const { name, refID } = req.body.deletedPlayer;
+
+        let between = [];
+        let spectators = [];
+        let playerID = null;
+
+        priveStories.doc(refID).get()
+            .then(doc => {
+                let story = doc.data();
+                let deletedIndex = null;
+                between = story.between;
+                spectators = story.spectators;
+                spectators.map((spectator, index) => {
+                    if (spectator.name === name) {
+                        deletedIndex = index;
+                        playerID = spectator.id;
+                    }
+                });
+                spectators.splice(deletedIndex, 1);
+                between.map((player, index) => {
+                    if (player === playerID) {
+                        deletedIndex = index;
+                    }
+                });
+                between.splice(deletedIndex, 1);
+                console.log(between, spectators);
+                priveStories.doc(refID).set({ between: between, spectators: spectators }, { merge: true })
+                    .then(ok => {
+                        if (ok.writeTime) {
+                            res.json({ saved: true })
+                        }
+                    })
+
+            })
+    } else if (addedPlayer) {
+        const { player, refID } = req.body.addedPlayer;
+
+        let between = [];
+        let spectators = [];
+
+
+        priveStories.doc(refID).get()
+            .then(doc => {
+                let story = doc.data();
+                between = story.between;
+                between.push(player.id);
+                spectators = story.spectators;
+                let spectator = {
+                    name: player.name,
+                    id: player.id,
+                    seen: false,
+                }
+                spectators.push(spectator);
+                priveStories.doc(refID).set({ between: between, spectators: spectators }, { merge: true })
+                    .then(ok => {
+                        if (ok.writeTime) {
+                            res.json({ saved: true })
+                        }
+                    })
+
+            })
+    }
+})
+
+
+
+
+
+
+
+
+
 app.listen(port, () => console.log(`Listening on port ${port}`));
 
