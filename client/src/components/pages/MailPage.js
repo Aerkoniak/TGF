@@ -31,6 +31,9 @@ const MailPage = ({ mails, msg, player }) => {
         let newMessage = false;
         if (player.id === mail.addreesse.id && !mail.addreesse.read) newMessage = true
         else if (player.id === mail.sender.id && !mail.sender.read) newMessage = true
+        mail.viewers.map(viewer => {
+            if (player.id === viewer.id && !viewer.read) newMessage = true
+        })
         
         return (
             <div className="oneMail" key={mail.id}>
