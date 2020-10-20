@@ -41,11 +41,16 @@ const Navbar = ({ stories, priveStories, isLeftHanded, fetchStories, player, mai
     }, [priveStories])
 
     useEffect(() => {
+        let counter = 0;
         mails.map(mail => {
-            if (player.id === mail.addreesse.id && !mail.addreesse.read) changeMailRecordStatus(true)
-            else if (player.id === mail.sender.id && !mail.sender.read) changeMailRecordStatus(true)
-            else changeMailRecordStatus(false)
+            if (player.id === mail.addreesse.id && !mail.addreesse.read) counter++
+            else if (player.id === mail.sender.id && !mail.sender.read) counter++
+            mail.viewers.map(viewer => {
+                if (player.id === viewer.id && !viewer.read) counter++
+            })
         })
+        if (counter > 0) changeMailRecordStatus(true);
+        else changeMailRecordStatus(false);
     }, [mails])
 
     const tavernSubLinks = taverns.map((tavern, index) => ((
