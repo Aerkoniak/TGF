@@ -4,8 +4,6 @@ import { createDate } from '../usefullFN';
 
 export const sendMail = message => dispatch => {
 
-    console.log(message);
-
     const newMessage = {}
     newMessage.startDate = createDate();
     let sender = {}
@@ -20,6 +18,7 @@ export const sendMail = message => dispatch => {
     newMessage.addreesse = addreesse;
     newMessage.startText = message.text
     newMessage.title = message.title
+    newMessage.viewers = [];
 
     axios.post('/mails-create', { newMessage })
         .then(res => {
@@ -54,15 +53,12 @@ export const sendMailReply = message => dispatch => {
             if (res.data.saved) {
                 let id = newMessage.author.id
                 axios.post('/mails-fetch', { id })
-                    .then(res => {
-                        let mails = res.data.mailsArray;
-                        dispatch({ type: 'MAIL_FETCH_COMPLETE', mails });
-                    })
             }
         })
 }
 
 export const changeSeenInMail = (id, refID) => dispatch => {
+    console.log("change Seen")
     let read = {};
     read.id = id;
     read.refID = refID;
@@ -77,9 +73,26 @@ export const fetchMails = login => dispatch => {
                 dispatch({ type: 'MAIL_FETCH_FAILED' })
             } else if (res.data.mailsArray) {
                 let mails = res.data.mailsArray;
-                console.log(mails)
                 dispatch({ type: 'MAIL_FETCH_COMPLETE', mails });
             }
 
         })
+}
+
+
+export const addingPlayerToMail = mail => dispatch => {
+    let newViewer = {};
+    newViewer.mailsDocRef = mail.mailsDocRef;
+    let viewer = {
+        name: mail.player.name,
+        id: mail.player.id,
+        read: false,
+    }
+    newViewer.viewer = viewer;
+    axios.post('/mails-update', { newViewer })
+}
+
+export const deletePlayerFromMail = player => dispatch => {
+    let deletedPlayer = player;
+    axios.post('/mails-update', {deletedPlayer})
 }
