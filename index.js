@@ -311,7 +311,6 @@ app.post('/mails-fetch', (req, res) => {
                     mails.where("between", 'array-contains', playerID).orderBy("id", "asc").get()
                         .then(snapshot => {
                             if (snapshot.size === 0) {
-                                console.log("Nie ma maili")
                             } else {
                                 snapshot.forEach(doc => {
                                     let story = doc.data();
@@ -345,55 +344,130 @@ app.post('/mails-fetch', (req, res) => {
 })
 
 app.post('/mails-update', (req, res) => {
-    if (req.body.newMessage) {
+    const { newMessage, read, newViewer, deletedPlayer } = req.body;
+    if (newMessage) {
         const mailRecord = req.body.newMessage;
         let recordsArray = [];
         let addreesse = {};
         let sender = {};
+        let viewers = [];
         mails.doc(mailRecord.mailsDocRef).get()
             .then(doc => {
                 let mail = doc.data()
                 console.log(mail)
                 recordsArray = mail.records;
+                viewers = mail.viewers;
                 recordsArray.push(mailRecord);
+
+
                 if (mailRecord.author.id === mail.sender.id) {
                     addreesse = mail.addreesse;
                     addreesse.read = false;
                     sender = mail.sender;
                     sender.read = true;
+                    viewers.map(viewer => {
+                        viewer.read = false;
+                    })
                 } else if (mailRecord.author.id === mail.addreesse.id) {
                     sender = mail.sender;
                     sender.read = false;
                     addreesse = mail.addreesse;
                     addreesse.read = true;
+                    viewers.map(viewer => {
+                        viewer.read = false;
+                    })
+                } else if (mailRecord.author.id != mail.sender.id && mail.addreesse.id) {
+                    addreesse = mail.addreesse;
+                    addreesse.read = false;
+                    sender = mail.sender;
+                    sender.read = false;
+                    viewers.map(viewer => {
+                        if (viewer.name === mailRecord.author.name) {
+                            viewer.read = true;
+                        } else {
+                            viewer.read = false;
+                        }
+                    })
                 }
-                mails.doc(mailRecord.mailsDocRef).set({ records: recordsArray, sender: sender, addreesse: addreesse }, { merge: true })
+
+
+                mails.doc(mailRecord.mailsDocRef).set({ records: recordsArray, sender: sender, addreesse: addreesse, viewers: viewers }, { merge: true })
                     .then(ok => {
                         if (ok.writeTime) {
                             res.json({ saved: true })
                         }
                     })
             })
-    } else if (req.body.read) {
+    } else if (read) {
         const { id, refID } = req.body.read;
         let addreesse = {};
         let sender = {};
+        let viewers = [];
+        console.log(read)
         mails.doc(refID).get()
             .then(doc => {
                 let mail = doc.data()
+                viewers = mail.viewers;
 
                 if (id === mail.sender.id) {
                     sender = mail.sender;
                     sender.read = true;
-                    console.log("Nadawca zmieniony na odczytaną.");
                     mails.doc(refID).set({ sender: sender }, { merge: true })
                 } else if (id === mail.addreesse.id) {
                     addreesse = mail.addreesse;
                     addreesse.read = true;
-                    console.log("Odbiorca zmieniony na odczytaną.")
                     mails.doc(refID).set({ addreesse: addreesse }, { merge: true })
+                } else if (id != mail.sender.id && mail.addreesse.id) {
+                    viewers.map(viewer => {
+                        if (id === viewer.id) {
+                            viewer.read = true;
+                        }
+                    })
+                    mails.doc(refID).set({ viewers: viewers }, { merge: true })
                 }
+
+
                 res.json({ saved: true })
+            })
+    } else if (newViewer) {
+        const { mailsDocRef, viewer } = req.body.newViewer;
+        let between = [];
+        let viewers = [];
+
+        mails.doc(mailsDocRef).get()
+            .then(doc => {
+                let mail = doc.data();
+                between = mail.between;
+                between.push(viewer.id);
+                viewers = mail.viewers;
+                viewers.push(viewer);
+                mails.doc(mailsDocRef).set({ between: between, viewers: viewers }, { merge: true })
+            })
+    } else if (deletedPlayer) {
+        const { name, mailsDocRef } = req.body.deletedPlayer;
+        
+        let between = [];
+        let viewers = [];
+        let removedIndex = null;
+        let deletedID = null;
+
+        mails.doc(mailsDocRef).get()
+            .then(doc => {
+                let mail = doc.data();
+                between = mail.between;
+                viewers = mail.viewers;
+                viewers.map((viewer, index) => {
+                    if (viewer.name === name) {
+                        removedIndex = index;
+                        deletedID = viewer.id;
+                    }
+                });
+                viewers.splice(removedIndex, 1);
+                between.map((id, index) => {
+                    if (id === deletedID) removedIndex = index;
+                })
+                between.splice(removedIndex, 1)
+                mails.doc(mailsDocRef).set({ between: between, viewers: viewers }, {merge: true})
             })
     }
 
