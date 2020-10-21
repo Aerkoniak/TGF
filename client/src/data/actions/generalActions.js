@@ -172,3 +172,11 @@ export const fetchCharactersList = argument => dispatch => {
 export const setRefreshToken = token => dispatch => {
     dispatch({ type: "SET_REFRESH_TOKEN", token });
 }
+
+export const updateActive = player => dispatch => {
+    let lastActiveTime = new Date().getTime();
+    let data = {};
+    data.lastActiveTime = lastActiveTime;
+    data.accountDocRef = player.accountDocRef;
+    axios.post('/update-activeTime', { data })
+}
