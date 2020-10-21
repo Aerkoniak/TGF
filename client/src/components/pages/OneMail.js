@@ -9,13 +9,16 @@ import ProfileViewer from '../ProfileViewer/ProfileViewer';
 import { sendMailReply, changeSeenInMail, addingPlayerToMail, deletePlayerFromMail } from '../../data/actions/mailsActions';
 import { mailsDB } from '../../data/firebase/firebaseConfig';
 import { fetchMails } from '../../data/actions/mailsActions';
+import {updateActive} from '../../data/actions/generalActions';
 
 
 
 
-const OneMail = ({ mail, player, characters, sendMailReply, changeSeenInMail, fetchMails, addingPlayerToMail, deletePlayerFromMail }) => {
+const OneMail = ({ mail, player, characters, sendMailReply, changeSeenInMail, fetchMails, addingPlayerToMail, deletePlayerFromMail, updateActive }) => {
 
     useEffect(() => {
+        if (player.id === mail.sender.id) confirmAuthorRank(true);
+        
         let counter = 0;
         if (player.id === mail.addreesse.id && !mail.addreesse.read) counter++;
         else if ((mail.sender.id === player.id && !mail.sender.read)) counter++;
@@ -46,10 +49,12 @@ const OneMail = ({ mail, player, characters, sendMailReply, changeSeenInMail, fe
     const [addPlayers, toggleAddPlayers] = useState(false);
     const [seachedPlayersList, setPlayersList] = useState([]);
     const [addresseeValue, setAddressee] = useState("");
+    const [isAuthor, confirmAuthorRank] = useState(false);
 
     const submitReply = (e) => {
         e.preventDefault();
         toggleMailForm(false);
+        updateActive(player);
     }
 
     const mailsChapters = mail.records.map(record => ((
@@ -149,14 +154,17 @@ const OneMail = ({ mail, player, characters, sendMailReply, changeSeenInMail, fe
                         <ul className="storyPlayers">
                             {players}
                         </ul>
-                        <button className="addDeletePlayers" onClick={(e) => {
-                            e.preventDefault();
-                            toggleDeletePlayers(!deletePlayers)
-                        }}>Włącz usuwanie graczy</button>
-                        <button className="addDeletePlayers" onClick={(e) => {
-                            e.preventDefault();
-                            toggleAddPlayers(!addPlayers)
-                        }} >Włącz dodawanie graczy</button>
+                        
+                        {isAuthor ? <>
+                            <button className="addDeletePlayers" onClick={(e) => {
+                                e.preventDefault();
+                                toggleDeletePlayers(!deletePlayers)
+                            }}>Włącz usuwanie graczy</button>
+                            <button className="addDeletePlayers" onClick={(e) => {
+                                e.preventDefault();
+                                toggleAddPlayers(!addPlayers)
+                            }} >Włącz dodawanie graczy</button>
+                        </> : null}
 
                         {addPlayers ?
                             <div className="addPlayers">
@@ -197,6 +205,7 @@ const MapDispatchToProps = dispatch => {
         fetchMails: (mail) => dispatch(fetchMails(mail)),
         addingPlayerToMail: (viewer) => dispatch(addingPlayerToMail(viewer)),
         deletePlayerFromMail: player => dispatch(deletePlayerFromMail(player)),
+        updateActive: player => dispatch(updateActive(player)),
     }
 }
 
