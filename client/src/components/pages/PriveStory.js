@@ -4,12 +4,13 @@ import { connect } from 'react-redux';
 import parse from 'html-react-parser';
 
 
-import { changeSeenInPriveSession, fetchPriveStories, addChapter, deleteChapter, deletePlayerFromStory, addingPlayerFromStory,  } from '../../data/actions/priveStoriesActions';
+import { changeSeenInPriveSession, fetchPriveStories, addChapter, deleteChapter, deletePlayerFromStory, addingPlayerFromStory, } from '../../data/actions/priveStoriesActions';
+import {updateActive} from '../../data/actions/generalActions';
 import { priveStoriesDB } from '../../data/firebase/firebaseConfig'
 import RichEditor from '../RichEditor/RichEditor';
 import ProfileViewer from '../ProfileViewer/ProfileViewer';
 
-const PriveStory = ({ story, player, addChapter, changeSeenInPriveSession, fetchPriveStories, deleteChapter, deletePlayerFromStory, characters, addingPlayerFromStory }) => {
+const PriveStory = ({ story, player, addChapter, changeSeenInPriveSession, fetchPriveStories, deleteChapter, deletePlayerFromStory, characters, addingPlayerFromStory, updateActive }) => {
 
 
     useEffect(() => {
@@ -41,6 +42,7 @@ const PriveStory = ({ story, player, addChapter, changeSeenInPriveSession, fetch
     const [seachedPlayersList, setPlayersList] = useState([]);
     const [addresseeValue, setAddressee] = useState("");
 
+
     useEffect(() => {
         if (player.id === story.author.id && player.rank <= 2) setIsAuthor(true);
     }, [player])
@@ -49,6 +51,7 @@ const PriveStory = ({ story, player, addChapter, changeSeenInPriveSession, fetch
         e.preventDefault();
         setAnswerText('');
         toggleTA(true);
+        updateActive(player)
     }
 
     const deleteChapterSupporter = e => {
@@ -65,7 +68,7 @@ const PriveStory = ({ story, player, addChapter, changeSeenInPriveSession, fetch
         toggleDeletePlayers(false);
     }
 
-  
+
 
     const searchForPlayer = arg => {
         let charactersArray = characters;
@@ -78,7 +81,7 @@ const PriveStory = ({ story, player, addChapter, changeSeenInPriveSession, fetch
 
             if (nameCheck || idCheck) {
                 console.log(character)
-                searchedPlayerList.push(character) 
+                searchedPlayerList.push(character)
             }
         })
         setPlayersList(searchedPlayerList);
@@ -110,7 +113,6 @@ const PriveStory = ({ story, player, addChapter, changeSeenInPriveSession, fetch
                 </li>
             )
         }
-
     })
 
     const playerListSet = seachedPlayersList.map(player => (
@@ -122,8 +124,6 @@ const PriveStory = ({ story, player, addChapter, changeSeenInPriveSession, fetch
             <Link className="return" to="/sessions/prive"><i className="fas fa-undo-alt"></i></Link>
             <div className="storyInfo">
                 <p className="storyTitle">{story.title}</p>
-                <span className="nextTurnDateSpan">Termin następnego odpisu:</span>
-                <p className="nextTurnDate">{story.nextTurn ? story.nextTurn : null}</p>
                 <p className="showIntro" onClick={() => showIntro(!intro)}  >Kliknij by pokazać lub schować wstęp</p>
                 {player.rank <= 3 ? <p className="answer" onClick={() => toggleTA(!textareaHidden)} >Odpisz</p> : null}
                 {!story.openMsg || story.openMsg === "undefined" ? <h2 onClick={() => toggleTA(!textareaHidden)} className="test">Napisz wprowadzenie do sesji.</h2> :
@@ -132,7 +132,7 @@ const PriveStory = ({ story, player, addChapter, changeSeenInPriveSession, fetch
                 {/* {intro ? <p className="openingMsg">{`${story.openMsg}`}</p> : null} */}
                 <form className={textareaHidden ? "answerForm hidden" : "answerForm"} onSubmit={submitAnswer} >
 
-                    <RichEditor action={addChapter} place={story} player={player} isAuthor={isAuthor ? true : false} />
+                    <RichEditor action={addChapter} place={story} player={player} />
                 </form>
 
             </div>
@@ -153,14 +153,17 @@ const PriveStory = ({ story, player, addChapter, changeSeenInPriveSession, fetch
                         <ul className="storyPlayers">
                             {players}
                         </ul>
-                        <button className="addDeletePlayers" onClick={(e) => {
-                            e.preventDefault();
-                            toggleDeletePlayers(!deletePlayers)
-                        }}>Włącz usuwanie graczy</button>
-                        <button className="addDeletePlayers" onClick={(e) => {
-                            e.preventDefault();
-                            toggleAddPlayers(!addPlayers)
-                        }} >Włącz dodawanie graczy</button>
+                        {isAuthor ? <>
+                            <button className="addDeletePlayers" onClick={(e) => {
+                                e.preventDefault();
+                                toggleDeletePlayers(!deletePlayers)
+                            }}>Włącz usuwanie graczy</button>
+                            <button className="addDeletePlayers" onClick={(e) => {
+                                e.preventDefault();
+                                toggleAddPlayers(!addPlayers)
+                            }} >Włącz dodawanie graczy</button>
+                        </> : null}
+                        
 
                         {addPlayers ?
                             <div className="addPlayers">
@@ -198,7 +201,8 @@ const MapDispatchToProps = dispatch => ({
     fetchPriveStories: (mail) => dispatch(fetchPriveStories(mail)),
     deleteChapter: (chapterIndex, refID) => dispatch(deleteChapter(chapterIndex, refID)),
     deletePlayerFromStory: player => dispatch(deletePlayerFromStory(player)),
-    addingPlayerFromStory: player => dispatch(addingPlayerFromStory(player))
+    addingPlayerFromStory: player => dispatch(addingPlayerFromStory(player)),
+    updateActive: player => dispatch(updateActive(player)),
 })
 
 export default connect(MapStateToProps, MapDispatchToProps)(PriveStory);
