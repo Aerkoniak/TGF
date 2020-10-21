@@ -58,6 +58,7 @@ app.post("/registerAccount", (req, res) => {
 app.post('/login', (req, res) => {
     let account = req.body.account;
     const { login, password, lastLogged } = account;
+    let lastActiveTime = new Date().getTime();
     players.where("login", "==", `${login}`).get()
         .then(snapshot => {
             if (snapshot.size === 0) {
@@ -69,13 +70,28 @@ app.post('/login', (req, res) => {
                     let player = {};
                     player = document;
 
-                    res.json({ player });
-                    console.log("Zalogowano");
-                    players.doc(player.accountDocRef).set({ lastLog: lastLogged }, { merge: true });
+                    players.doc(player.accountDocRef).set({ lastLog: lastLogged, lastActiveTime: lastActiveTime }, { merge: true })
+                        .then(ok => {
+                            if (ok.writeTime) {
+                                console.log("Zalogowano")
+                                res.json({ player })
+                            }
+                        })
 
                 })
             }
         });
+})
+
+app.post('/update-activeTime', (req, res) => {
+    const { lastActiveTime, accountDocRef } = req.body.data;
+    if (!accountDocRef) {
+        res.json({ data: "ok" })
+    } else if (lastActiveTime && accountDocRef) {
+        players.doc(accountDocRef).set({ lastActiveTime: lastActiveTime }, { merge: true })
+        res.json({ data: "ok" });
+    }
+
 })
 
 app.post('/edit-account', (req, res) => {
@@ -354,7 +370,6 @@ app.post('/mails-update', (req, res) => {
         mails.doc(mailRecord.mailsDocRef).get()
             .then(doc => {
                 let mail = doc.data()
-                console.log(mail)
                 recordsArray = mail.records;
                 viewers = mail.viewers;
                 recordsArray.push(mailRecord);
@@ -403,7 +418,6 @@ app.post('/mails-update', (req, res) => {
         let addreesse = {};
         let sender = {};
         let viewers = [];
-        console.log(read)
         mails.doc(refID).get()
             .then(doc => {
                 let mail = doc.data()
@@ -445,7 +459,7 @@ app.post('/mails-update', (req, res) => {
             })
     } else if (deletedPlayer) {
         const { name, mailsDocRef } = req.body.deletedPlayer;
-        
+
         let between = [];
         let viewers = [];
         let removedIndex = null;
@@ -467,7 +481,7 @@ app.post('/mails-update', (req, res) => {
                     if (id === deletedID) removedIndex = index;
                 })
                 between.splice(removedIndex, 1)
-                mails.doc(mailsDocRef).set({ between: between, viewers: viewers }, {merge: true})
+                mails.doc(mailsDocRef).set({ between: between, viewers: viewers }, { merge: true })
             })
     }
 
