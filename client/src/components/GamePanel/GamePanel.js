@@ -27,10 +27,12 @@ import OneMail from '../pages/OneMail';
 import LogOutPage from '../pages/LogOutPage';
 import PriveSessionsPage from '../pages/PriveSessionsPage';
 import PriveStory from '../pages/PriveStory';
+import VerifyPage from '../pages/VerifyPage';
+import PlayerPage from '../pages/PlayerPage';
 
 
 
-const GamePanel = ({ player, stories, mails, downloadNeed, isLeftHanded, setHandCoockie, fetchStories, fetchMails, fetchTavernRooms, logInPlayer, fetchPriveStories, priveStories, fetchCharactersList, setActive, updateActive, isLogged }) => {
+const GamePanel = ({ player, stories, mails, characters, downloadNeed, isLeftHanded, setHandCoockie, fetchStories, fetchMails, fetchTavernRooms, logInPlayer, fetchPriveStories, priveStories, fetchCharactersList, isLogged }) => {
 
     const [redirectToLogOut, setLogOutRedirect] = useState(false)
 
@@ -80,10 +82,11 @@ const GamePanel = ({ player, stories, mails, downloadNeed, isLeftHanded, setHand
             <Route key={storyRoute.id} path={`/sessions/prive/id${storyRoute.id}`} render={(routeProps) => (<PriveStory {...routeProps} id={storyRoute.id} story={storyRoute} />)} />
         )
     })
-
-
     const mailsRoutes = mails.map(mailRoute => ((
         <Route key={mailRoute.id} path={`/mails/id${mailRoute.id}`} render={(routeProps) => (<OneMail {...routeProps} id={mailRoute.id} mail={mailRoute} />)} />
+    )))
+    const playerRoutes = characters.map(character => ((
+        <Route key={character.accountDocRef} path={`/character/id${character.id}`} render={(routeProps) => (<PlayerPage {...routeProps} id={character.id} character={character} />)} />
     )))
 
     return (
@@ -96,14 +99,16 @@ const GamePanel = ({ player, stories, mails, downloadNeed, isLeftHanded, setHand
                 <Route exact path="/sessions/prive" component={PriveSessionsPage} />
                 <Route exact path="/mails" component={MailPage} />
                 <Route path="/tavern" component={TavernPage} />
-                <Route path="/charakter" component={CharakterPage} />
+                <Route exact path="/character" component={CharakterPage} />
                 <Route path="/settings" component={SettingsPage} />
                 <Route path='/logout' component={LogOutPage} />
+                <Route exact path="/email" component={VerifyPage} />
 
                 {priveStoriesRoutes}
                 {storiesRoutes}
                 {mailsRoutes}
-                {/* <Route path='/storyCreator' render={(routeProps) => (<StoryCreator {...routeProps} player={player}></StoryCreator>)} /> */}
+                {playerRoutes}
+               
             </Switch>
             {redirectToLogOut ? <Redirect to="/logout" /> : null}
 
@@ -119,6 +124,7 @@ const MapStateToProps = state => ({
     downloadNeed: state.stories.downloadNeed,
     player: state.player.player,
     setActive: state.player.setActive,
+    characters: state.characters.characters,
 })
 const MapDispatchToProps = dispatch => {
     return {
