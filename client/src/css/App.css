@@ -1560,6 +1560,41 @@ h2.metrics:nth-of-type(2) {
     padding: 0 20px 0 20px;
   }
 
+
+  /* CHARACTERPAGE */
+
+  .metricsWrap {
+    display: flex;
+    flex-wrap: wrap;
+    text-align: left;
+  }
+  .avatar {
+    flex-basis: 50%;
+    min-height: 50vh;
+    text-align: center;
+    padding-top: 25vh;
+    border-bottom: 2px brown solid;
+  }
+  .metricsData {
+    flex-basis: 50%;
+    margin-top: 50px;
+    padding-left: 20px;
+    padding-bottom: 20px;
+    border-left: 2px brown solid;
+    border-bottom: 2px brown solid;
+  }
+  .metrics{
+    margin: 5px 0;
+    font-size: 18px;
+  }
+  h2.metrics {
+    font-size: 20px;
+    text-align: center;
+  }
+  h2.metrics:nth-of-type(2) {
+    margin-bottom: 20px;
+  }
+
   /* SETTINGS PAGE */
 
   .desktopSetting {
