@@ -64,7 +64,7 @@ const Navbar = ({ stories, priveStories, isLeftHanded, fetchStories, player, mai
                 <NavLink className={newSessionChapter || newChapterInPrive ? "navMob newMessage" : "navMob"} to="/sessions">S</NavLink>
                 <NavLink className={newMailRecord ? "navMob newMessage" : "navMob"} to="/mails">P</NavLink>
                 <NavLink className="navMob" to="/tavern">K</NavLink>
-                <NavLink className="navMob" to="/charakter">KP</NavLink>
+                <NavLink className="navMob" to="/character">KP</NavLink>
                 <NavLink className="navMob" to="/settings">U</NavLink>
             </nav>
             <nav className="desktop" onClick={fetchStories}>
@@ -76,7 +76,7 @@ const Navbar = ({ stories, priveStories, isLeftHanded, fetchStories, player, mai
                 <NavLink to="/tavern" className="navDesk tavern">Karczmy
                     {tavernSubLinks}
                 </NavLink>
-                <NavLink to="/charakter" className="navDesk">Karta Postaci</NavLink>
+                <NavLink to="/character" className="navDesk">Karta Postaci</NavLink>
                 <NavLink to="/settings" className="navDesk">Ustawienia</NavLink>
             </nav>
         </>
