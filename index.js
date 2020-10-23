@@ -85,10 +85,14 @@ app.post('/login', (req, res) => {
 
 app.post('/update-activeTime', (req, res) => {
     const { lastActiveTime, accountDocRef } = req.body.data;
+    console.log(lastActiveTime, accountDocRef);
     if (!accountDocRef) {
         res.json({ data: "ok" })
     } else if (lastActiveTime && accountDocRef) {
         players.doc(accountDocRef).set({ lastActiveTime: lastActiveTime }, { merge: true })
+        .catch(err => {
+            console.log(err)
+        })
         res.json({ data: "ok" });
     }
 
