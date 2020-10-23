@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import parse from 'html-react-parser';
+import ProfileViewer from '../ProfileViewer/ProfileViewer';
 
 
-const PlayerPage = ({ character }) => {
+const PlayerPage = ({ character, player }) => {
 
     const checkRang = (player) => {
         switch (player.rank) {
@@ -51,7 +52,7 @@ const PlayerPage = ({ character }) => {
                 <h2 className="metrics">Profil</h2>
                 {parse(character.profile)}
             </div>
-            
+            <ProfileViewer />
         </section>
     );
 }
