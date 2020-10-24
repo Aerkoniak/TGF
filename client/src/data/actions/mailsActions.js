@@ -14,6 +14,7 @@ export const sendMail = message => dispatch => {
     addreesse.name = message.addreesse.name;
     addreesse.id = message.addreesse.id;
     addreesse.rank = message.addreesse.rank;
+    addreesse.docRef= message.addreesse.accountDocRef;
     newMessage.sender = sender;
     newMessage.addreesse = addreesse;
     newMessage.startText = message.text
@@ -58,7 +59,6 @@ export const sendMailReply = message => dispatch => {
 }
 
 export const changeSeenInMail = (id, refID) => dispatch => {
-    console.log("change Seen")
     let read = {};
     read.id = id;
     read.refID = refID;
@@ -87,6 +87,7 @@ export const addingPlayerToMail = mail => dispatch => {
         name: mail.player.name,
         id: mail.player.id,
         read: false,
+        docRef: mail.player.accountDocRef,
     }
     newViewer.viewer = viewer;
     axios.post('/mails-update', { newViewer })
