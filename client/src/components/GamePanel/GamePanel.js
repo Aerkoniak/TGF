@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import { Switch, Route, Redirect } from 'react-router-dom';
-import { auth } from '../../data/firebase/firebaseConfig'
+import { auth, playersDB } from '../../data/firebase/firebaseConfig'
 
 
 import { setHandCoockie, logInPlayer, fetchCharactersList, updateActive } from '../../data/actions/generalActions';
@@ -68,6 +68,27 @@ const GamePanel = ({ player, stories, mails, characters, downloadNeed, isLeftHan
     }, [downloadNeed])
 
 
+    useEffect(() => {
+        if (isLogged === "logged") {
+            const unsubscribe = playersDB.doc(`${player.accountDocRef}`)
+                .onSnapshot((doc) => {
+                    let snapshotPlayer = doc.data()
+                    console.log(snapshotPlayer);
+                    if (player.mailsField < snapshotPlayer.mailsField) {
+                        console.log("Snapshot ma większe mailsField");
+                        fetchMails(player.login);
+                    } else if (player.mailsField == snapshotPlayer.mailsField) {
+                        console.log("Snapshot ma takie samo mailsField")
+                    }
+                });
+
+            return function cleanup() {
+                unsubscribe()
+            }
+        }
+
+    }, [isLogged])
+
 
 
 
@@ -108,7 +129,7 @@ const GamePanel = ({ player, stories, mails, characters, downloadNeed, isLeftHan
                 {storiesRoutes}
                 {mailsRoutes}
                 {playerRoutes}
-               
+
             </Switch>
             {redirectToLogOut ? <Redirect to="/logout" /> : null}
 
