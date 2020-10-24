@@ -4,6 +4,7 @@ import { createDate } from '../usefullFN';
 
 import firebase from 'firebase/app';
 import 'firebase/auth';
+import { auth } from './firebaseConfig';
 
 
 
@@ -91,4 +92,35 @@ export const signInFirebase = (email, password, account) => dispatch => {
             dispatch({ type: 'LOG_IN_NOT', msg })
         })
 
+}
+
+export const signOut = () => dispatch => {
+    dispatch({ type: "LOG_OUT" });
+    auth.signOut();
+}
+
+export const sendVerification = email => dispatch => {
+    console.log(auth.currentUser.email)
+    const actionCodeSettings = {
+        url: 'http://aarde.link/email' + auth.currentUser.email,
+        // iOS: {
+        //     bundleId: 'com.example.ios'
+        // },
+        // android: {
+        //     packageName: 'com.example.android',
+        //     installApp: true,
+        //     minimumVersion: '12'
+        // },
+        handleCodeInApp: true,
+        // When multiple custom dynamic link domains are defined, specify which
+        // one to use.
+    };
+
+    auth.currentUser.sendEmailVerification(actionCodeSettings)
+        .then(function () {
+            console.log("Wysłano e-mail weryfikacyjny.")
+        })
+        .catch(function (error) {
+            console.log(error)
+        });
 }
