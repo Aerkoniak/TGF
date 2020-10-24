@@ -11,6 +11,8 @@ const admin = require('firebase-admin');
 const dbAdmin = require('./firebaseAdmin');
 admin.initializeApp(dbAdmin);
 
+const FieldValue = require('firebase-admin').firestore.FieldValue;
+
 const db = admin.firestore()
 db.settings({ ignoreUndefinedProperties: true })
 const players = db.collection("players");
@@ -299,7 +301,7 @@ app.post('/characters-fetch', (req, res) => {
 app.post('/mails-create', (req, res) => {
     const message = req.body.newMessage;
     const { addreesse, sender, text, title } = message;
-    console.log(addreesse.id)
+    console.log(addreesse)
 
     let newMail = message;
     newMail.id = new Date().getTime();
@@ -307,13 +309,18 @@ app.post('/mails-create', (req, res) => {
     newMail.sender.read = true;
     newMail.between = [addreesse.id, sender.id];
     newMail.records = [];
-    console.log(newMail);
+    // console.log(newMail);
 
     mails.add(newMail)
         .then((docRef) => {
             mails.doc(docRef.id).update({ mailsDocRef: docRef.id });
             res.json({ isSaved: true });
+            players.doc(addreesse.docRef).update({
+                mailsField: FieldValue.increment(1)
+            })
+            .catch(err => console.log(err))
         })
+        .catch(err => console.log(err))
 });
 
 app.post('/mails-fetch', (req, res) => {
@@ -374,8 +381,12 @@ app.post('/mails-update', (req, res) => {
         mails.doc(mailRecord.mailsDocRef).get()
             .then(doc => {
                 let mail = doc.data()
+                console.log(mail);
                 recordsArray = mail.records;
                 viewers = mail.viewers;
+
+                let inform = null;
+                
                 recordsArray.push(mailRecord);
 
 
