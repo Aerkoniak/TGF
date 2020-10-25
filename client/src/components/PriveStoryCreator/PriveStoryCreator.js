@@ -2,7 +2,9 @@ import React, { useState } from 'react';
 import { connect } from 'react-redux';
 import RichEditor from '../RichEditor/RichEditor';
 
-const PriveStoryCreator = ({ player, characters }) => {
+import {createPriveStory} from '../../data/actions/priveStoriesActions';
+
+const PriveStoryCreator = ({ player, characters,createPriveStory }) => {
 
 
     const [titleValue, setTitleValue] = useState("");
@@ -34,22 +36,39 @@ const PriveStoryCreator = ({ player, characters }) => {
         setPlayers(insideSession);
     }
 
+    const removePlayer = e => {
+        let players = playersInSession;
+        let index = e.target.id;
+        players.splice(index, 1);
+        setPlayersList([]);
+        setPlayers(players);
+    }
+
+    const submitPriveStory = e => {
+        e.preventDefault(); 
+        setAddressee("")
+        setPlayersList([]);
+        setTitleValue("");
+        setPlayers([]);
+    }
+
+
     const playerListSet = seachedPlayersList.map(player => (
-        <option key={player.id} value={player.name}></option>
+        <option key={player.id} value={`${player.name}`} ></option>
     ))
     const playersInside = playersInSession.map((player, index) => ((
-        <p className="inside"> - {player.name} - <span id={index} onClick={e => console.log(e.target.id)}>usuń</span></p>
+        <p className="inside"> - {player.name} - <span id={index} onClick={removePlayer}>usuń</span></p>
     )))
 
     return (
-        <form className="priveStoryCreator" onSubmit={e => e.preventDefault()}>
+        <form className="priveStoryCreator" onSubmit={submitPriveStory}>
             {/* <h2 className="test">Kreator sesji prywatnej</h2> */}
             <label htmlFor="titleForStory" className="titleForStory" >Nadaj tytuł sesji:</label>
             <input type="text" id="titleForStory" className="titleForStoryInput" value={titleValue} onChange={(e) => setTitleValue(e.target.value)} />
 
             <label htmlFor="addressee">Dodaj gracza do sesji</label>
-            <input type="text" placeholder="Adresat" id="addressee" className="newMessageAddressee" list="playerListSet" value={addresseeValue} onChange={(e) => {
-                setAddressee(e.target.value);
+            <input type="text" placeholder="Adresat" id="addressee" className="priveRecipients" list="playerListSet" value={addresseeValue} onChange={(e) => {
+                setAddressee(`${e.target.value}`);
                 searchForPlayer(addresseeValue)
             }} />
             <datalist id="playerListSet" className="addPlayerDatalist">
@@ -60,7 +79,7 @@ const PriveStoryCreator = ({ player, characters }) => {
             {playersInSession ? <div className="players">Gracze w sesji: {playersInside}</div> : null}
 
 
-            <RichEditor priveStoryCreator title={titleValue} action={(arg) => console.log(arg)} />
+            <RichEditor priveStoryCreator title={titleValue} playersInSession={playersInSession} action={createPriveStory} />
         </form>
     );
 }
@@ -69,5 +88,8 @@ const MapStateToProps = state => ({
     characters: state.characters.characters,
     player: state.player.player
 })
+const MapDispatchToProps = dispatch => ({
+    createPriveStory: story => dispatch(createPriveStory(story))
+})
 
-export default connect(MapStateToProps)(PriveStoryCreator);
+export default connect(MapStateToProps, MapDispatchToProps)(PriveStoryCreator);
