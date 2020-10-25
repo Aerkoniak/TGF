@@ -21,6 +21,7 @@ export const addChapter = (chapter) => dispatch => {
     author.name = chapter.player.name;
     author.id = chapter.player.id;
     author.rank = chapter.player.rank;
+    author.docRef = chapter.player.accountDocRef;
     newChapter.author = author;
     if (chapter.nextTurn) {
         newChapter.nextTurn = createDate(chapter.nextTurn)
@@ -62,28 +63,3 @@ export const createStory = story => dispatch => {
 
 }
 
-export const createPriveStory = story => dispatch => {
-    story.startDate = createDate();
-    story.nextTurn = createDate(story.nextTurn)
-    console.log(story);
-    axios.post('/stories/prive-create', { story })
-        .then(res => {
-            console.log(res.data);
-            let id = res.data.id
-            dispatch({ type: 'DOWNLOAD_NEED', payload: true })
-            dispatch({ type: "STORY_CREATE_SUCCESS", id })
-        })
-}
-
-export const fetchPriveStories = mail => dispatch => {
-    dispatch({ type: 'PRIVE_FETCH_START' })
-    axios.post('/stories/prive-fetch', { mail })
-        .then(res => {
-            if (res.data.saved) {
-                let priveStories = res.data.priveStoriesArray
-                dispatch({ type: 'PRIVE_FETCH_SUCCESS', priveStories })
-
-            }
-        })
-
-}

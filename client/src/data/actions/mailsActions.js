@@ -11,6 +11,7 @@ export const sendMail = message => dispatch => {
     sender.name = message.player.name;
     sender.id = message.player.id;
     sender.rank = message.player.rank;
+    sender.docRef = message.player.accountDocRef;
     addreesse.name = message.addreesse.name;
     addreesse.id = message.addreesse.id;
     addreesse.rank = message.addreesse.rank;
