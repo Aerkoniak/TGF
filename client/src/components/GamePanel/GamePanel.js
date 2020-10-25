@@ -61,9 +61,8 @@ const GamePanel = ({ player, stories, mails, characters, downloadNeed, isLeftHan
 
     useEffect(() => {
         if (downloadNeed) {
-            fetchStories();
-            fetchMails(player.login);
             fetchPriveStories(player.login);
+            fetchStories()
         }
     }, [downloadNeed])
 
@@ -75,10 +74,11 @@ const GamePanel = ({ player, stories, mails, characters, downloadNeed, isLeftHan
                     let snapshotPlayer = doc.data()
                     console.log(snapshotPlayer);
                     if (player.mailsField < snapshotPlayer.mailsField) {
-                        console.log("Snapshot ma większe mailsField");
                         fetchMails(player.login);
-                    } else if (player.mailsField == snapshotPlayer.mailsField) {
-                        console.log("Snapshot ma takie samo mailsField")
+                    } else if (player.storyField < snapshotPlayer.storyField) {
+                        fetchStories();
+                    } else if (player.priveField < snapshotPlayer.priveField) {
+                        fetchPriveStories(player.login);
                     }
                 });
 
