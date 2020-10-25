@@ -15,7 +15,8 @@ const StoriesCreator = ({ player, createStory }) => {
         let author = {
             name: player.name,
             id: player.id,
-            rank: player.rank
+            rank: player.rank,
+            docRef: player.accountDocRef
         };
         story.author = author;
         story.title = titleValue;
