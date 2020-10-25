@@ -37,6 +37,9 @@ app.post("/registerAccount", (req, res) => {
     let account = req.body.account;
     account.rank = 5;
     account.profile = "";
+    account.priveField = 0;
+    account.mailsField = 0;
+    account.storyField = 0;
     players.get()
         .then(snapshot => {
             let size = snapshot.size + 1;
@@ -92,9 +95,9 @@ app.post('/update-activeTime', (req, res) => {
         res.json({ data: "ok" })
     } else if (lastActiveTime && accountDocRef) {
         players.doc(accountDocRef).set({ lastActiveTime: lastActiveTime }, { merge: true })
-        .catch(err => {
-            console.log(err)
-        })
+            .catch(err => {
+                console.log(err)
+            })
         res.json({ data: "ok" });
     }
 
@@ -190,6 +193,7 @@ app.post('/stories-update', (req, res) => {
                     spectator.name = chapter.author.name;
                     spectator.id = chapter.author.id;
                     spectator.seen = true;
+                    spectator.docRef = chapter.author.docRef;
                     // Mapujemy tablicę obecnych spectatorów, jeśli jeden z nich ma to samo ID co osoba odpisująca to ustawiamy isNewSpectator na true, a jednocześnie temu samemu spectatorowi zmieniami seen na true.
                     spectatorsArray.map(spectator => {
                         spectator.seen = false;
@@ -217,7 +221,17 @@ app.post('/stories-update', (req, res) => {
                                     res.json({ saved: true })
                                 }
                             })
-                    }
+                    };
+                    players.doc(story.author.docRef).update({
+                        storyField: FieldValue.increment(1)
+                    })
+                        .catch(err => console.log(err));
+                    spectatorsArray.forEach(spectator => {
+                        players.doc(spectator.docRef).update({
+                            storyField: FieldValue.increment(1)
+                        })
+                            .catch(err => console.log(err));
+                    })
 
 
 
@@ -267,6 +281,7 @@ app.post('/stories-update', (req, res) => {
         spectator.name = story.author.name;
         spectator.id = story.author.id;
         spectator.seen = true;
+        spectator.docRef = story.author.docRef;
         story.spectators = [];
         story.spectators.push(spectator);
         story.chapters = [];
@@ -318,7 +333,7 @@ app.post('/mails-create', (req, res) => {
             players.doc(addreesse.docRef).update({
                 mailsField: FieldValue.increment(1)
             })
-            .catch(err => console.log(err))
+                .catch(err => console.log(err))
         })
         .catch(err => console.log(err))
 });
@@ -385,37 +400,44 @@ app.post('/mails-update', (req, res) => {
                 recordsArray = mail.records;
                 viewers = mail.viewers;
 
-                let inform = null;
-                
+                let inform = [];
+
                 recordsArray.push(mailRecord);
 
 
                 if (mailRecord.author.id === mail.sender.id) {
                     addreesse = mail.addreesse;
                     addreesse.read = false;
+                    inform.push(addreesse.docRef);
                     sender = mail.sender;
                     sender.read = true;
                     viewers.map(viewer => {
                         viewer.read = false;
+                        inform.push(viewer.docRef)
                     })
                 } else if (mailRecord.author.id === mail.addreesse.id) {
                     sender = mail.sender;
                     sender.read = false;
+                    inform.push(sender.docRef);
                     addreesse = mail.addreesse;
                     addreesse.read = true;
                     viewers.map(viewer => {
                         viewer.read = false;
+                        inform.push(viewer.docRef)
                     })
                 } else if (mailRecord.author.id != mail.sender.id && mail.addreesse.id) {
                     addreesse = mail.addreesse;
                     addreesse.read = false;
+                    inform.push(addreesse.docRef);
                     sender = mail.sender;
                     sender.read = false;
+                    inform.push(sender.docRef);
                     viewers.map(viewer => {
                         if (viewer.name === mailRecord.author.name) {
                             viewer.read = true;
                         } else {
                             viewer.read = false;
+                            inform.push(viewer.docRef)
                         }
                     })
                 }
@@ -427,6 +449,13 @@ app.post('/mails-update', (req, res) => {
                             res.json({ saved: true })
                         }
                     })
+                    .catch(err => console.log(err));
+                inform.forEach(docRef => {
+                    players.doc(docRef).update({
+                        mailsField: FieldValue.increment(1)
+                    })
+                        .catch(err => console.log(err))
+                })
             })
     } else if (read) {
         const { id, refID } = req.body.read;
@@ -472,6 +501,10 @@ app.post('/mails-update', (req, res) => {
                 viewers.push(viewer);
                 mails.doc(mailsDocRef).set({ between: between, viewers: viewers }, { merge: true })
             })
+        players.doc(viewer.docRef).update({
+            mailsField: FieldValue.increment(1)
+        })
+            .catch(err => console.log(err))
     } else if (deletedPlayer) {
         const { name, mailsDocRef } = req.body.deletedPlayer;
 
@@ -510,6 +543,7 @@ app.post('/stories/prive-create', (req, res) => {
     author.id = story.author.id;
     author.name = story.author.name;
     author.rank = story.author.rank;
+    author.docRef = story.author.accountDocRef;
     priveStory.author = author;
     priveStory.title = story.title;
     priveStory.id = new Date().getTime();
@@ -521,6 +555,7 @@ app.post('/stories/prive-create', (req, res) => {
     spectator.name = story.author.name;
     spectator.id = story.author.id;
     spectator.seen = true;
+    spectator.docRef = story.author.accountDocRef;
     spectators.push(spectator);
 
     story.players.map(playerInside => {
@@ -528,6 +563,7 @@ app.post('/stories/prive-create', (req, res) => {
         spectator.id = playerInside.id;
         spectator.name = playerInside.name;
         spectator.seen = false;
+        spectator.docRef = playerInside.accountDocRef;
         spectators.push(spectator)
     });
 
@@ -547,6 +583,12 @@ app.post('/stories/prive-create', (req, res) => {
             let id = priveStory.id;
             res.json({ id: id })
         })
+    spectators.forEach(spectator => {
+        players.doc(spectator.docRef).update({
+            priveField: FieldValue.increment(1)
+        })
+            .catch(err => console.log(err));
+    })
 
 })
 
@@ -656,7 +698,12 @@ app.post('/stories/prive-update', (req, res) => {
                                 }
                             })
                     }
-
+                    spectatorsArray.forEach(spectator => {
+                        players.doc(spectator.docRef).update({
+                            priveField: FieldValue.increment(1)
+                        })
+                            .catch(err => console.log(err));
+                    })
 
 
                 }
@@ -728,6 +775,7 @@ app.post('/stories/prive-update', (req, res) => {
                     name: player.name,
                     id: player.id,
                     seen: false,
+                    docRef: player.accountDocRef
                 }
                 spectators.push(spectator);
                 priveStories.doc(refID).set({ between: between, spectators: spectators }, { merge: true })
@@ -736,6 +784,10 @@ app.post('/stories/prive-update', (req, res) => {
                             res.json({ saved: true })
                         }
                     })
+                players.doc(player.accountDocRef).update({
+                    priveField: FieldValue.increment(1)
+                })
+                    .catch(err => console.log(err));
 
             })
     }
