@@ -88,6 +88,15 @@ app.post('/login', (req, res) => {
         });
 })
 
+app.post('/fetch-player', (req, res) => {
+    let docRef = req.body.docRef;
+    players.doc(docRef).get()
+        .then(doc => {
+            let player = doc.data()
+            res.json({ player })
+        })
+})
+
 app.post('/update-activeTime', (req, res) => {
     const { lastActiveTime, accountDocRef } = req.body.data;
     console.log(lastActiveTime, accountDocRef);
@@ -107,14 +116,38 @@ app.post('/edit-account', (req, res) => {
     let character = req.body.character;
 
     switch (character.changed) {
-        case "character":
-            players.doc(character.accountDocRef).set({ name: character.name, age: character.age, race: character.race, class: character.class }, { merge: true })
+        case "character - stageOne":
+            players.doc(character.accountDocRef).set({ name: character.name, race: character.race, class: character.class }, { merge: true })
                 .then(ok => {
                     if (ok.writeTime) {
                         res.json({ saved: true })
                     }
                 })
 
+            break;
+        case 'character - stageTwo':
+            players.doc(character.accountDocRef).set({ age: character.age, height: character.height, posture: character.posture, hairColor: character.hairColor, eyeColor: character.eyeColor }, { merge: true })
+                .then(ok => {
+                    if (ok.writeTime) {
+                        res.json({ saved: true })
+                    }
+                })
+            break;
+        case 'character - reset':
+            players.doc(character.accountDocRef).set({ name: "", race: "", class: "", age: null, height: null, posture: "", hairColor: "", eyeColor: "" }, { merge: true })
+                .then(ok => {
+                    if (ok.writeTime) {
+                        res.json({ saved: true })
+                    }
+                })
+            break;
+        case 'character - profile':
+            players.doc(character.docRef).set({ profile: character.profile }, { merge: true })
+                .then(ok => {
+                    if (ok.writeTime) {
+                        res.json({ saved: true })
+                    }
+                })
             break;
         case "name":
             players.doc(character.accountDocRef).set({ name: character.name }, { merge: true })
@@ -285,7 +318,7 @@ app.post('/stories-update', (req, res) => {
         story.spectators = [];
         story.spectators.push(spectator);
         story.chapters = [];
-        story.isReady = false;
+        story.isReady = true;
         console.log(story);
         stories.add(story)
             .then((docRef) => {
@@ -302,7 +335,7 @@ app.post('/characters-fetch', (req, res) => {
         .then(snapshot => {
             snapshot.forEach(doc => {
                 let data = doc.data();
-                if (data.name && data.race && data.class && data.age && data.profile) {
+                if (data.name && data.race && data.class && data.rank < 3) {
                     let character = {};
                     character = data;
                     characters.push(character)
