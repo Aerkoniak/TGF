@@ -11,7 +11,7 @@ class TinyEditor extends Component {
         dateValue: "",
         timeValue: "",
         warnings: "",
-    
+
     }
 
     handleEditorChange = (content, editor) => {
@@ -19,7 +19,7 @@ class TinyEditor extends Component {
     }
 
     confirmAction = () => {
-        const { addProfileOverlap, title, player, sendMailReply, place, addChapterPrive, addChapterGlobal, createPriveStory, createStory, sendMail } = this.props;
+        const { addProfileOverlap, title, player, sendMailReply, place, addChapterPrive, addChapterGlobal, createPriveStory, createStory, sendMail, editOverlap } = this.props;
         if (addProfileOverlap) {
             let profile = {
                 name: title,
@@ -60,7 +60,7 @@ class TinyEditor extends Component {
             priveStory.players = this.props.playersInSession;
             priveStory.author = player;
             priveStory.text = this.state.content;
-        
+
             createPriveStory(priveStory);
         } else if (createStory) {
             let story = {}
@@ -91,10 +91,17 @@ class TinyEditor extends Component {
             message.addreesse = this.props.addreesse;
             message.text = this.state.content;
             sendMail(message);
+        } else if (editOverlap) {
+            let overlap = {};
+            overlap.player = player;
+            overlap.name = this.props.overlapName;
+            overlap.text = this.state.content;
+            editOverlap(overlap);
+            this.props.closeEditor();
         }
     }
 
-    
+
 
     render() {
         return (
@@ -112,7 +119,7 @@ class TinyEditor extends Component {
                 <h2 className="test">{this.state.warnings}</h2>
                 <Editor
                     apiKey="aav2pu19wqfcwk3k0fcugetpvv0g2esxr65lrb8oas4r5okk"
-                    value={this.state.content}
+                    value={this.props.initialValue ? this.props.initialValue : this.state.content}
                     init={{
                         height: 500,
                         menubar: false,
