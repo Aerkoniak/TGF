@@ -1,7 +1,11 @@
 const express = require('express');
 const path = require('path');
+const fs = require('fs');
 const bodyParser = require('body-parser');
 require('dotenv').config()
+
+const multer = require('multer')
+const upload = multer({ dest: 'uploads/' })
 
 const firebase = require("firebase/app");
 const firebaseConfig = require('./firebaseConfig');
@@ -28,6 +32,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 // app.use(express.static(path.join(__dirname, 'build')));
+
+
 // app.get('/*', function (req, res) {
 //     res.sendFile(path.join(__dirname, 'build', 'index.html'));
 // });
@@ -829,8 +835,43 @@ app.post('/stories/prive-update', (req, res) => {
 
 
 
+app.post(
+    "/set-avatar",
+    upload.single("avatar" /* name attribute of <file> element in your form */),
+    (req, res) => {
+        console.log(req.file.originalname)
+        const tempPath = req.file.path;
+        const targetPathJpg = path.join(__dirname, `./uploads/${req.file.originalname}`);
+        const targetPathJpeg = path.join(__dirname, `./uploads/${req.file.originalname}`);
 
+        if (path.extname(req.file.originalname).toLowerCase() === ".jpg") {
+            fs.rename(tempPath, targetPathJpg, err => {
+                if (err) return handleError(err, res);
 
+                res.json({ saved: true })
+            });
+        } else if (path.extname(req.file.originalname).toLowerCase() === '.jpeg') {
+            fs.rename(tempPath, targetPathJpeg, err => {
+                if (err) return handleError(err, res);
+
+                res.json({ saved: true })
+
+            });
+        }
+        else {
+            fs.unlink(tempPath, err => {
+                if (err) return handleError(err, res);
+
+                res.json({ saved: false })
+            });
+        }
+    }
+);
+app.post('/get-avatar', (req, res) => {
+    let docRef = req.body.docRef;
+    let b64avatar = fs.readFileSync(`./uploads/${docRef}.jpeg`, 'base64');
+    res.json({ b64avatar })
+})
 
 
 
