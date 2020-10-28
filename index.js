@@ -839,23 +839,21 @@ app.post(
     "/set-avatar",
     upload.single("avatar" /* name attribute of <file> element in your form */),
     (req, res) => {
-        console.log(req.file.originalname)
+        console.log(req.file)
         const tempPath = req.file.path;
         const targetPathJpg = path.join(__dirname, `./uploads/${req.file.originalname}`);
         const targetPathJpeg = path.join(__dirname, `./uploads/${req.file.originalname}`);
 
+        let docRef = (req.file.originalname).split('.');
+        console.log(docRef[0]);
+
         if (path.extname(req.file.originalname).toLowerCase() === ".jpg") {
             fs.rename(tempPath, targetPathJpg, err => {
                 if (err) return handleError(err, res);
-
-                res.json({ saved: true })
             });
         } else if (path.extname(req.file.originalname).toLowerCase() === '.jpeg') {
             fs.rename(tempPath, targetPathJpeg, err => {
                 if (err) return handleError(err, res);
-
-                res.json({ saved: true })
-
             });
         }
         else {
@@ -864,14 +862,21 @@ app.post(
 
                 res.json({ saved: false })
             });
-        }
+        };
+
+        setTimeout(() => {
+            let b64avatar = fs.readFileSync(`./uploads/${req.file.originalname}`, 'base64');
+            players.doc(docRef[0]).set({ avatar64: b64avatar }, { merge: true })
+                .then(ok => {
+                    if (ok.writeTime) {
+                        console.log("Zapisano w bazie danych w formacie b64");
+                        res.json({ saved: true });
+                    }
+                })
+        }, 500)
+
     }
 );
-app.post('/get-avatar', (req, res) => {
-    let docRef = req.body.docRef;
-    let b64avatar = fs.readFileSync(`./uploads/${docRef}.jpeg`, 'base64');
-    res.json({ b64avatar })
-})
 
 
 
