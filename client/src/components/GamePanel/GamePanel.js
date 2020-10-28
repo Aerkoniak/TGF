@@ -29,6 +29,7 @@ import PriveSessionsPage from '../pages/PriveSessionsPage';
 import PriveStory from '../pages/PriveStory';
 import VerifyPage from '../pages/VerifyPage';
 import PlayerPage from '../pages/PlayerPage';
+import CreatorKP from '../CharacterCreator/CreatorKP';
 
 
 
@@ -63,6 +64,7 @@ const GamePanel = ({ player, stories, mails, characters, downloadNeed, isLeftHan
         if (downloadNeed) {
             fetchPriveStories(player.login);
             fetchStories()
+            fetchMails(player.login);
         }
     }, [downloadNeed])
 
@@ -72,7 +74,6 @@ const GamePanel = ({ player, stories, mails, characters, downloadNeed, isLeftHan
             const unsubscribe = playersDB.doc(`${player.accountDocRef}`)
                 .onSnapshot((doc) => {
                     let snapshotPlayer = doc.data()
-                    console.log(snapshotPlayer);
                     if (player.mailsField < snapshotPlayer.mailsField) {
                         fetchMails(player.login);
                     } else if (player.storyField < snapshotPlayer.storyField) {
@@ -120,7 +121,8 @@ const GamePanel = ({ player, stories, mails, characters, downloadNeed, isLeftHan
                 <Route exact path="/sessions/prive" component={PriveSessionsPage} />
                 <Route exact path="/mails" component={MailPage} />
                 <Route path="/tavern" component={TavernPage} />
-                <Route exact path="/character" component={CharakterPage} />
+                <Route exact path="/character" component={CreatorKP} />
+                {playerRoutes}
                 <Route path="/settings" component={SettingsPage} />
                 <Route path='/logout' component={LogOutPage} />
                 <Route exact path="/email" component={VerifyPage} />
@@ -128,7 +130,6 @@ const GamePanel = ({ player, stories, mails, characters, downloadNeed, isLeftHan
                 {priveStoriesRoutes}
                 {storiesRoutes}
                 {mailsRoutes}
-                {playerRoutes}
 
             </Switch>
             {redirectToLogOut ? <Redirect to="/logout" /> : null}
