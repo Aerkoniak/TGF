@@ -1,10 +1,22 @@
 import React, { useState, useEffect } from 'react';
+import { Switch, NavLink, Route } from 'react-router-dom';
 import { connect } from 'react-redux';
 import parse from 'html-react-parser';
 import ProfileViewer from '../ProfileViewer/ProfileViewer';
+import ProfileOverlap from '../ProfileOverlap/ProfileOverlap';
+import TinyEditor from '../RichEditor/TinyEditor';
+
+import axios from 'axios';
+import { Base64 } from 'js-base64';
+
+import { playersDB } from '../../data/firebase/firebaseConfig';
+import { addProfileOverlap } from '../../data/actions/creatorActions';
+import { fetchCharactersList } from '../../data/actions/generalActions';
+import { updateActive } from '../../data/actions/generalActions';
 
 
-const PlayerPage = ({ character, player }) => {
+
+const PlayerPage = ({ character, player, addProfileOverlap, fetchCharactersList }) => {
 
     const checkRang = (player) => {
         switch (player.rank) {
@@ -34,11 +46,59 @@ const PlayerPage = ({ character, player }) => {
         }
     }
 
+    useEffect(() => {
+        if (character.id === player.id) {
+            const unsubscribe = playersDB.doc(`${player.accountDocRef}`)
+                .onSnapshot(doc => {
+                    let data = doc.data();
+                    if (data.profile.length > character.profile.length) {
+                        setNewOverlap(false);
+                        fetchCharactersList();
+                    }
+
+                })
+            updateActive(player)
+            const myInterval = setInterval(updateActive(player), 300000);
+            setTimeout(() => {
+                clearInterval(myInterval);
+            }, 900000)
+            return function cleanup() {
+                unsubscribe()
+                clearInterval(myInterval);
+            }
+        }
+    }, [character])
+
+    const [isPlayer, confirmPlayer] = useState(false);
+    const [addNewOverlap, setNewOverlap] = useState(false);
+    const [overlapTitle, setOverlapTitle] = useState("")
+    const [image, setImage] = useState(null)
+
+    useEffect(() => {
+        let avatar = character.avatar64;
+        let source = 'data:image/jpeg;base64,' + avatar;
+        setImage(source)
+    }, [character])
+
+    useEffect(() => {
+        if (character.id === player.id) confirmPlayer(true);
+        else confirmPlayer(false);
+    }, [character])
+
+    const profileOverlaps = character.profile.map(overlap => ((
+        <NavLink key={overlap.name + character.id} to={`/character/id${character.id}/${overlap.name}`}>{overlap.name}</NavLink>
+    )))
+    const overlapsRoutes = character.profile.map(overlap => ((
+        <Route key={overlap.name} path={`/character/id${character.id}/${overlap.name}`} render={(routeProps) => (<ProfileOverlap {...routeProps} id={overlap.name} profile={overlap} character={character} />)} />
+    )))
+
+
     return (
         <section className="mainPage playerPage">
+            {isPlayer ? <h2 className="test">Oto Twoje konto:</h2> : <p className="test">Oglądasz konto gracza:</p>}
             <div className="metricsWrap">
-                <div className="avatar">
-                    tu będzie avatar
+                <div className="avatar" id="avatar">
+                    <img className="avatarFile" src={image} alt="avatar" />
                 </div>
                 <div className="metricsData">
                     {checkRang(character)}
@@ -46,12 +106,37 @@ const PlayerPage = ({ character, player }) => {
                     <p className="metrics">Rasa: {character.race}</p>
                     <p className="metrics">Z zamiłowania: {character.class}</p>
                     <p className="metrics">Wiek: {character.age} lat</p>
+                    {character.height ? <p className="metrics">Wzrost: {character.height} centymetrów</p> : null}
+                    {character.posture ? <p className="metrics">{character.posture} postura.</p> : null}
+                    {character.hairColor ? <p className="metrics">{`Ma ${character.hairColor} włosy i ${character.eyeColor} oczy.`}</p> : null}
                 </div>
             </div>
-            <div className="profile">
-                <h2 className="metrics">Profil</h2>
-                {parse(character.profile)}
-            </div>
+            {isPlayer ? <button className="addProfile" onClick={(e) => {
+                e.preventDefault();
+                setNewOverlap(!addNewOverlap)
+            }}>Dodaj zakładkę do profilu</button> : null}
+            {addNewOverlap ?
+                <>
+                    <label htmlFor="overlap" className="creatorLabel">Nazwij swoją nową zakładkę</label>
+                    <input type="text" id="overlap" className="creatorInput" value={overlapTitle} onChange={e => setOverlapTitle(e.target.value)} />
+                    <TinyEditor title={overlapTitle} addProfileOverlap={addProfileOverlap} />
+                </>
+                : null}
+
+
+            {addNewOverlap ? null : character.profile.length > 0 ? <>
+                <div className="profile">
+                    <h2 className="metrics">Profil</h2>
+                    <div className="overlapsLinks">
+                        {profileOverlaps}
+                    </div>
+
+                    <Switch>
+                        {overlapsRoutes}
+                    </Switch>
+                </div> </>
+                : <p className="test">Gracz nie ma żadnego profilu.</p>}
+
             <ProfileViewer />
         </section>
     );
@@ -60,4 +145,8 @@ const PlayerPage = ({ character, player }) => {
 const MapStateToProps = state => ({
     player: state.player.player
 })
-export default connect(MapStateToProps)(PlayerPage);
+const MapDispatchToProps = dispatch => ({
+    addProfileOverlap: profile => dispatch(addProfileOverlap(profile)),
+    fetchCharactersList: () => dispatch(fetchCharactersList())
+})
+export default connect(MapStateToProps, MapDispatchToProps)(PlayerPage);
