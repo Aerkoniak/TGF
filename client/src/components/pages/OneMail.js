@@ -9,7 +9,8 @@ import ProfileViewer from '../ProfileViewer/ProfileViewer';
 import { sendMailReply, changeSeenInMail, addingPlayerToMail, deletePlayerFromMail } from '../../data/actions/mailsActions';
 import { mailsDB } from '../../data/firebase/firebaseConfig';
 import { fetchMails } from '../../data/actions/mailsActions';
-import {updateActive} from '../../data/actions/generalActions';
+import { updateActive } from '../../data/actions/generalActions';
+import TinyEditor from '../RichEditor/TinyEditor';
 
 
 
@@ -18,7 +19,7 @@ const OneMail = ({ mail, player, characters, sendMailReply, changeSeenInMail, fe
 
     useEffect(() => {
         if (player.id === mail.sender.id) confirmAuthorRank(true);
-        
+
         let counter = 0;
         if (player.id === mail.addreesse.id && !mail.addreesse.read) counter++;
         else if ((mail.sender.id === player.id && !mail.sender.read)) counter++;
@@ -36,10 +37,17 @@ const OneMail = ({ mail, player, characters, sendMailReply, changeSeenInMail, fe
         const unsubscribe = mailsDB.doc(`${mail.mailsDocRef}`)
             .onSnapshot(doc => {
                 let data = doc.data();
+                console.log(data)
                 fetchMails(player.login)
             })
+        updateActive(player)
+        const myInterval = setInterval(updateActive(player), 300000);
+        setTimeout(() => {
+            clearInterval(myInterval);
+        }, 900000)
         return function cleanup() {
-            unsubscribe()
+            clearInterval(myInterval);
+            unsubscribe();
         }
     }, [])
 
@@ -128,7 +136,7 @@ const OneMail = ({ mail, player, characters, sendMailReply, changeSeenInMail, fe
             {mailFormVisible ?
                 <div className="mailReply">
                     <form className="mailForm" onSubmit={submitReply}>
-                        <RichEditor action={sendMailReply} place={mail} player={player} />
+                        <TinyEditor place={mail} sendMailReply={sendMailReply} />
                     </form>
                 </div> : null}
 
@@ -154,7 +162,7 @@ const OneMail = ({ mail, player, characters, sendMailReply, changeSeenInMail, fe
                         <ul className="storyPlayers">
                             {players}
                         </ul>
-                        
+
                         {isAuthor ? <>
                             <button className="addDeletePlayers" onClick={(e) => {
                                 e.preventDefault();
