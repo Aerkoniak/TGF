@@ -5,6 +5,7 @@ import { sendMail } from '../../data/actions/mailsActions';
 import { parseString } from '../../data/parseString';
 import RichEditor from '../RichEditor/RichEditor'
 import parse from 'html-react-parser';
+import TinyEditor from '../RichEditor/TinyEditor';
 
 
 
@@ -61,7 +62,8 @@ const NewMessageCreator = ({ player, characters, sendMail }) => {
                 </datalist>
                 <input type="text" placeholder="Tytuł" className="newMessageTitle" value={titleValue} onChange={(e) => setTitle(e.target.value)} />
                 
-                <RichEditor action={sendMail} addreesse={seachedPlayersList[0]} player={player} title={titleValue} />
+                {/* <RichEditor action={sendMail} addreesse={seachedPlayersList[0]} player={player} title={titleValue} /> */}
+                <TinyEditor sendMail={sendMail} addreesse={seachedPlayersList[0]} title={titleValue}   />
               
             </form>
         </>
