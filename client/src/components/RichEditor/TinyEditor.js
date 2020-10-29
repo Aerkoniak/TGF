@@ -47,13 +47,17 @@ class TinyEditor extends Component {
             chapter.text = this.state.content;
             chapter.place = place;
             chapter.player = player;
-            if (!this.state.dateValue || !this.state.timeValue) {
-                this.setState({
-                    warnings: "Musisz ustawić termin odpisu."
-                })
+
+            if (this.props.isAuthor) {
+                if (!this.state.dateValue || !this.state.timeValue) {
+                    this.setState({
+                        warnings: "Musisz ustawić termin odpisu."
+                    })
+                } else addChapterGlobal(chapter)
             } else {
                 addChapterGlobal(chapter)
             }
+
         } else if (createPriveStory) {
             let priveStory = {}
             priveStory.title = title;
@@ -77,13 +81,16 @@ class TinyEditor extends Component {
             story.place = this.props.section;
             story.author = author;
             story.openMsg = this.state.content;
-            if (!this.state.dateValue || !this.state.timeValue) {
-                this.setState({
-                    warnings: "Musisz ustawić termin odpisu."
-                })
+            if (this.props.isAuthor) {
+                if (!this.state.dateValue || !this.state.timeValue) {
+                    this.setState({
+                        warnings: "Musisz ustawić termin odpisu."
+                    })
+                } else createStory(story);
             } else {
                 createStory(story);
             }
+
         } else if (sendMail) {
             let message = {};
             message.player = player;
