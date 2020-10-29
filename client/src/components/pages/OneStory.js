@@ -2,16 +2,20 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import parse from 'html-react-parser';
+import { setActiveInterval } from '../../data/usefullFN';
 
 // import { parseString } from '../../data/parseString';
 
 import { addChapter, changeSeenInSession, fetchStories, deleteChapter } from '../../data/actions/storiesActions';
+import { updateActive } from '../../data/actions/generalActions'
 import { storiesDB } from '../../data/firebase/firebaseConfig'
 import RichEditor from '../RichEditor/RichEditor';
+import ProfileViewer from '../ProfileViewer/ProfileViewer';
+import TinyEditor from '../RichEditor/TinyEditor';
 
 
 
-const OneSession = ({ story, player, addChapter, changeSeenInSession, fetchStories, deleteChapter }) => {
+const OneSession = ({ story, player, addChapter, changeSeenInSession, fetchStories, deleteChapter, updateActive }) => {
 
     useEffect(() => {
         story.spectators.map(spectator => {
@@ -23,14 +27,20 @@ const OneSession = ({ story, player, addChapter, changeSeenInSession, fetchStori
             }
         })
     }, [])
+
     useEffect(() => {
         const unsubscribe = storiesDB.doc(`${story.refID}`)
             .onSnapshot(doc => {
                 let data = doc.data();
                 fetchStories()
-            })
+            });
+        updateActive(player)
+        const myInterval = setInterval(updateActive(player), 300000);
+        setTimeout(() => {
+            clearInterval(myInterval);
+        }, 900000)
         return function cleanup() {
-            unsubscribe()
+            clearInterval(myInterval);
         }
     }, [])
 
@@ -38,6 +48,7 @@ const OneSession = ({ story, player, addChapter, changeSeenInSession, fetchStori
     const [textareaHidden, toggleTA] = useState(true);
     const [answerText, setAnswerText] = useState("");
     const [isAuthor, setIsAuthor] = useState(false);
+    const [storySummaryVisible, toggleSummaryVisibility] = useState(true)
 
     useEffect(() => {
         if (player.id === story.author.id && player.rank <= 2) setIsAuthor(true);
@@ -47,6 +58,7 @@ const OneSession = ({ story, player, addChapter, changeSeenInSession, fetchStori
         e.preventDefault();
         setAnswerText('');
         toggleTA(true);
+        updateActive(player)
     }
 
     const deleteChapterSupporter = e => {
@@ -81,6 +93,8 @@ const OneSession = ({ story, player, addChapter, changeSeenInSession, fetchStori
             <Link className="return" to="/sessions"><i className="fas fa-undo-alt"></i></Link>
             <div className="storyInfo">
                 <p className="storyTitle">{story.title}</p>
+                <span className="nextTurnDateSpan">Termin następnego odpisu:</span>
+                <p className="nextTurnDate">{story.nextTurn ? story.nextTurn : null}</p>
                 <p className="showIntro" onClick={() => showIntro(!intro)}  >Kliknij by pokazać lub schować wstęp</p>
                 {player.rank <= 3 ? <p className="answer" onClick={() => toggleTA(!textareaHidden)} >Odpisz</p> : null}
                 {!story.openMsg || story.openMsg === "undefined" ? <h2 onClick={() => toggleTA(!textareaHidden)} className="test">Napisz wprowadzenie do sesji.</h2> :
@@ -88,8 +102,8 @@ const OneSession = ({ story, player, addChapter, changeSeenInSession, fetchStori
                 }
                 {/* {intro ? <p className="openingMsg">{`${story.openMsg}`}</p> : null} */}
                 <form className={textareaHidden ? "answerForm hidden" : "answerForm"} onSubmit={submitAnswer} >
-
-                    <RichEditor action={addChapter} place={story} player={player} isAuthor={isAuthor ? true : false} />
+                    <TinyEditor addChapterGlobal={addChapter} place={story} isAuthor={isAuthor ? true : false} />
+                    {/* <RichEditor action={addChapter} place={story} player={player} isAuthor={isAuthor ? true : false} /> */}
                 </form>
 
             </div>
@@ -97,15 +111,25 @@ const OneSession = ({ story, player, addChapter, changeSeenInSession, fetchStori
                 {chapters}
             </div>
 
-            <section className="sideBar">
-                <label className="sideBarLabel" htmlFor="">Mistrz Gry:</label>
-                <p className="storyAuthor">{story.author.name}</p>
-                <label className="sideBarLabel" htmlFor="">Sesja założona:</label>
-                <p className="storyDate">{story.startDate}</p>
-                <label className="sideBarLabel" htmlFor="">Grający:</label>
-                <ul className="storyPlayers">
-                    {players}
-                </ul>
+            <section className="sideBar inStory">
+                <h3 className={storySummaryVisible ? "sideBarOverlap active" : "sideBarOverlap"} onClick={() => toggleSummaryVisibility(true)}  >O sesji: </h3>
+                <h3 className={storySummaryVisible ? "sideBarOverlap" : "sideBarOverlap active"} onClick={() => toggleSummaryVisibility(false)} >Lista graczy: </h3>
+                {storySummaryVisible ?
+                    <div className="storySummary">
+                        <label className="sideBarLabel" htmlFor="">Mistrz Gry:</label>
+                        <p className="storyAuthor">{story.author.name}</p>
+                        <label className="sideBarLabel" htmlFor="">Sesja założona:</label>
+                        <p className="storyDate">{story.startDate}</p>
+                        <label className="sideBarLabel" htmlFor="">Grający:</label>
+                        <ul className="storyPlayers">
+                            {players}
+                        </ul>
+                    </div>
+                    :
+                    <ProfileViewer />
+                }
+
+
             </section>
         </section>
     );
@@ -119,6 +143,7 @@ const MapDispatchToProps = dispatch => ({
     changeSeenInSession: (id, refID) => dispatch(changeSeenInSession(id, refID)),
     fetchStories: () => dispatch(fetchStories()),
     deleteChapter: (chapterIndex, refID) => dispatch(deleteChapter(chapterIndex, refID)),
+    updateActive: player => dispatch(updateActive(player)),
 })
 
 export default connect(MapStateToProps, MapDispatchToProps)(OneSession);
