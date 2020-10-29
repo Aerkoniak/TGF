@@ -4,11 +4,23 @@ import { connect } from 'react-redux';
 
 import ProfileViewer from '../ProfileViewer/ProfileViewer';
 import NewMessageCreator from '../NewMessageCreator/NewMessageCreator';
+import { updateActive } from '../../data/actions/generalActions';
 
 
-const MailPage = ({ mails, msg, player }) => {
+const MailPage = ({ mails, msg, player, isLogged }) => {
 
-
+    useEffect(() => {
+        if (isLogged === "logged") {
+            updateActive(player)
+            const myInterval = setInterval(updateActive(player), 300000);
+            setTimeout(() => {
+                clearInterval(myInterval);
+            }, 900000)
+            return function cleanup() {
+                clearInterval(myInterval);
+            }
+        }
+    }, [isLogged])
 
     const [newMessage, writeNewMessage] = useState(false)
 
@@ -34,7 +46,7 @@ const MailPage = ({ mails, msg, player }) => {
         mail.viewers.map(viewer => {
             if (player.id === viewer.id && !viewer.read) newMessage = true
         })
-        
+
         return (
             <div className="oneMail" key={mail.id}>
                 <Link to={`/mails/id${mail.id}`}><p className={newMessage ? "linkTitle new" : "linkTitle "}>{mail.title}</p></Link>
@@ -65,7 +77,8 @@ const MailPage = ({ mails, msg, player }) => {
 const MapStateToProps = state => ({
     mails: state.mails.mails,
     msg: state.player.msg,
-    player: state.player.player
+    player: state.player.player,
+    isLogged: state.player.isLogged,
 })
 
 export default connect(MapStateToProps)(MailPage);
