@@ -109,9 +109,7 @@ const CreatorKP = ({ player, creator, isLogged, setCharacter, fetchPlayer }) => 
             setWarnings("");
         }
     }
-    // const setPosture = e => {
-    //     let posture = e.target.value;
-    // }
+
 
     const ConfirmStageOne = e => {
         if (e.target.id === "reset") {
@@ -175,7 +173,7 @@ const CreatorKP = ({ player, creator, isLogged, setCharacter, fetchPlayer }) => 
     )))
 
     return (
-        <section className="creatorKP mainPage">
+        <section className="creatorKP">
 
             {stageOne ? <>
                 <div className="stageOne">
@@ -255,19 +253,6 @@ const CreatorKP = ({ player, creator, isLogged, setCharacter, fetchPlayer }) => 
                 : null
             }
 
-            {isCreatorComplete ?
-                <div className="stageTwo">
-                    <p className="test">Imię: <span className="kp">{player.name}</span> </p>
-                    <p className="test">Rasa: <span className="kp">{player.race}</span> </p>
-                    <p className="test">Klasa: <span className="kp">{player.class}</span></p>
-
-                    <p className="test">Wiek: <span className="kp">{player.age}</span></p>
-                    <p className="test">Wzrost: <span className="kp">{player.height} centymetrów</span></p>
-                    <p className="test">Postura: <span className="kp">{player.posture}</span></p>
-                    <p className="test">Ma <span className="kp">{player.hairColor}</span> włosy</p>
-                    <p className="test">Ma <span className="kp">{player.eyeColor}</span> oczy</p>
-                </div>
-                : null}
 
             <div className="infoCreator">
                 {raceObject ? <p>Rasy:</p> : null}
@@ -290,8 +275,8 @@ const CreatorKP = ({ player, creator, isLogged, setCharacter, fetchPlayer }) => 
                     </ul>
                 </div> : null}
             </div>
-            <ProfileViewer />
-            {redirectActive ? <Redirect to={`/character/id${player.id}`} /> : null}
+            {/* <ProfileViewer /> */}
+            {/* {redirectActive ? <Redirect to={`/character/id${player.id}`} /> : null} */}
         </section>
     );
 }
