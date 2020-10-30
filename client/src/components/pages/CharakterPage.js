@@ -1,27 +1,36 @@
 import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 
-import { resetCharacter } from '../../data/actions/creatorActions';
+// import { resetCharacter } from '../../data/actions/creatorActions';
 
 import ProfileViewer from '../ProfileViewer/ProfileViewer';
-import CreatorKP from '../CharacterCreator/CreatorKP';
+import CreatorKP from '../CharacterPage/CreatorKP';
+import CharacterPreview from '../CharacterPage/CharacterPreview';
 
 
-const CharakterPage = ({ player, done, resetCharacter }) => {
+const CharakterPage = ({ player }) => {
+
+    const [isCreatorComplete, confirmCreator] = useState(false);
+    useEffect(() => {
+        if (!player.name || !player.race || !player.class || !player.age || !player.height || !player.posture || !player.hairColor || !player.eyeColor) {
+            confirmCreator(false);
+        }
+        else {
+            confirmCreator(true)
+        }
+    }, [player])
 
 
-    const resetKP = () => {
-        let char = player;
-        resetCharacter(char)
-    }
 
     return (
         <section className="charakterPage mainPage">
-           
-            <CreatorKP />
 
-            <button className="resetCharacter" onClick={resetKP}>Zresetuj swoją KP</button>
-          
+            {isCreatorComplete ?
+                <CharacterPreview />
+                :
+                <CreatorKP />
+            }
+
             <ProfileViewer />
         </section>
     );
@@ -30,11 +39,10 @@ const CharakterPage = ({ player, done, resetCharacter }) => {
 
 const MapStateToProps = state => ({
     player: state.player.player,
-    done: state.creator.done
 })
 
 const MapDispatchToProps = dispatch => ({
-    resetCharacter: char => dispatch(resetCharacter(char))
+
 })
 
 export default connect(MapStateToProps, MapDispatchToProps)(CharakterPage);
