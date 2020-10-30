@@ -19,7 +19,7 @@ class TinyEditor extends Component {
     }
 
     confirmAction = () => {
-        const { addProfileOverlap, title, player, sendMailReply, place, addChapterPrive, addChapterGlobal, createPriveStory, createStory, sendMail, editOverlap } = this.props;
+        const { addProfileOverlap, title, player, sendMailReply, place, addChapterPrive, addChapterGlobal, createPriveStory, createStory, sendMail, editOverlap, addTavernRecord } = this.props;
         if (addProfileOverlap) {
             let profile = {
                 name: title,
@@ -105,6 +105,12 @@ class TinyEditor extends Component {
             overlap.text = this.state.content;
             editOverlap(overlap);
             this.props.closeEditor();
+        } else if (addTavernRecord) {
+            let tavernRecord = {};
+            tavernRecord.player = player;
+            tavernRecord.place = place;
+            tavernRecord.text = this.state.content;
+            addTavernRecord(tavernRecord);
         }
     }
 
