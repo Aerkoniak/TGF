@@ -202,7 +202,7 @@ app.post('/stories-fetch', (req, res) => {
 })
 
 app.post('/stories-update', (req, res) => {
-    const { newChapter, seen, deleteChapter, createStory } = req.body;
+    const { newChapter, seen, deleteChapter, createStory, closeStory } = req.body;
 
     if (newChapter) {
         let chapter = req.body.newChapter;
@@ -330,6 +330,15 @@ app.post('/stories-update', (req, res) => {
             .then((docRef) => {
                 stories.doc(docRef.id).update({ refID: docRef.id });
                 res.json({ id: story.id });
+            })
+    } else if (closeStory) {
+        const { refID, place, closeTime } = req.body.closeStory;
+
+        stories.doc(refID).set({ closeTime: closeTime, place: place }, { merge: true })
+            .then(ok => {
+                if (ok.writeTime) {
+                    res.json({ saved: true })
+                }
             })
     }
 })
@@ -658,7 +667,7 @@ app.post('/stories/prive-fetch', (req, res) => {
 })
 
 app.post('/stories/prive-update', (req, res) => {
-    const { newChapter, seen, deleteChapter, deletedPlayer, addedPlayer } = req.body;
+    const { newChapter, seen, deleteChapter, deletedPlayer, addedPlayer, closedPrive } = req.body;
 
     if (seen) {
         let { id, refID } = req.body.seen;
@@ -828,6 +837,15 @@ app.post('/stories/prive-update', (req, res) => {
                 })
                     .catch(err => console.log(err));
 
+            })
+    } else if (closedPrive) {
+        const { refID, closed, closeTime } = req.body.closedPrive;
+
+        priveStories.doc(refID).set({ closed: closed, closeTime: closeTime }, { merge: true })
+            .then(ok => {
+                if (ok.writeTime) {
+                    res.json({ saved: true })
+                }
             })
     }
 })
