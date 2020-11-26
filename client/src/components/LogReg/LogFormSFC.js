@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { Redirect } from 'react-router-dom'
 import { connect } from 'react-redux';
 import { logInPlayer } from '../../data/actions/generalActions';
 import { signInFirebase } from '../../data/firebase/firebaseActions';
 
 
 
-const LogFormSFC = ({ loginClassName, msg, isLogged, logInPlayer, signInFirebase }) => {
+const LogFormSFC = ({ player, loginClassName, msg, isLogged, logInPlayer, signInFirebase }) => {
 
     const [login, setLogin] = useState("");
     const [password, setPassword] = useState("");
@@ -15,8 +16,14 @@ const LogFormSFC = ({ loginClassName, msg, isLogged, logInPlayer, signInFirebase
         e.preventDefault();
         let account = {};
         account.login = login;
-        // logInPlayer(account);
-        signInFirebase(login, password, account)
+        if (login === "Konto testowe") {
+            let login = process.env.REACT_APP_TEST_LOGIN;
+            let testPass = process.env.REACT_APP_TEST_PASS
+            account.login = login;
+            signInFirebase(login, testPass, account);
+        } else {
+            signInFirebase(login, password, account);
+        }
     }
 
     useEffect(() => {
@@ -25,35 +32,27 @@ const LogFormSFC = ({ loginClassName, msg, isLogged, logInPlayer, signInFirebase
         }
     }, [msg])
 
-    // const loadingIndicator = () => (( 
-    // <div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-    // ))
-    // const loginSubmit = () => {
-    //     return (
-    //         <input className='loginSubmit' type="submit" value="Zaloguj" onSubmit={submitLogin} />
-    //     )
-    // }
 
     return (
         <form className={loginClassName} onSubmit={submitLogin}>
 
-            <input className="logInput" type="text" id="login" value={login} onChange={(e) => setLogin(e.target.value)} />
-            <input className="logInput" type="password" id="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+            <input className="logInput" type="text" id="login" placeholder="twój e-mail" value={login} onChange={(e) => setLogin(e.target.value)} />
+            <input className="logInput" type="password" id="password" placeholder="twoje hasło" value={password} onChange={(e) => setPassword(e.target.value)} />
             { isLogged === "checking" ?
                 <div className="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
                 :
                 <input className='loginSubmit' type="submit" value="Zaloguj" onSubmit={submitLogin} />
             }
-            {/* <input className='loginSubmit' type="submit" value="Zaloguj" onSubmit={submitLogin} /> */}
-            { warnings ? <p>{warnings}</p> : <p className="formInfo">Później będzie można logować się loginem lub imieniem postaci. Powiem kiedy.</p>}
-
+            { warnings ? <p>{warnings}</p> : null}
+            {isLogged === "logged" ? <Redirect to="/" /> : null}
         </form>
     );
 }
 
 const MapStateToProps = state => ({
     msg: state.player.msg,
-    isLogged: state.player.isLogged
+    isLogged: state.player.isLogged,
+    player: state.player.player
 })
 
 const MapDispatchToProps = (dispatch) => {
