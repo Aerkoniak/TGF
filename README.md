@@ -1,6 +1,18 @@
 Demo: https://aarde.link
 
-# TGF Oude Aard
+By zalogować się na Koncie Testowym wpisz w polu e-mail "Konto testowe" i kliknij zaloguj bez podawania żadnego hasła. 
+
+# TGF Oude Aard - english desc below
+
+TGF czyli „Tekstowa Gra Fabularna”, autorskie podejście do znanego od lat vallheru engine. 
+
+Oude Aard to w pełni kompletny portal online, który obejmuje narzędzie do tworzenia konta, forum internetowe, czaty w czasie rzeczywistym i wbudowany sklep. Utworzono za pomocą React.js i Redux.js dla FrontEndu i przy użyciu Node.js / Express.js i Google Firebase dla Backendu.
+
+„Oude Aard” to polski projekt współtworzony z grupą entuzjastów odpowiedzialnych za spięcie w całość warstwy fabularnej oraz z grafikiem, który będzie odpowiadał później za pełną warstwę graficzną. Bieżąca warstwa graficzna i CSS służy jedynie do podstawowego wyróżnienia niektórych sekcji strony i symbolizuje późniejszy układ. Start świata planowany jest na rok 2021. 
+
+Witryna posiada obecnie 75% podstawowej funkcjonalności, w tym zakładanie konta obsługiwanego przez system uwierzytelniania firebase, system rang ograniczający możliwość tworzenia nowych wątków na wbudowanym forum czy odpowiadania na te tematy. Dzięki zastosowaniu firebase firestore gracz jest powiadamiany w czasie rzeczywistym o nowej prywatnej wiadomości lub nowym poście na obserwowany temat. Wdrożenie edytora TinyMCE daje prawie nieograniczone możliwości edycji postów.
+
+# English
 
 TGF stands for "Tekstowa Gra Fabularna" which means "text-based role-playing game".
 
