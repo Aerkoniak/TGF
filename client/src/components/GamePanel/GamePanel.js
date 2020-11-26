@@ -29,7 +29,7 @@ import PriveSessionsPage from '../pages/PriveSessionsPage';
 import PriveStory from '../pages/PriveStory';
 import VerifyPage from '../pages/VerifyPage';
 import PlayerPage from '../pages/PlayerPage';
-import CreatorKP from '../CharacterCreator/CreatorKP';
+import CreatorKP from '../CharacterPage/CreatorKP';
 
 
 
@@ -121,7 +121,7 @@ const GamePanel = ({ player, stories, mails, characters, downloadNeed, isLeftHan
                 <Route exact path="/sessions/prive" component={PriveSessionsPage} />
                 <Route exact path="/mails" component={MailPage} />
                 <Route path="/tavern" component={TavernPage} />
-                <Route exact path="/character" component={CreatorKP} />
+                <Route exact path="/character" component={CharakterPage} />
                 {playerRoutes}
                 <Route path="/settings" component={SettingsPage} />
                 <Route path='/logout' component={LogOutPage} />
