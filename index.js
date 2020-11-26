@@ -42,7 +42,7 @@ app.use(bodyParser.json());
 app.post("/registerAccount", (req, res) => {
     let account = req.body.account;
     account.rank = 5;
-    account.profile = "";
+    account.profile = [];
     account.priveField = 0;
     account.mailsField = 0;
     account.storyField = 0;
@@ -340,6 +340,7 @@ app.post('/stories-update', (req, res) => {
                     res.json({ saved: true })
                 }
             })
+            .catch(err => console.log(err))
     }
 })
 
@@ -350,7 +351,7 @@ app.post('/characters-fetch', (req, res) => {
         .then(snapshot => {
             snapshot.forEach(doc => {
                 let data = doc.data();
-                if (data.name && data.race && data.class && data.rank < 3) {
+                if (data.name && data.race && data.class && (data.rank < 3 || data.rank === 10)) {
                     let character = {};
                     character = data;
                     characters.push(character)
