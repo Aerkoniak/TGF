@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Switch, NavLink, Route } from 'react-router-dom';
 import { connect } from 'react-redux';
-import parse from 'html-react-parser';
 import ProfileViewer from '../ProfileViewer/ProfileViewer';
 import ProfileOverlap from '../ProfileOverlap/ProfileOverlap';
 import TinyEditor from '../RichEditor/TinyEditor';
 
-import axios from 'axios';
-import { Base64 } from 'js-base64';
+
 
 import { playersDB } from '../../data/firebase/firebaseConfig';
 import { addProfileOverlap } from '../../data/actions/creatorActions';
@@ -111,30 +109,21 @@ const PlayerPage = ({ character, player, addProfileOverlap, fetchCharactersList 
                     {character.hairColor ? <p className="metrics">{`Ma ${character.hairColor} włosy i ${character.eyeColor} oczy.`}</p> : null}
                 </div>
             </div>
-            {isPlayer ? <button className="addProfile" onClick={(e) => {
-                e.preventDefault();
-                setNewOverlap(!addNewOverlap)
-            }}>Dodaj zakładkę do profilu</button> : null}
-            {addNewOverlap ?
+
+
+
+            {character.profile.length > 0 ?
                 <>
-                    <label htmlFor="overlap" className="creatorLabel">Nazwij swoją nową zakładkę</label>
-                    <input type="text" id="overlap" className="creatorInput" value={overlapTitle} onChange={e => setOverlapTitle(e.target.value)} />
-                    <TinyEditor title={overlapTitle} addProfileOverlap={addProfileOverlap} />
-                </>
-                : null}
+                    <div className="profile">
+                        <h2 className="metrics">Profil</h2>
+                        <div className="overlapsLinks">
+                            {profileOverlaps}
+                        </div>
 
-
-            {addNewOverlap ? null : character.profile.length > 0 ? <>
-                <div className="profile">
-                    <h2 className="metrics">Profil</h2>
-                    <div className="overlapsLinks">
-                        {profileOverlaps}
-                    </div>
-
-                    <Switch>
-                        {overlapsRoutes}
-                    </Switch>
-                </div> </>
+                        <Switch>
+                            {overlapsRoutes}
+                        </Switch>
+                    </div> </>
                 : <p className="test">Gracz nie ma żadnego profilu.</p>}
 
             <ProfileViewer />
