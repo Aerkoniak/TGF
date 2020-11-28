@@ -184,6 +184,15 @@ app.post('/edit-account', (req, res) => {
                             })
                     }
                 })
+            break;
+        case 'skills':
+            players.doc(character.docRef).set({ skills: character.skills, FabularPoints: character.PF }, { merge: true })
+                .then(ok => {
+                    if (ok.writeTime) {
+                        res.json({ saved: true })
+                    }
+                })
+            break;
     }
 
 
