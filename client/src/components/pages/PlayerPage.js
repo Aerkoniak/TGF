@@ -84,10 +84,10 @@ const PlayerPage = ({ character, player, addProfileOverlap, fetchCharactersList 
     }, [character])
 
     const profileOverlaps = character.profile.map(overlap => ((
-        <NavLink key={overlap.name + character.id} to={`/character/id${character.id}/${overlap.name}`}>{overlap.name}</NavLink>
+        <NavLink key={overlap.name + character.id} to={`/characters/id${character.id}/${overlap.name}`}>{overlap.name}</NavLink>
     )))
     const overlapsRoutes = character.profile.map(overlap => ((
-        <Route key={overlap.name} path={`/character/id${character.id}/${overlap.name}`} render={(routeProps) => (<ProfileOverlap {...routeProps} id={overlap.name} profile={overlap} character={character} />)} />
+        <Route key={overlap.name} path={`/characters/id${character.id}/${overlap.name}`} render={(routeProps) => (<ProfileOverlap {...routeProps} id={overlap.name} profile={overlap} character={character} />)} />
     )))
 
 
