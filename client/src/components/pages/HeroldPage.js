@@ -14,14 +14,6 @@ const HeroldPage = ({ player, isLogged }) => {
     useEffect(() => {
         if (isLogged === "logged") {
             setPlayerLog(true);
-            updateActive(player)
-            const myInterval = setInterval(updateActive(player), 300000);
-            setTimeout(() => {
-                clearInterval(myInterval);
-            }, 900000)
-            return function cleanup() {
-                clearInterval(myInterval);
-            }
         }
     }, [isLogged])
 
