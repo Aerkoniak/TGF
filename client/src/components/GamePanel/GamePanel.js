@@ -108,7 +108,7 @@ const GamePanel = ({ player, stories, mails, characters, downloadNeed, isLeftHan
         <Route key={mailRoute.id} path={`/mails/id${mailRoute.id}`} render={(routeProps) => (<OneMail {...routeProps} id={mailRoute.id} mail={mailRoute} />)} />
     )))
     const playerRoutes = characters.map(character => ((
-        <Route key={character.accountDocRef} path={`/character/id${character.id}`} render={(routeProps) => (<PlayerPage {...routeProps} id={character.id} character={character} />)} />
+        <Route key={character.accountDocRef} path={`/characters/id${character.id}`} render={(routeProps) => (<PlayerPage {...routeProps} id={character.id} character={character} />)} />
     )))
 
     return (
@@ -121,7 +121,7 @@ const GamePanel = ({ player, stories, mails, characters, downloadNeed, isLeftHan
                 <Route exact path="/sessions/prive" component={PriveSessionsPage} />
                 <Route exact path="/mails" component={MailPage} />
                 <Route path="/tavern" component={TavernPage} />
-                <Route exact path="/character" component={CharakterPage} />
+                <Route path="/character" component={CharakterPage} />
                 {playerRoutes}
                 <Route path="/settings" component={SettingsPage} />
                 <Route path='/logout' component={LogOutPage} />
