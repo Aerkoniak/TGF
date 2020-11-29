@@ -64,16 +64,21 @@ const playerReducer = (state = initState, action) => {
                 ...state,
                 autoLog: action.payload
             };
-        case 'SET_ACTIVE_TRUE': 
-        return {
-            ...state,
-            setActive: true
-        }
-        case 'SET_ACTIVE_FALSE': 
-        return {
-            ...state,
-            setActive: false
-        }
+        case 'SET_ACTIVE_TRUE':
+            return {
+                ...state,
+                setActive: true
+            }
+        case 'SET_ACTIVE_FALSE':
+            return {
+                ...state,
+                setActive: false
+            }
+        case 'UPDATE_PLAYER':
+            return {
+                ...state,
+                player: action.payload
+            }
 
 
         default:
