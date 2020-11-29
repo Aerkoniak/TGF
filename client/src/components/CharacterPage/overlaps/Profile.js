@@ -22,7 +22,7 @@ const Profile = ({ player, addProfileOverlap }) => {
         <NavLink key={overlap.name + player.id} to={`/character/profile/${overlap.name}`}>{overlap.name}</NavLink>
     )))
     const overlapsRoutes = player.profile.map(overlap => ((
-        <Route key={overlap.name} path={`/character/profile/${overlap.name}`} render={(routeProps) => (<ProfileOverlap {...routeProps} id={overlap.name} profile={overlap} character={player} />)} />
+        <Route key={overlap.name} path={`/character/profile/${overlap.name}`} render={(routeProps) => (<ProfileOverlap {...routeProps} id={overlap.name} inCP profile={overlap} character={player} />)} />
     )))
     return (
 
