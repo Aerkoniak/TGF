@@ -11,6 +11,7 @@ import { playersDB } from '../../data/firebase/firebaseConfig';
 import { addProfileOverlap } from '../../data/actions/creatorActions';
 import { fetchCharactersList } from '../../data/actions/generalActions';
 import { updateActive } from '../../data/actions/generalActions';
+import Diary from '../CharacterPage/overlaps/Diary';
 
 
 
@@ -83,9 +84,7 @@ const PlayerPage = ({ character, player, addProfileOverlap, fetchCharactersList 
         else confirmPlayer(false);
     }, [character])
 
-    const profileOverlaps = character.profile.map(overlap => ((
-        <NavLink key={overlap.name + character.id} to={`/characters/id${character.id}/${overlap.name}`}>{overlap.name}</NavLink>
-    )))
+
     const overlapsRoutes = character.profile.map(overlap => ((
         <Route key={overlap.name} path={`/characters/id${character.id}/${overlap.name}`} render={(routeProps) => (<ProfileOverlap {...routeProps} id={overlap.name} profile={overlap} character={character} />)} />
     )))
@@ -112,20 +111,21 @@ const PlayerPage = ({ character, player, addProfileOverlap, fetchCharactersList 
 
 
 
-            {character.profile.length > 0 ?
-                <>
-                    <div className="profile">
-                        <h2 className="metrics">Profil</h2>
-                        <div className="overlapsLinks">
-                            {profileOverlaps}
-                        </div>
 
-                        <Switch>
-                            {overlapsRoutes}
-                        </Switch>
-                    </div> </>
-                : <p className="test">Gracz nie ma żadnego profilu.</p>}
+            <div className="profile">
+                <div className="profileNav">
+                    <NavLink key={"a" + character.id} to={`/characters/id${character.id}/${character.profile[0].name}`}>Profil</NavLink>
+                    <NavLink to={`/characters/id${character.id}/diary`}>Kronika</NavLink>
+                    <NavLink to={`/characters/id${character.id}/kp`}>Karta Postaci</NavLink>
+                </div>
 
+
+
+                <Switch>
+                    <Route key={1 * 2} path={`/characters/id${character.id}/diary`} render={(routeProps) => (<Diary {...routeProps} character={character} />)} />
+                    {overlapsRoutes}
+                </Switch>
+            </div>
             <ProfileViewer />
         </section>
     );
