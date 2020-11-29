@@ -1,20 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import { connect, useSelector, useDispatch } from 'react-redux';
 import _ from 'lodash'
-import { selectSkills, selectFabPoints, setSkills, fetchSkillsList, fetchPFAmount, updateSkills, increaseSkill } from '../../../data/slices/CPSlice';
+import { selectSkills, selectFabPoints, setSkills, fetchSkillsList, fetchPFAmount, updateSkills, increaseSkill, updateStatistics, loadingSel } from '../../../data/slices/CPSlice';
 import Stats from '../Stats';
 
-import { Button } from 'react-bootstrap'
+import { Button, Spinner } from 'react-bootstrap'
 
-const Skills = ({ player, skills }) => {
+const Skills = ({ player, skills, stats }) => {
 
     const dispatch = useDispatch();
     const ownSkills = useSelector(selectSkills);
     const PF = useSelector(selectFabPoints)
+    const loading = useSelector(loadingSel)
 
     const [warnings, setWarnings] = useState("")
+    const [buttonVisible, toggleConfirmButton] = useState(false)
     const [allSkillsArray, setAllSkillsArray] = useState([]);
-    const [ownedSkillsArray, setOwnSkillsArray] = useState([])
+    const [ownedSkillsArray, setOwnSkillsArray] = useState([]);
+    const [bonusStatsArray, setStatsArray] = useState([])
     const [skillPrice, setSkillPrice] = useState(0);
     const [skillUpgPrice, setSkillUpgPrice] = useState(0);
 
@@ -37,6 +40,14 @@ const Skills = ({ player, skills }) => {
     }, [ownedSkillsArray])
 
     useEffect(() => {
+
+        if (loading === "loading") {
+            if (!loading) toggleConfirmButton(false)
+        } else { toggleConfirmButton(false) }
+
+    }, [loading])
+
+    useEffect(() => {
         let skillsList = skills;
         let newSkills = _.sortBy(skillsList, ["cat", "name"]);
         setAllSkillsArray(newSkills);
@@ -49,6 +60,7 @@ const Skills = ({ player, skills }) => {
     }, [ownSkills])
 
     const buySkill = (id, price) => {
+        toggleConfirmButton(true)
         let takenSkill = id;
         let flag = true;
         ownedSkillsArray.forEach(skill => {
@@ -71,6 +83,7 @@ const Skills = ({ player, skills }) => {
         }
     }
     const upgradeSkill = (id, price) => {
+        toggleConfirmButton(true)
         let takenSkill = id;
         let lvl = null
         ownedSkillsArray.map(skill => {
@@ -79,6 +92,46 @@ const Skills = ({ player, skills }) => {
             }
         })
         if (skillUpgPrice > PF) setWarnings("Nie masz dość PFów.");
+        else if (lvl == 3) {
+            allSkillsArray.forEach(skill => {
+                if (skill.name === takenSkill) {
+                    let stats = bonusStatsArray;
+                    stats.push(skill.base)
+                    setStatsArray(stats)
+                    let skills = {
+                        price,
+                        skill
+                    }
+                    dispatch(increaseSkill(skills));
+                }
+            })
+        }
+
+
+
+        // allSkillsArray.forEach(skill => {
+        //     if (skill.name === takenSkill) {
+        //         let skills = {
+        //             price,
+        //             skill
+        //         }
+        //         dispatch(increaseSkill(skills));
+        //         let newStat = {}
+        //         let increaseStats = []
+        //         stats.map(stat => {
+        //             if (stat.name === skill.base) {
+        //                 let newStat = {}
+        //                 newStat.name = stat.name
+        //                 newStat.val = stat.val + 5
+        //                 increaseStats.push(newStat)
+        //             } else increaseStats.push(stat)
+        //         })
+        //         newStat.stats = increaseStats;
+        //         newStat.player = player;
+        //         dispatch(updateStatistics(newStat))
+        //     }
+        // })}
+
         else if (lvl == 5) setWarnings("Maksymalny poziom umiejętności to Piątka.");
         else {
             allSkillsArray.forEach(skill => {
@@ -98,6 +151,8 @@ const Skills = ({ player, skills }) => {
         skills.player = player;
         skills.skillsArray = ownSkills;
         skills.PF = PF;
+
+
         dispatch(updateSkills(skills))
     }
 
@@ -141,15 +196,19 @@ const Skills = ({ player, skills }) => {
             <div className="ownSkills">
                 <h3 className="test">Umiejętności:</h3>
                 <p>{`Masz ${PF} wolnych Punktów Fabularnych`}<span className="fabPointSpan">{warnings ? warnings : null}</span> </p>
-                {ownSkills > player.skills ? <Button variant="outline-dark" onClick={confirmChanges}>Zatwierdź zmiany</Button> : null}
 
                 <p className="test">Posiadane umiejętności:</p>
-                {ownSkills ?
+
+                {ownedSkillsArray
+                    ?
+
                     <ul className="skillList">
                         {ownedSkills}
                     </ul>
                     : null}
+
             </div>
+            { buttonVisible ? <Button variant="outline-danger" block onClick={confirmChanges}>{loading ? <Spinner animation="border" variant="dark" /> : `Zatwierdź zmiany`}</Button> : null}
             <div className="allSkills">
                 <p className="test">Wszystkie umiejętności:</p>
                 <div className="skills">
@@ -171,6 +230,7 @@ const Skills = ({ player, skills }) => {
 const MapStateToProps = state => ({
     player: state.player.player,
     skills: state.creator.skills,
+    stats: state.player.player.stats
 })
 
 export default connect(MapStateToProps)(Skills);
