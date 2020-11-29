@@ -42,7 +42,7 @@ app.use(bodyParser.json());
 app.post("/registerAccount", (req, res) => {
     let account = req.body.account;
     account.rank = 5;
-    account.profile = [];
+    account.profile = [{ name: "Pierwsza zakładka", text: "" }];
     account.priveField = 0;
     account.mailsField = 0;
     account.storyField = 0;
@@ -96,9 +96,11 @@ app.post('/login', (req, res) => {
 
 app.post('/fetch-player', (req, res) => {
     let docRef = req.body.docRef;
+    console.log(docRef)
     players.doc(docRef).get()
         .then(doc => {
             let player = doc.data()
+
             res.json({ player })
         })
 })
@@ -189,7 +191,24 @@ app.post('/edit-account', (req, res) => {
             players.doc(character.docRef).set({ skills: character.skills, FabularPoints: character.PF }, { merge: true })
                 .then(ok => {
                     if (ok.writeTime) {
-                        res.json({ saved: true })
+                        players.doc(character.docRef).get()
+                            .then(doc => {
+                                player = doc.data()
+                                res.json(player)
+                            })
+                    }
+                })
+            break;
+        case 'stats':
+            players.doc(character.docRef).set({ stats: character.stats }, { merge: true })
+                .then(ok => {
+                    if (ok.writeTime) {
+                        let player = {};
+                        players.doc(character.docRef).get()
+                            .then(doc => {
+                                player = doc.data()
+                                res.json(player)
+                            })
                     }
                 })
             break;
