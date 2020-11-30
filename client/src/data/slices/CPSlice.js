@@ -1,5 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
+import { createDate } from '../usefullFN';
 
 
 export const CPSlice = createSlice({
@@ -11,9 +12,8 @@ export const CPSlice = createSlice({
         loading: false
     },
     reducers: {
-        setLoading: state => {
-            if (!state.loading) state.loading = "loading"
-            else state.loading = false
+        setLoading: (state, action) => {
+            state.loading = action.payload
         },
         setSkills: (state, action) => {
             let skillsArray = state.ownSkills;
@@ -57,7 +57,7 @@ export const CPSlice = createSlice({
 export const { setLoading, setSkills, fetchSkillsList, fetchPFAmount, increaseSkill, updateStats, modifyStat } = CPSlice.actions;
 
 export const updateSkills = skills => dispatch => {
-    dispatch(setLoading())
+    dispatch(setLoading("loading"))
     let character = {};
     character.changed = "skills";
     character.skills = skills.skillsArray;
@@ -67,11 +67,11 @@ export const updateSkills = skills => dispatch => {
         .then(res => {
             let payload = res.data;
             dispatch({ type: "UPDATE_PLAYER", payload });
-            dispatch(setLoading())
+            dispatch(setLoading(false))
         })
 }
 export const updateStatistics = stats => dispatch => {
-    dispatch(setLoading())
+    dispatch(setLoading("loading"))
     let character = {};
     character.changed = "stats";
     character.stats = stats.stats;
@@ -81,7 +81,7 @@ export const updateStatistics = stats => dispatch => {
         .then(res => {
             let payload = res.data;
             dispatch({ type: "UPDATE_PLAYER", payload });
-            dispatch(setLoading())
+            dispatch(setLoading(false))
         })
 }
 
@@ -90,6 +90,28 @@ export const updatePlayer = docRef => dispatch => {
         .then(res => {
             let payload = res.data;
             dispatch({ type: "UPDATE_PLAYER", payload });
+        })
+}
+
+export const updateDiary = object => dispatch => {
+    dispatch(setLoading("loading"))
+    console.log(object)
+    let character = {};
+    character.changed = "diary";
+    character.docRef = object.character.accountDocRef;
+    let diary = object.character.diary || [];
+    let diaryEntry = {
+        author: { name: object.player.name, id: object.player.id },
+        date: createDate(),
+        text: object.text
+    };
+    diary.push(diaryEntry);
+    character.diary = diary;
+    axios.post('/edit-account', { character })
+        .then(res => {
+            let payload = res.data;
+            dispatch({ type: "FETCH_CHAR_SUCCESS", payload });
+            dispatch(setLoading(false))
         })
 }
 
