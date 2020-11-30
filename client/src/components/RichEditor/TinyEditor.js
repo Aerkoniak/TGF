@@ -1,7 +1,10 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Editor, TinyMCE_1 } from '@tinymce/tinymce-react';
+import { Editor } from '@tinymce/tinymce-react';
 import parse from 'html-react-parser';
+
+import { Button } from 'react-bootstrap';
+
 
 
 
@@ -19,13 +22,15 @@ class TinyEditor extends Component {
     }
 
     confirmAction = () => {
-        const { addProfileOverlap, title, player, sendMailReply, place, addChapterPrive, addChapterGlobal, createPriveStory, createStory, sendMail, editOverlap, addTavernRecord } = this.props;
+        const { addProfileOverlap, title, player, sendMailReply, place, addChapterPrive, addChapterGlobal, createPriveStory, createStory, sendMail, editOverlap, addTavernRecord, updateDiary } = this.props;
+
         if (addProfileOverlap) {
             let profile = {
                 name: title,
                 text: this.state.content,
             }
             profile.player = player;
+            console.log(profile)
             addProfileOverlap(profile);
         } else if (sendMailReply) {
             let message = {};
@@ -111,6 +116,13 @@ class TinyEditor extends Component {
             tavernRecord.place = place;
             tavernRecord.text = this.state.content;
             addTavernRecord(tavernRecord);
+        } else if (updateDiary) {
+            let diaryEntry = {}
+            diaryEntry.player = player;
+            diaryEntry.character = this.props.character;
+            diaryEntry.text = this.state.content;
+            console.log(diaryEntry)
+            updateDiary(diaryEntry)
         }
     }
 
@@ -145,11 +157,11 @@ class TinyEditor extends Component {
                         toolbar:
                             ` undo redo | forecolor formatselect | bold italic underline | \
                             alignleft aligncenter alignright | indent outdent wordcount`,
-                        // bbcode_dialect: 'punbb'
+
                     }}
                     onEditorChange={this.handleEditorChange}
                 />
-                <button className="addProfile" onClick={this.confirmAction}>Zaakceptuj</button>
+                <Button className="addProfile" variant="outline-dark" onClick={this.confirmAction}>Zaakceptuj</Button>
             </div>
         );
     }
