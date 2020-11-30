@@ -1,4 +1,6 @@
 import axios from 'axios';
+import { createDate } from '../usefullFN';
+
 
 export const setCharacter = char => dispatch => {
     dispatch({ type: "SET_CHARACTER_START" })
@@ -42,6 +44,7 @@ export const fetchPlayer = docRef => dispatch => {
 }
 
 export const addProfileOverlap = overlap => dispatch => {
+    console.log(overlap)
     let profile = overlap.player.profile;
     let newOverlap = {
         name: overlap.name,
@@ -53,5 +56,41 @@ export const addProfileOverlap = overlap => dispatch => {
     character.profile = profile;
     character.docRef = overlap.player.accountDocRef;
     axios.post('/edit-account', { character })
+}
 
+export const editOverlap = overlap => dispatch => {
+    console.log(overlap)
+    let profile = overlap.player.profile;
+    profile.map(oldOverlap => {
+        if (oldOverlap.name === overlap.name) {
+            oldOverlap.text = overlap.text
+        }
+    })
+    console.log(profile)
+    let character = {};
+    character.changed = "character - profile";
+    character.profile = profile;
+    character.docRef = overlap.player.accountDocRef;
+    axios.post('/edit-account', { character })
+}
+
+
+export const updateDiary = object => dispatch => {
+    let character = {};
+    character.changed = "diary";
+    character.docRef = object.character.accountDocRef;
+    let diary = object.character.diary || [];
+    let diaryEntry = {
+        author: { name: object.player.name, id: object.player.id },
+        date: createDate(),
+        text: object.text
+    };
+    diary.push(diaryEntry);
+    character.diary = diary;
+    dispatch({ type: "RESET_CHARACTER_START" })
+    axios.post('/edit-account', { character })
+        .then(res => {
+            let payload = res.data;
+            dispatch({ type: "FETCH_CHAR_SUCCESS", payload });
+        })
 }
