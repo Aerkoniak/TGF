@@ -43,6 +43,7 @@ app.post("/registerAccount", (req, res) => {
     let account = req.body.account;
     account.rank = 5;
     account.profile = [{ name: "Pierwsza zakładka", text: "" }];
+    account.diary = []
     account.priveField = 0;
     account.mailsField = 0;
     account.storyField = 0;
@@ -208,6 +209,26 @@ app.post('/edit-account', (req, res) => {
                             .then(doc => {
                                 player = doc.data()
                                 res.json(player)
+                            })
+                    }
+                })
+            break;
+        case 'diary':
+            players.doc(character.docRef).set({ diary: character.diary }, { merge: true })
+                .then(ok => {
+                    if (ok.writeTime) {
+                        players.orderBy("id").get()
+                            .then(snapshot => {
+                                let characters = [];
+                                snapshot.forEach(doc => {
+                                    let data = doc.data();
+                                    if (data.name && data.race && data.class && (data.rank < 3 || data.rank === 10)) {
+                                        let character = {};
+                                        character = data;
+                                        characters.push(character)
+                                    }
+                                })
+                                res.json(characters);
                             })
                     }
                 })
