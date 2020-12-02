@@ -59,7 +59,6 @@ export const signInFirebase = (email, password, account) => dispatch => {
                     if (user) {
                         const user = firebase.auth().currentUser;
                         if (user) {
-                            console.log(user)
                             account.lastLogged = createDate();
                             axios.post('/login', { account })
                                 .then(res => {
@@ -123,4 +122,15 @@ export const sendVerification = email => dispatch => {
         .catch(function (error) {
             console.log(error)
         });
+}
+
+export const sendPasswordReset = email => dispatch => {
+    auth.sendPasswordResetEmail(email)
+        .then(function () {
+            console.log("Wysłano e-mail resetowy.")
+        })
+        .catch(function (error) {
+            console.log(error)
+        });
+
 }
