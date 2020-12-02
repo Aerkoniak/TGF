@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import { NavLink, Switch, Route } from 'react-router-dom';
+import { Button } from 'react-bootstrap'
 
 import { addProfileOverlap } from '../../../data/actions/creatorActions';
 import { playersDB } from '../../../data/firebase/firebaseConfig'
@@ -26,17 +27,16 @@ const Profile = ({ player, addProfileOverlap }) => {
     )))
     return (
 
-        <>
-            <button className="addProfile" onClick={(e) => {
+        <div className="profile">
+            <Button variant="outline-dark" className="addProfile" onClick={(e) => {
                 e.preventDefault();
                 setNewOverlap(!addNewOverlap)
-            }}>Dodaj zakładkę do profilu</button>
+            }}>Dodaj zakładkę do profilu</Button>
 
             {addNewOverlap ?
                 <>
-                    <div>
-                        <label htmlFor="overlap" className="creatorLabel">Nazwij swoją nową zakładkę</label>
-                        <input type="text" id="overlap" className="creatorInput" value={overlapTitle} onChange={e => setOverlapTitle(e.target.value)} />
+                    <div className="addOverlapWrap">
+                        <input type="text" id="overlap" placeholder="Tytuł nowej zakładki" className="creatorInput" value={overlapTitle} onChange={e => setOverlapTitle(e.target.value)} />
                     </div>
 
                     <TinyEditor title={overlapTitle} addProfileOverlap={addProfileOverlap} />
@@ -49,7 +49,7 @@ const Profile = ({ player, addProfileOverlap }) => {
             <Switch>
                 {overlapsRoutes}
             </Switch>
-        </>
+        </div>
     );
 }
 
