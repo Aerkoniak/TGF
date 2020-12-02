@@ -121,7 +121,6 @@ class TinyEditor extends Component {
             diaryEntry.player = player;
             diaryEntry.character = this.props.character;
             diaryEntry.text = this.state.content;
-            console.log(diaryEntry)
             updateDiary(diaryEntry)
         }
     }
@@ -147,6 +146,8 @@ class TinyEditor extends Component {
                     value={this.props.initialValue ? this.props.initialValue : this.state.content}
                     init={{
                         height: 500,
+                        // skin: 'oxide-dark',
+                        // content_css: 'dark',
                         menubar: false,
                         plugins: [
                             'advlist autolink lists link image',
@@ -161,7 +162,7 @@ class TinyEditor extends Component {
                     }}
                     onEditorChange={this.handleEditorChange}
                 />
-                <Button className="addProfile" variant="outline-dark" onClick={this.confirmAction}>Zaakceptuj</Button>
+                <Button className="addProfile" variant="outline-danger" onClick={this.confirmAction}>Zaakceptuj</Button>
             </div>
         );
     }
