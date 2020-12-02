@@ -30,33 +30,37 @@ const Diary = ({ player, character, inPlayerPage, updateDiary }) => {
         }
     }, [character])
 
+    const updateDiarySupporter = (obj) => {
+        window.scrollBy(0, 300);
+        updateDiary(obj)
+        toggleAddingEntry(false)
+    }
+
 
     const diaryEntries = diariesArray.map(diary => {
         return (
             <div className="diaryEntry">
-                <p className="test">{parse(diary.text)}</p>
-                <p className="test">{`Wpis dodany przez ID${diary.author.id} - ${diary.author.name}`}</p>
-                <p className="test">{diary.date}</p>
+                <p>{parse(diary.text)}</p>
+                <p>{`Wpis dodany przez ID${diary.author.id} - ${diary.author.name}`}</p>
+                <p>{diary.date}</p>
             </div>
         )
-    })
+    }).reverse()
 
     return (
         <>
             <div className="diary">
-                <h2>Kronika</h2>
-
-                {diaryEntries}
 
                 {inPlayerPage ?
                     <div className="editWrap">
-                        {player.rank <= 2 ? <Button onClick={() => toggleAddingEntry(!addEntry)} variant="outline-dark" size="lg">{loading ? <Spinner animation="border" variant="dark" /> : `Zatwierdź zmiany`}</Button> : null}
+                        {player.rank <= 2 ? <Button onClick={() => toggleAddingEntry(!addEntry)} variant="outline-dark" className="newEntry" size="lg">{loading ? <Spinner animation="border" variant="dark" /> : `Dodaj nowy wpis`}</Button> : null}
 
-                        {addEntry ? <TinyEditor player={player} character={character} updateDiary={updateDiary} /> : null}
+                        {addEntry ? <TinyEditor player={player} character={character} updateDiary={updateDiarySupporter} /> : null}
                     </div>
                     : null
                 }
 
+                {diaryEntries}
 
 
             </div>
