@@ -6,16 +6,15 @@ import { setActiveInterval } from '../../data/usefullFN';
 
 // import { parseString } from '../../data/parseString';
 
-import { addChapter, changeSeenInSession, fetchStories, deleteChapter } from '../../data/actions/storiesActions';
+import { changeSeenInSession, fetchStories, deleteChapter, closeStory } from '../../data/actions/storiesActions';
 import { updateActive } from '../../data/actions/generalActions'
 import { storiesDB } from '../../data/firebase/firebaseConfig'
-import RichEditor from '../RichEditor/RichEditor';
 import ProfileViewer from '../ProfileViewer/ProfileViewer';
 import TinyEditor from '../RichEditor/TinyEditor';
 
 
 
-const OneSession = ({ story, player, addChapter, changeSeenInSession, fetchStories, deleteChapter, updateActive }) => {
+const OneSession = ({ story, player, addChapter, changeSeenInSession, fetchStories, deleteChapter, updateActive, closeStory }) => {
 
     useEffect(() => {
         story.spectators.map(spectator => {
@@ -34,13 +33,8 @@ const OneSession = ({ story, player, addChapter, changeSeenInSession, fetchStori
                 let data = doc.data();
                 fetchStories()
             });
-        updateActive(player)
-        const myInterval = setInterval(updateActive(player), 300000);
-        setTimeout(() => {
-            clearInterval(myInterval);
-        }, 900000)
         return function cleanup() {
-            clearInterval(myInterval);
+            unsubscribe()
         }
     }, [])
 
@@ -67,6 +61,12 @@ const OneSession = ({ story, player, addChapter, changeSeenInSession, fetchStori
         deleteChapter(chapterIndex, refID)
     }
 
+    const closeStorySupporter = e => {
+        e.preventDefault();
+        let closedStory = story;
+        closeStory(closedStory)
+    }
+
     const chapters = story.chapters.map((chapter, index) => ((
         <div className="chapter" key={chapter.id} >
             <p className="chapterAuthor"  >{chapter.author.name}</p>
@@ -85,7 +85,6 @@ const OneSession = ({ story, player, addChapter, changeSeenInSession, fetchStori
                 </li>
             )
         }
-
     })
 
     return (
@@ -93,10 +92,17 @@ const OneSession = ({ story, player, addChapter, changeSeenInSession, fetchStori
             <Link className="return" to="/sessions"><i className="fas fa-undo-alt"></i></Link>
             <div className="storyInfo">
                 <p className="storyTitle">{story.title}</p>
-                <span className="nextTurnDateSpan">Termin następnego odpisu:</span>
-                <p className="nextTurnDate">{story.nextTurn ? story.nextTurn : null}</p>
+                {story.place === "4" ? <>
+                    <span className="nextTurnDateSpan">Sesja zamknięta:</span>
+                    <p className="nextTurnDateSpan">{story.closeTime}</p>
+                </> : <>
+                        <span className="nextTurnDateSpan">Termin następnego odpisu:</span>
+                        <p className="nextTurnDate">{story.nextTurn ? story.nextTurn : null}</p>
+                    </>}
+
                 <p className="showIntro" onClick={() => showIntro(!intro)}  >Kliknij by pokazać lub schować wstęp</p>
-                {player.rank <= 3 ? <p className="answer" onClick={() => toggleTA(!textareaHidden)} >Odpisz</p> : null}
+                {(player.rank <= 3 || player.rank === 10) && story.place != "4" ? <p className="answer" onClick={() => toggleTA(!textareaHidden)} >Odpisz</p> : null}
+                {story.place === "4" ? <p className="test">Sesja zamknięta</p> : null}
                 {!story.openMsg || story.openMsg === "undefined" ? <h2 onClick={() => toggleTA(!textareaHidden)} className="test">Napisz wprowadzenie do sesji.</h2> :
                     intro ? <p className="openingMsg">{parse(story.openMsg)}</p> : null
                 }
@@ -120,10 +126,15 @@ const OneSession = ({ story, player, addChapter, changeSeenInSession, fetchStori
                         <p className="storyAuthor">{story.author.name}</p>
                         <label className="sideBarLabel" htmlFor="">Sesja założona:</label>
                         <p className="storyDate">{story.startDate}</p>
+                        {story.place === "4" ? <>
+                            <label className="sideBarLabel" htmlFor="">Sesja zakończona:</label>
+                            <p className="storyDate">{story.closeTime}</p>
+                        </> : null}
                         <label className="sideBarLabel" htmlFor="">Grający:</label>
                         <ul className="storyPlayers">
                             {players}
                         </ul>
+                        {player.rank <= 2 ? <button className="closeStory" onClick={closeStorySupporter} >Zakończ sesję</button> : null}
                     </div>
                     :
                     <ProfileViewer />
@@ -139,11 +150,12 @@ const MapStateToProps = state => ({
     player: state.player.player
 })
 const MapDispatchToProps = dispatch => ({
-    addChapter: (chapter) => dispatch(addChapter(chapter)),
+
     changeSeenInSession: (id, refID) => dispatch(changeSeenInSession(id, refID)),
     fetchStories: () => dispatch(fetchStories()),
     deleteChapter: (chapterIndex, refID) => dispatch(deleteChapter(chapterIndex, refID)),
     updateActive: player => dispatch(updateActive(player)),
+    closeStory: story => dispatch(closeStory(story)),
 })
 
 export default connect(MapStateToProps, MapDispatchToProps)(OneSession);
