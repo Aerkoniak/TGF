@@ -40,6 +40,7 @@ app.use(bodyParser.json());
 
 
 app.post("/registerAccount", (req, res) => {
+    console.log("/registerAccount")
     let account = req.body.account;
     account.rank = 5;
     account.profile = [{ name: "Pierwsza zakładka", text: "" }];
@@ -59,7 +60,7 @@ app.post("/registerAccount", (req, res) => {
                             if (ok.writeTime) {
                                 let player = {};
                                 player = account;
-
+                                console.log("/registerAccount --- response")
                                 res.json({ player });
                             }
                         })
@@ -68,6 +69,7 @@ app.post("/registerAccount", (req, res) => {
 })
 
 app.post('/login', (req, res) => {
+    console.log("/login")
     let account = req.body.account;
     const { login, password, lastLogged } = account;
     let lastActiveTime = new Date().getTime();
@@ -85,7 +87,7 @@ app.post('/login', (req, res) => {
                     players.doc(player.accountDocRef).set({ lastLog: lastLogged, lastActiveTime: lastActiveTime }, { merge: true })
                         .then(ok => {
                             if (ok.writeTime) {
-                                console.log("Zalogowano")
+                                console.log("Login --- done")
                                 res.json({ player })
                             }
                         })
@@ -96,19 +98,21 @@ app.post('/login', (req, res) => {
 })
 
 app.post('/fetch-player', (req, res) => {
+    3
+    console.log("/fetch-player")
     let docRef = req.body.docRef;
     console.log(docRef)
     players.doc(docRef).get()
         .then(doc => {
             let player = doc.data()
-
+            console.log("/fetch-player --- done")
             res.json({ player })
         })
 })
 
 app.post('/update-activeTime', (req, res) => {
     const { lastActiveTime, accountDocRef } = req.body.data;
-    console.log(lastActiveTime, accountDocRef);
+    console.log("/update-activeTime", lastActiveTime, accountDocRef)
     if (!accountDocRef) {
         res.json({ data: "ok" })
     } else if (lastActiveTime && accountDocRef) {
@@ -117,11 +121,13 @@ app.post('/update-activeTime', (req, res) => {
                 console.log(err)
             })
         res.json({ data: "ok" });
+        console.log("update-activeTime")
     }
 
 })
 
 app.post('/edit-account', (req, res) => {
+    console.log("/edit-account")
     let character = req.body.character;
 
     switch (character.changed) {
@@ -130,6 +136,7 @@ app.post('/edit-account', (req, res) => {
                 .then(ok => {
                     if (ok.writeTime) {
                         res.json({ saved: true })
+                        console.log("/edit-account -- stageOne --- done")
                     }
                 })
 
@@ -139,6 +146,7 @@ app.post('/edit-account', (req, res) => {
                 .then(ok => {
                     if (ok.writeTime) {
                         res.json({ saved: true })
+                        console.log("/edit-account -- stageTwo --- done")
                     }
                 })
             break;
@@ -147,6 +155,7 @@ app.post('/edit-account', (req, res) => {
                 .then(ok => {
                     if (ok.writeTime) {
                         res.json({ saved: true })
+                        console.log("/edit-account -- reset --- done")
                     }
                 })
             break;
@@ -155,6 +164,7 @@ app.post('/edit-account', (req, res) => {
                 .then(ok => {
                     if (ok.writeTime) {
                         res.json({ saved: true })
+                        console.log("/edit-account -- char-profile --- done")
                     }
                 })
             break;
@@ -163,6 +173,7 @@ app.post('/edit-account', (req, res) => {
                 .then(ok => {
                     if (ok.writeTime) {
                         res.json({ saved: true })
+                        console.log("/edit-account -- name --- done")
                     }
                 })
             break;
@@ -171,6 +182,7 @@ app.post('/edit-account', (req, res) => {
                 .then(ok => {
                     if (ok.writeTime) {
                         res.json({ saved: true })
+                        console.log("/edit-account -- profile --- done")
                     }
                 })
             break;
@@ -183,7 +195,7 @@ app.post('/edit-account', (req, res) => {
                             .then(doc => {
                                 let player = doc.data()
                                 res.json({ saved: true, player })
-
+                                console.log("/edit-account -- rank --- done")
                             })
                     }
                 })
@@ -196,6 +208,7 @@ app.post('/edit-account', (req, res) => {
                             .then(doc => {
                                 player = doc.data()
                                 res.json(player)
+                                console.log("/edit-account -- skills --- done")
                             })
                     }
                 })
@@ -209,6 +222,7 @@ app.post('/edit-account', (req, res) => {
                             .then(doc => {
                                 player = doc.data()
                                 res.json(player)
+                                console.log("/edit-account -- stats --- done")
                             })
                     }
                 })
@@ -229,16 +243,16 @@ app.post('/edit-account', (req, res) => {
                                     }
                                 })
                                 res.json(characters);
+                                console.log("/edit-account -- diary --- done")
                             })
                     }
                 })
             break;
     }
-
-
 })
 
 app.post('/stories-fetch', (req, res) => {
+    console.log("/stories-fetch")
     let storiesArray = [];
     stories.get()
         .then(snapshot => {
@@ -247,13 +261,16 @@ app.post('/stories-fetch', (req, res) => {
                 storiesArray.push(story);
             })
             res.json({ storiesArray })
+            console.log("/stories-fetch --- done")
         })
 })
 
 app.post('/stories-update', (req, res) => {
+    console.log("/stories-update")
     const { newChapter, seen, deleteChapter, createStory, closeStory } = req.body;
 
     if (newChapter) {
+        console.log("/stories-update --- newChapter")
         let chapter = req.body.newChapter;
         let chaptersArray = [];
         let spectatorsArray = [];
@@ -267,6 +284,7 @@ app.post('/stories-update', (req, res) => {
                         .then(ok => {
                             if (ok.writeTime) {
                                 res.json({ saved: true })
+                                console.log("/stories-update --- newChapter --- done")
                             }
                         })
                 } else {
@@ -296,17 +314,21 @@ app.post('/stories-update', (req, res) => {
                     }
 
                     if (story.author.id === chapter.author.id) {
-                        stories.doc(chapter.storyID).set({ chapters: chaptersArray, spectators: spectatorsArray, nextTurn: chapter.nextTurn }, { merge: true })
+                        let lastReply = new Date().getTime();
+                        stories.doc(chapter.storyID).set({ lastReply: lastReply, chapters: chaptersArray, spectators: spectatorsArray, nextTurn: chapter.nextTurn }, { merge: true })
                             .then(ok => {
                                 if (ok.writeTime) {
                                     res.json({ saved: true })
+                                    console.log("/stories-update --- newChapter --- done")
                                 }
                             })
                     } else {
-                        stories.doc(chapter.storyID).set({ chapters: chaptersArray, spectators: spectatorsArray }, { merge: true })
+                        let lastReply = new Date().getTime();
+                        stories.doc(chapter.storyID).set({ lastReply: lastReply, chapters: chaptersArray, spectators: spectatorsArray }, { merge: true })
                             .then(ok => {
                                 if (ok.writeTime) {
                                     res.json({ saved: true })
+                                    console.log("/stories-update --- newChapter --- done")
                                 }
                             })
                     };
@@ -326,6 +348,7 @@ app.post('/stories-update', (req, res) => {
                 }
             })
     } else if (seen) {
+        console.log("/stories-update --- seen --- done")
         let { id, refID } = req.body.seen;
         let spectatorsArray = [];
 
@@ -343,10 +366,12 @@ app.post('/stories-update', (req, res) => {
                     .then(ok => {
                         if (ok.writeTime) {
                             res.json({ saved: true })
+                            console.log("/stories-update --- seen --- done")
                         }
                     })
             })
     } else if (deleteChapter) {
+        console.log("/stories-update --- deleteChapter")
         let { chapterIndex, refID } = req.body.deleteChapter;
         let chapters = [];
         stories.doc(refID).get()
@@ -358,10 +383,12 @@ app.post('/stories-update', (req, res) => {
                     .then(ok => {
                         if (ok.writeTime) {
                             res.json({ saved: true })
+                            console.log("/stories-update --- deleteChapter --- done")
                         }
                     })
             })
     } else if (createStory) {
+        console.log("/stories-update --- createStory")
 
         let story = req.body.createStory;
         story.id = new Date().getTime();
@@ -374,19 +401,24 @@ app.post('/stories-update', (req, res) => {
         story.spectators.push(spectator);
         story.chapters = [];
         story.isReady = true;
-        console.log(story);
+        story.lastReply = new Date().getTime();
         stories.add(story)
             .then((docRef) => {
                 stories.doc(docRef.id).update({ refID: docRef.id });
                 res.json({ id: story.id });
+                console.log("/stories-update --- createStory --- done")
+
             })
     } else if (closeStory) {
+        console.log("/stories-update --- closeStory")
+
         const { refID, place, closeTime } = req.body.closeStory;
 
         stories.doc(refID).set({ closeTime: closeTime, place: place }, { merge: true })
             .then(ok => {
                 if (ok.writeTime) {
                     res.json({ saved: true })
+                    console.log("/stories-update --- closeStory --- done")
                 }
             })
             .catch(err => console.log(err))
@@ -394,6 +426,7 @@ app.post('/stories-update', (req, res) => {
 })
 
 app.post('/characters-fetch', (req, res) => {
+    console.log("/characters-fetch")
     let characters = [];
 
     players.orderBy("id").get()
@@ -407,11 +440,15 @@ app.post('/characters-fetch', (req, res) => {
                 }
             })
             res.json({ characters });
+            console.log("/characters-fetch --- done")
+
         })
 
 })
 
 app.post('/mails-create', (req, res) => {
+    console.log("/mails-create")
+
     const message = req.body.newMessage;
     const { addreesse, sender, text, title } = message;
     console.log(addreesse)
@@ -428,6 +465,8 @@ app.post('/mails-create', (req, res) => {
         .then((docRef) => {
             mails.doc(docRef.id).update({ mailsDocRef: docRef.id });
             res.json({ isSaved: true });
+            console.log("/mails-create --- done")
+
             players.doc(addreesse.docRef).update({
                 mailsField: FieldValue.increment(1)
             })
@@ -437,6 +476,7 @@ app.post('/mails-create', (req, res) => {
 });
 
 app.post('/mails-fetch', (req, res) => {
+    console.log("/mails-fetch")
     const playerLogin = req.body.login;
     let mailsArray = [];
 
@@ -458,34 +498,19 @@ app.post('/mails-fetch', (req, res) => {
                                 })
                             }
                             res.json({ mailsArray })
+                            console.log("/mails-fetch --- done")
                         })
                 })
             }
         })
 
-    // if (playerID === undefined) {
-    //     console.log("Nie moge pobrać maili")
-    //     res.json({ failed: true })
-    // } else {
-    //     mails.where("between", 'array-contains', playerID).orderBy("id", "asc").get()
-    //         .then(snapshot => {
-    //             if (snapshot.size === 0) {
-    //                 console.log("Nie ma maili")
-    //             } else {
-    //                 snapshot.forEach(doc => {
-    //                     let story = doc.data();
-    //                     mailsArray.push(story);
-    //                 })
-    //             }
-    //             res.json({ mailsArray })
-    //         })
-    // }
-
 })
 
 app.post('/mails-update', (req, res) => {
+    console.log("/mails-update")
     const { newMessage, read, newViewer, deletedPlayer } = req.body;
     if (newMessage) {
+        console.log("/mails-update --- newMessage")
         const mailRecord = req.body.newMessage;
         let recordsArray = [];
         let addreesse = {};
@@ -545,6 +570,8 @@ app.post('/mails-update', (req, res) => {
                     .then(ok => {
                         if (ok.writeTime) {
                             res.json({ saved: true })
+                            console.log("/mails-update --- newMessage --- done")
+
                         }
                     })
                     .catch(err => console.log(err));
@@ -556,6 +583,8 @@ app.post('/mails-update', (req, res) => {
                 })
             })
     } else if (read) {
+        console.log("/mails-update --- read")
+
         const { id, refID } = req.body.read;
         let addreesse = {};
         let sender = {};
@@ -584,8 +613,12 @@ app.post('/mails-update', (req, res) => {
 
 
                 res.json({ saved: true })
+                console.log("/mails-update --- read --- done")
+
             })
     } else if (newViewer) {
+        console.log("/mails-update --- newViewer")
+
         const { mailsDocRef, viewer } = req.body.newViewer;
         let between = [];
         let viewers = [];
@@ -598,12 +631,16 @@ app.post('/mails-update', (req, res) => {
                 viewers = mail.viewers;
                 viewers.push(viewer);
                 mails.doc(mailsDocRef).set({ between: between, viewers: viewers }, { merge: true })
+                console.log("/mails-update --- newViewer --- done")
+
             })
         players.doc(viewer.docRef).update({
             mailsField: FieldValue.increment(1)
         })
             .catch(err => console.log(err))
     } else if (deletedPlayer) {
+        console.log("/mails-update --- deletePlayer")
+
         const { name, mailsDocRef } = req.body.deletedPlayer;
 
         let between = [];
@@ -628,12 +665,16 @@ app.post('/mails-update', (req, res) => {
                 })
                 between.splice(removedIndex, 1)
                 mails.doc(mailsDocRef).set({ between: between, viewers: viewers }, { merge: true })
+                console.log("/mails-update --- deletePlayer --- done")
+
             })
     }
 
 })
 
 app.post('/stories/prive-create', (req, res) => {
+    console.log("/stories/prive-create")
+
     let story = req.body.story;
 
     let priveStory = {};
@@ -680,6 +721,8 @@ app.post('/stories/prive-create', (req, res) => {
             priveStories.doc(docRef.id).update({ refID: docRef.id });
             let id = priveStory.id;
             res.json({ id: id })
+            console.log("/stories/prive-create --- done")
+
         })
     spectators.forEach(spectator => {
         players.doc(spectator.docRef).update({
@@ -691,6 +734,8 @@ app.post('/stories/prive-create', (req, res) => {
 })
 
 app.post('/stories/prive-fetch', (req, res) => {
+    console.log("/stories/prive-fetch")
+
     let mail = req.body.mail;
     let priveStoriesArray = []
 
@@ -708,6 +753,8 @@ app.post('/stories/prive-fetch', (req, res) => {
                             priveStoriesArray.push(story);
                         })
                         res.json({ saved: true, priveStoriesArray });
+                        console.log("/stories/prive-fetch --- done")
+
                     })
             })
 
@@ -717,9 +764,13 @@ app.post('/stories/prive-fetch', (req, res) => {
 })
 
 app.post('/stories/prive-update', (req, res) => {
+    console.log("/stories/prive-update")
+
     const { newChapter, seen, deleteChapter, deletedPlayer, addedPlayer, closedPrive } = req.body;
 
     if (seen) {
+        console.log("/stories/prive-update --- seen")
+
         let { id, refID } = req.body.seen;
         let spectatorsArray = [];
 
@@ -738,10 +789,14 @@ app.post('/stories/prive-update', (req, res) => {
                         if (ok.writeTime) {
                             console.log("seen")
                             res.json({ saved: true })
+                            console.log("/stories/prive-update --- seen --- done")
+
                         }
                     })
             })
     } else if (newChapter) {
+        console.log("/stories/prive-update --- newChapter")
+
         let chapter = req.body.newChapter;
         let chaptersArray = [];
         let spectatorsArray = [];
@@ -755,6 +810,8 @@ app.post('/stories/prive-update', (req, res) => {
                         .then(ok => {
                             if (ok.writeTime) {
                                 res.json({ saved: true })
+                                console.log("/stories/prive-update --- newChapter --- done")
+
                             }
                         })
                 } else {
@@ -807,6 +864,8 @@ app.post('/stories/prive-update', (req, res) => {
                 }
             })
     } else if (deleteChapter) {
+        console.log("/stories/prive-update --- deleteChapter")
+
         let { chapterIndex, refID } = req.body.deleteChapter;
         let chapters = [];
         priveStories.doc(refID).get()
@@ -818,10 +877,14 @@ app.post('/stories/prive-update', (req, res) => {
                     .then(ok => {
                         if (ok.writeTime) {
                             res.json({ saved: true })
+                            console.log("/stories/prive-update --- deleteChapter --- done")
+
                         }
                     })
             })
     } else if (deletedPlayer) {
+        console.log("/stories/prive-update --- deletedPlayer")
+
         const { name, refID } = req.body.deletedPlayer;
 
         let between = [];
@@ -852,11 +915,15 @@ app.post('/stories/prive-update', (req, res) => {
                     .then(ok => {
                         if (ok.writeTime) {
                             res.json({ saved: true })
+                            console.log("/stories/prive-update --- deletedPlayer  --- done")
+
                         }
                     })
 
             })
     } else if (addedPlayer) {
+        console.log("/stories/prive-update --- addPlayer")
+
         const { player, refID } = req.body.addedPlayer;
 
         let between = [];
@@ -880,6 +947,8 @@ app.post('/stories/prive-update', (req, res) => {
                     .then(ok => {
                         if (ok.writeTime) {
                             res.json({ saved: true })
+                            console.log("/stories/prive-update --- addPlayer --- done")
+
                         }
                     })
                 players.doc(player.accountDocRef).update({
@@ -889,12 +958,16 @@ app.post('/stories/prive-update', (req, res) => {
 
             })
     } else if (closedPrive) {
+        console.log("/stories/prive-update --- closedPrive")
+
         const { refID, closed, closeTime } = req.body.closedPrive;
 
         priveStories.doc(refID).set({ closed: closed, closeTime: closeTime }, { merge: true })
             .then(ok => {
                 if (ok.writeTime) {
                     res.json({ saved: true })
+                    console.log("/stories/prive-update --- closedPrive --- done")
+
                 }
             })
     }
