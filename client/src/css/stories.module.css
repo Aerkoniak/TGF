@@ -1,0 +1,87 @@
+.main {
+    text-align: left;
+}
+
+
+  @media (min-width: 1280px) {
+    .main {
+        min-height: 100vh;
+        text-align: justify;
+        padding: 100px calc(10vw + 20px) 20vh calc(20vw + 20px);
+        display: flex;
+        flex-direction: column;      
+    }
+    .links {
+        width: 100%;
+        margin: 0 auto;
+        list-style: none;
+        display: flex;
+    }
+    .links a {
+        flex-basis: 25%;
+        padding: 15px 10px;
+        font-size: calc(10px + 1vmin);
+        text-align: center;
+        color: black;
+        border: 2px solid grey;
+        border-top-left-radius: 30px;
+        border-top-right-radius: 30px;
+        border-bottom-left-radius: 5px;
+        border-bottom-right-radius: 5px;
+        transition: 0.3s;
+    }
+    .links a.active {
+        border-bottom-color: white;
+        transition: 0.3s;
+    }
+    .links a:hover {
+        border-bottom-color: white;        transition: 0.3s;
+    }
+
+    .addStory {
+        text-align: center;
+        cursor: pointer;
+    }
+
+    /* DISTRICT */
+
+    .district {
+        display: flex;
+        flex-direction: column;
+        margin: 50px 0;
+        text-align: center;
+    }
+    .storyLinkWrap {
+        margin: 5px auto;
+        width: 80%;
+        display: flex;
+    }
+    .storyLinkWrap p {
+        margin: 0;
+    }
+    .author, .title, .date {
+        align-self: center;
+        margin: 0;
+        padding: 10px 0;
+        flex-basis: 30%;
+        text-align: center;
+        font-size: calc(9px + 1vmin);
+        color: black;
+    }
+
+    /* SINGLESTORY */
+
+    
+    .InfoSlide {
+        text-align: center;
+        background-color: #ccc;
+        height: 20vh;
+        border-radius: 10px;
+    }
+    .storyPlayers{
+        display: flex;
+        margin: 0 auto;
+        list-style: none;
+    }
+    
+  }
