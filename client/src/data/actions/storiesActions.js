@@ -10,26 +10,7 @@ export const fetchStories = () => dispatch => {
         })
 }
 
-export const addChapter = (chapter) => dispatch => {
-    console.log(chapter);
-    let newChapter = {};
-    let author = {}
-    newChapter.replyDate = createDate();
-    newChapter.id = new Date().getTime();
-    newChapter.msg = chapter.text;
-    newChapter.storyID = chapter.place.refID;
-    author.name = chapter.player.name;
-    author.id = chapter.player.id;
-    author.rank = chapter.player.rank;
-    author.docRef = chapter.player.accountDocRef;
-    newChapter.author = author;
-    if (chapter.nextTurn) {
-        newChapter.nextTurn = createDate(chapter.nextTurn)
-    }
 
-    axios.post('/stories-update', { newChapter })
-    // then jest niepotrzebny, ponieważ onSnapshot w sesji załatwia reload sesji.
-}
 
 export const deleteChapter = (chapterIndex, refID) => dispatch => {
     let deleteChapter = {};
@@ -37,7 +18,6 @@ export const deleteChapter = (chapterIndex, refID) => dispatch => {
     deleteChapter.refID = refID;
     dispatch({ type: 'STORY_EDITED' })
     axios.post('/stories-update', { deleteChapter })
-    // then jest niepotrzebny, ponieważ onSnapshot w sesji załatwia reload sesji.
 }
 
 export const changeSeenInSession = (id, refID) => dispatch => {
@@ -48,18 +28,13 @@ export const changeSeenInSession = (id, refID) => dispatch => {
     dispatch({ type: "STORY_SEEN" });
 }
 
-export const createStory = story => dispatch => {
-    story.startDate = createDate();
-    let createStory = story;
-    dispatch({ type: "STORIES_CREATE_START" })
-    axios.post('/stories-update', { createStory })
+
+export const closeStory = story => dispatch => {
+    story.closeTime = createDate();
+    story.place = "4";
+    let closeStory = story;
+    axios.post('/stories-update', { closeStory })
         .then(res => {
-            console.log(res.data);
-            let id = res.data.id
-            dispatch({ type: 'DOWNLOAD_NEED', payload: true })
-            dispatch({ type: "STORY_CREATE_SUCCESS", id })
 
         })
-
 }
-
