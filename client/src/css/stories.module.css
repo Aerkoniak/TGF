@@ -68,6 +68,11 @@
         font-size: calc(9px + 1vmin);
         color: black;
     }
+    .titleNew {
+        composes: title;
+        color: red;
+    }
+
 
     /* SINGLESTORY */
 
