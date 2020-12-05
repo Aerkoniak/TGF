@@ -1,15 +1,12 @@
 import React, { useState } from 'react';
 import { connect } from 'react-redux'
 
-import { sendMail } from '../../data/actions/mailsActions';
-import { parseString } from '../../data/parseString';
-import RichEditor from '../RichEditor/RichEditor'
-import parse from 'html-react-parser';
+import { sendMail } from '../../data/slices/mailsSlice';
 import TinyEditor from '../RichEditor/TinyEditor';
 
 
 
-const NewMessageCreator = ({ player, characters, sendMail }) => {
+const NewMessageCreator = ({ player, characters, sendMail, type }) => {
 
     const [addresseeValue, setAddressee] = useState("");
     const [titleValue, setTitle] = useState("");
@@ -53,6 +50,7 @@ const NewMessageCreator = ({ player, characters, sendMail }) => {
     return (
         <>
             <form className="newMessageCreatorForm" onSubmit={submitNewMessage}>
+                <input type="text" value={`Typ wiadomości - ${type}`} className="newMessageTitle" style={{ borderColor: "red" }} disabled />
                 <input type="text" placeholder="Adresat" className="newMessageAddressee" list="playerListSet" value={addresseeValue} onChange={(e) => {
                     setAddressee(e.target.value);
                     searchForPlayer(addresseeValue)
@@ -61,10 +59,9 @@ const NewMessageCreator = ({ player, characters, sendMail }) => {
                     {playerListSet}
                 </datalist>
                 <input type="text" placeholder="Tytuł" className="newMessageTitle" value={titleValue} onChange={(e) => setTitle(e.target.value)} />
-                
-                {/* <RichEditor action={sendMail} addreesse={seachedPlayersList[0]} player={player} title={titleValue} /> */}
-                <TinyEditor sendMail={sendMail} addreesse={seachedPlayersList[0]} title={titleValue}   />
-              
+
+                <TinyEditor sendMail={sendMail} addreesse={seachedPlayersList[0]} title={titleValue} />
+
             </form>
         </>
     );
