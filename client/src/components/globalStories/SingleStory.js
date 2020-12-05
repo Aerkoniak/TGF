@@ -6,20 +6,35 @@ import styles from '../../css/stories.module.css';
 import { Accordion, Card, Carousel } from 'react-bootstrap'
 
 import { storiesDB } from '../../data/firebase/firebaseConfig'
-import { fetchGlobalStories, selectSend, addChapter, deleteChapter } from '../../data/slices/globalStoriesSlice'
+import { fetchGlobalStories, selectSend, addChapter, deleteChapter, changeSeenInSession } from '../../data/slices/globalStoriesSlice'
 
 import ProfileViewer from '../ProfileViewer/ProfileViewer';
 import TinyEditor from '../RichEditor/TinyEditor';
 
-const SingleStory = ({ player, story, fetchGlobalStories, addChapter, deleteChapter }) => {
+const SingleStory = ({ player, story, fetchGlobalStories, addChapter, deleteChapter, changeSeenInSession }) => {
+
+    const [unSeen, confirmSeen] = useState(false);
 
     const isSend = useSelector(selectSend);
     const [InfoIndex, setIndex] = useState(0);
     const [isAuthor, confirmAuthor] = useState(false);
     const [newChapter, setNewChapter] = useState(false);
+
     const handleSelect = (selectedIndex, e) => {
         setIndex(selectedIndex);
     };
+
+    useEffect(() => {
+        if (!unSeen) {
+            story.spectators.map(spectator => {
+                if (spectator.id === player.id && !spectator.seen) {
+                    changeSeenInSession(player.id, story.refID);
+                    confirmSeen(true)
+                }
+            })
+        }
+    }, [story])
+
     useEffect(() => {
         if (player.id === story.author.id) confirmAuthor(true)
         else confirmAuthor(false)
@@ -30,15 +45,16 @@ const SingleStory = ({ player, story, fetchGlobalStories, addChapter, deleteChap
     }, [isSend])
 
     useEffect(() => {
+        console.log("SingleStory - useEffect - onSnapshot - req")
         const unsubscribe = storiesDB.doc(`${story.refID}`)
             .onSnapshot(doc => {
-                let data = doc.data();
+                console.log("SingleStory - useEffect - onSnapshot - response & fetch")
                 fetchGlobalStories()
             });
         return function cleanup() {
             unsubscribe()
         }
-    }, [story])
+    }, [isSend])
 
     const deleteChapterSupporter = e => {
         let chapterIndex = e.target.id;
@@ -131,7 +147,8 @@ const MapStateToProps = state => ({
 const MapDispatchToProps = dispatch => ({
     fetchGlobalStories: () => dispatch(fetchGlobalStories()),
     addChapter: (chapter) => dispatch(addChapter(chapter)),
-    deleteChapter: (index, ID) => dispatch(deleteChapter(index, ID))
+    deleteChapter: (index, ID) => dispatch(deleteChapter(index, ID)),
+    changeSeenInSession: (id, refID) => dispatch(changeSeenInSession(id, refID)),
 })
 
 export default connect(MapStateToProps, MapDispatchToProps)(SingleStory);

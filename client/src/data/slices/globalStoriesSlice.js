@@ -83,6 +83,14 @@ export const deleteChapter = (chapterIndex, refID) => dispatch => {
     axios.post('/stories-update', { deleteChapter })
 }
 
+export const changeSeenInSession = (id, refID) => dispatch => {
+    let seen = {};
+    seen.id = id;
+    seen.refID = refID;
+    axios.post('/stories-update', { seen })
+    dispatch(toggleID(false));
+}
+
 
 export const selectSend = state => state.globalStories.isSend;
 export const selectFetch = state => state.globalStories.isFetched;
