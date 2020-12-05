@@ -1,81 +1,61 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { NavLink, Route, Switch } from 'react-router-dom';
 import { connect } from 'react-redux';
+import _ from 'lodash';
+import styles from '../../css/mails.module.css'
 
 import ProfileViewer from '../ProfileViewer/ProfileViewer';
-import NewMessageCreator from '../NewMessageCreator/NewMessageCreator';
-import { updateActive } from '../../data/actions/generalActions';
+import MailsCol from '../MailFeature/MailsCol';
 
 
-const MailPage = ({ mails, msg, player, isLogged }) => {
+const MailPage = ({ mails, player }) => {
 
-    useEffect(() => {
-        if (isLogged === "logged") {
-            updateActive(player)
-            const myInterval = setInterval(updateActive(player), 300000);
-            setTimeout(() => {
-                clearInterval(myInterval);
-            }, 900000)
-            return function cleanup() {
-                clearInterval(myInterval);
-            }
-        }
-    }, [isLogged])
 
-    const [newMessage, writeNewMessage] = useState(false)
+
+    const [newMessage, toggleNewMessage] = useState(false);
+    const [mailsArray, setMailsArray] = useState([])
 
     useEffect(() => {
-        if (newMessage) {
-            writeNewMessage(false)
-        }
+        let flag = false;
+        mailsArray.forEach(mail => {
+            if (player.id === mail.addreesse.id && !mail.addreesse.read) flag = true;
+            else if (player.id === mail.sender.id && !mail.sender.read) flag = true;
+            mail.viewers.map(viewer => {
+                if (player.id === viewer.id && !viewer.read) flag = true;
+            })
+        })
+        if (flag) toggleNewMessage(true)
+        else toggleNewMessage(false)
+    }, [mailsArray])
+
+    useEffect(() => {
+        let mailsArr = _.orderBy(mails, ["id"], ["desc"]);
+        setMailsArray(mailsArr)
     }, [mails])
 
-    // const mailList = mails.map(mail => ((
-    //     <div className="oneMail" key={mail.id}>
-    //         <Link to={`/mails/id${mail.id}`}><p className="test">{mail.title}</p></Link>
-    //         <p className="test">{mail.startDate}</p>
-    //         <p className="test">{mail.sender.name}</p>
-    //     </div>
-    // ))).reverse()
-
-
-    const mailList = mails.map(mail => {
-        let newMessage = false;
-        if (player.id === mail.addreesse.id && !mail.addreesse.read) newMessage = true
-        else if (player.id === mail.sender.id && !mail.sender.read) newMessage = true
-        mail.viewers.map(viewer => {
-            if (player.id === viewer.id && !viewer.read) newMessage = true
-        })
-
-        return (
-            <div className="oneMail" key={mail.id}>
-                <Link to={`/mails/id${mail.id}`}><p className={newMessage ? "linkTitle new" : "linkTitle "}>{mail.title}</p></Link>
-                <p className="mailDate">{mail.startDate}</p>
-                <p className="mailAuthor">{mail.sender.name}</p>
-            </div>
-        )
-    }
-    ).reverse()
 
 
     return (
         <section className="mailPage mainPage">
-            <h4 className="note">Poczta:</h4>
-            <button className="newMessageCreatorButton" onClick={() => writeNewMessage(!newMessage)} >Rozpocznij nową konwersację</button>
-            {newMessage ? <NewMessageCreator /> : null}
-            <div className="mails">
-                {mailList}
-            </div>
+            <ul className={styles.mailTypeLinks}>
+                <li> <NavLink className={newMessage ? styles.newMailTypeLink : styles.typeLink} to="/mails/prive">Poczta prywatna</NavLink> </li>
+                <li> <NavLink className={styles.typeLink} to="/mails/fab">Poczta fabularna</NavLink> </li>
+            </ul>
 
+            <section>
+                <Switch>
+                    <Route path="/mails/prive" render={(routeProps) => (<MailsCol {...routeProps} mailsArray={mailsArray} />)} />
+                    <Route path="" />
+                </Switch>
+            </section>
 
             <ProfileViewer />
-
         </section>
     );
 }
 
 const MapStateToProps = state => ({
-    mails: state.mails.mails,
+    mails: state.m.otMails,
     msg: state.player.msg,
     player: state.player.player,
     isLogged: state.player.isLogged,
