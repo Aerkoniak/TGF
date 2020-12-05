@@ -459,6 +459,7 @@ app.post('/mails-create', (req, res) => {
     newMail.sender.read = true;
     newMail.between = [addreesse.id, sender.id];
     newMail.records = [];
+    newMail.lastReply = message.startDate;
     // console.log(newMail);
 
     mails.add(newMail)
@@ -564,9 +565,9 @@ app.post('/mails-update', (req, res) => {
                         }
                     })
                 }
+                let lastReply = mailRecord.replyDate;
 
-
-                mails.doc(mailRecord.mailsDocRef).set({ records: recordsArray, sender: sender, addreesse: addreesse, viewers: viewers }, { merge: true })
+                mails.doc(mailRecord.mailsDocRef).set({ records: recordsArray, sender: sender, addreesse: addreesse, viewers: viewers, lastReply: lastReply }, { merge: true })
                     .then(ok => {
                         if (ok.writeTime) {
                             res.json({ saved: true })
