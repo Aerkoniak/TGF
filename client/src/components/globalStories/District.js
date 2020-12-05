@@ -5,13 +5,31 @@ import { connect } from 'react-redux';
 
 import styles from '../../css/stories.module.css';
 
-const District = ({ district, storiesArray }) => {
+const District = ({ player, district, storiesArray }) => {
+
+    // useEffect(() => {
+    //     let counter = 0;
+    //     district.forEach(story => {
+    //         story.forEach(specs => {
+    //             specs.forEach(spectator => {
+    //                 if (player.id === spectator.id && !spectator.seen) {
+    //                     counter++
+    //                 }
+    //             })
+    //         })
+    //     })
+    //     if (counter) 
+    //  }, [district])
 
     const storiesLinks = storiesArray.map((story, index) => {
+        let flag = false;
+        story.spectators.forEach(spec => {
+            if (player.id === spec.id & !spec.seen) flag = true;
+        })
         return (
             <div key={story.id} className={styles.storyLinkWrap} >
                 <p className={styles.author}>{story.author.name}</p>
-                <Link className={styles.title} to={`/story/id${story.id}`}><p>{story.title}</p></Link>
+                <Link className={flag ? styles.titleNew : styles.title} to={`/story/id${story.id}`}><p>{story.title}</p></Link>
                 <p className={styles.date}>{story.nextTurn}</p>
             </div>
         )
@@ -30,4 +48,8 @@ const District = ({ district, storiesArray }) => {
     );
 }
 
-export default District;
+const MapStateToProps = state => ({
+    player: state.player.player
+})
+
+export default connect(MapStateToProps)(District);
