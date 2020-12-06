@@ -4,13 +4,15 @@ import { connect } from 'react-redux';
 import parse from 'html-react-parser';
 
 
-import { changeSeenInPriveSession, fetchPriveStories, addChapter, deleteChapter, deletePlayerFromStory, addingPlayerFromStory, } from '../../data/actions/priveStoriesActions';
-import {updateActive} from '../../data/actions/generalActions';
+import { changeSeenInPriveSession, fetchPriveStories, addChapter, deleteChapter, deletePlayerFromStory, addingPlayerFromStory, closePrive } from '../../data/actions/priveStoriesActions';
+import { updateActive } from '../../data/actions/generalActions';
 import { priveStoriesDB } from '../../data/firebase/firebaseConfig'
-import RichEditor from '../RichEditor/RichEditor';
 import ProfileViewer from '../ProfileViewer/ProfileViewer';
+import { setActiveInterval } from '../../data/usefullFN';
+import TinyEditor from '../RichEditor/TinyEditor';
 
-const PriveStory = ({ story, player, addChapter, changeSeenInPriveSession, fetchPriveStories, deleteChapter, deletePlayerFromStory, characters, addingPlayerFromStory, updateActive }) => {
+
+const PriveStory = ({ story, player, addChapter, changeSeenInPriveSession, fetchPriveStories, deleteChapter, deletePlayerFromStory, characters, addingPlayerFromStory, updateActive, closePrive }) => {
 
 
     useEffect(() => {
@@ -24,11 +26,13 @@ const PriveStory = ({ story, player, addChapter, changeSeenInPriveSession, fetch
     useEffect(() => {
         const unsubscribe = priveStoriesDB.doc(`${story.refID}`)
             .onSnapshot(doc => {
+                console.log("PriveStory - useEffect - onSnapshot")
                 let data = doc.data();
                 fetchPriveStories(player.login)
             })
+
         return function cleanup() {
-            unsubscribe()
+            unsubscribe();
         }
     }, [])
 
@@ -44,7 +48,7 @@ const PriveStory = ({ story, player, addChapter, changeSeenInPriveSession, fetch
 
 
     useEffect(() => {
-        if (player.id === story.author.id && player.rank <= 2) setIsAuthor(true);
+        if (player.id === story.author.id) setIsAuthor(true);
     }, [player])
 
     const submitAnswer = e => {
@@ -95,6 +99,12 @@ const PriveStory = ({ story, player, addChapter, changeSeenInPriveSession, fetch
         toggleAddPlayers(false)
     }
 
+    const closeStorySupporter = e => {
+        e.preventDefault();
+        let closedStory = story;
+        closePrive(closedStory)
+    }
+
     const chapters = story.chapters.map((chapter, index) => ((
         <div className="chapter" key={chapter.id} >
             <p className="chapterAuthor"  >{chapter.author.name}</p>
@@ -125,14 +135,14 @@ const PriveStory = ({ story, player, addChapter, changeSeenInPriveSession, fetch
             <div className="storyInfo">
                 <p className="storyTitle">{story.title}</p>
                 <p className="showIntro" onClick={() => showIntro(!intro)}  >Kliknij by pokazać lub schować wstęp</p>
-                {player.rank <= 3 ? <p className="answer" onClick={() => toggleTA(!textareaHidden)} >Odpisz</p> : null}
+                {player.rank <= 3 && !story.closed ? <p className="answer" onClick={() => toggleTA(!textareaHidden)} >Odpisz</p> : null}
+                {story.closed ? <h2 className="test">Sesja zamknięta</h2> : null}
                 {!story.openMsg || story.openMsg === "undefined" ? <h2 onClick={() => toggleTA(!textareaHidden)} className="test">Napisz wprowadzenie do sesji.</h2> :
                     intro ? <p className="openingMsg">{parse(story.openMsg)}</p> : null
                 }
                 {/* {intro ? <p className="openingMsg">{`${story.openMsg}`}</p> : null} */}
                 <form className={textareaHidden ? "answerForm hidden" : "answerForm"} onSubmit={submitAnswer} >
-
-                    <RichEditor action={addChapter} place={story} player={player} />
+                    <TinyEditor addChapterPrive={addChapter} place={story} withHiddenContent />
                 </form>
 
             </div>
@@ -149,11 +159,15 @@ const PriveStory = ({ story, player, addChapter, changeSeenInPriveSession, fetch
                         <p className="storyAuthor">{story.author.name}</p>
                         <label className="sideBarLabel" htmlFor="">Sesja założona:</label>
                         <p className="storyDate">{story.startDate}</p>
+                        {story.closed ? <>
+                            <label className="sideBarLabel" htmlFor="">Sesja zakończona:</label>
+                            <p className="storyDate">{story.closeTime}</p>
+                        </> : null}
                         <label className="sideBarLabel" htmlFor="">Grający:</label>
                         <ul className="storyPlayers">
                             {players}
                         </ul>
-                        {isAuthor ? <>
+                        {isAuthor && !story.closed ? <>
                             <button className="addDeletePlayers" onClick={(e) => {
                                 e.preventDefault();
                                 toggleDeletePlayers(!deletePlayers)
@@ -163,7 +177,7 @@ const PriveStory = ({ story, player, addChapter, changeSeenInPriveSession, fetch
                                 toggleAddPlayers(!addPlayers)
                             }} >Włącz dodawanie graczy</button>
                         </> : null}
-                        
+
 
                         {addPlayers ?
                             <div className="addPlayers">
@@ -177,9 +191,10 @@ const PriveStory = ({ story, player, addChapter, changeSeenInPriveSession, fetch
                                     {playerListSet}
                                 </datalist>
                                 <button className="addPLayer" onClick={addPlayerSupporter} >Dodaj gracza do sesji</button>
-
                             </div>
                             : null}
+
+                        {isAuthor ? <button className="closeStory prive" onClick={closeStorySupporter}>Zakończ sesję</button> : null}
                     </div>
                     :
                     <ProfileViewer />
@@ -203,6 +218,7 @@ const MapDispatchToProps = dispatch => ({
     deletePlayerFromStory: player => dispatch(deletePlayerFromStory(player)),
     addingPlayerFromStory: player => dispatch(addingPlayerFromStory(player)),
     updateActive: player => dispatch(updateActive(player)),
+    closePrive: story => dispatch(closePrive(story))
 })
 
 export default connect(MapStateToProps, MapDispatchToProps)(PriveStory);

@@ -74,11 +74,13 @@ const SingleStory = ({ player, story, fetchGlobalStories, addChapter, deleteChap
     })
 
     const chapters = story.chapters.map((chapter, index) => ((
-        <div className="chapter" key={chapter.id} >
-            <p className="chapterAuthor"  >{chapter.author.name}</p>
-            <p className="replyDate">{chapter.replyDate}</p>
-            <div className="chapterMsg">{parse(chapter.msg)}</div>
-            {player.rank <= 2 ? <p onClick={deleteChapterSupporter} className="deleteChapter" id={index}> x </p> : null}
+        <div className={styles.chapter} key={chapter.id} >
+            <p className={styles.chapterAuthor}  >{chapter.author.name}</p>
+            <p className={styles.replyDate}>{chapter.replyDate}</p>
+            <div className={styles.chapterMsg}>{parse(chapter.msg)}</div>
+            {player.rank <= 2 ? <p onClick={deleteChapterSupporter} className={styles.deleteChapter} id={index}> x </p> : null}
+            {player.rank <= 2 && chapter.hiddenContent ? <p className={styles.hiddenContent}>{chapter.hiddenContent}</p> : null}
+
         </div>
     ))).reverse()
 
@@ -127,7 +129,7 @@ const SingleStory = ({ player, story, fetchGlobalStories, addChapter, deleteChap
                         </Accordion.Toggle>
                         <Accordion.Collapse eventKey="0">
                             <Card.Body>
-                                <TinyEditor addChapterGlobal={addChapter} place={story} isAuthor={isAuthor ? true : false} />
+                                <TinyEditor addChapterGlobal={addChapter} place={story} isAuthor={isAuthor ? true : false} withHiddenContent />
                             </Card.Body>
                         </Accordion.Collapse>
                     </Card>
