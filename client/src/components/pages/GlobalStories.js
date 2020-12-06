@@ -95,10 +95,10 @@ const GlobalStories = ({ globalStories, player }) => {
     return (
         <section className={styles.main}>
             <nav className={styles.links}>
-                <NavLink to="/stories/commons">Dzielnica Mieszczańska <span>{commonDistNewCounter ? commonDistNewCounter : null}</span> </NavLink>
-                <NavLink to="/stories/trades">Dzielnica Kupiecka <span>{tradeDistNewCounter ? tradeDistNewCounter : null}</span> </NavLink>
-                <NavLink to="/stories/nobles">Dzielnica Szlachecka <span>{nobleDistNewCounter ? nobleDistNewCounter : null}</span> </NavLink>
-                <NavLink to="/stories/closed">Sesje Zamknięte</NavLink>
+                <NavLink className={styles.navLink} activeClassName={styles.navLinkActive} to="/stories/commons">Dzielnica Mieszczańska <span>{commonDistNewCounter ? commonDistNewCounter : null}</span> </NavLink>
+                <NavLink className={styles.navLink} activeClassName={styles.navLinkActive} to="/stories/trades">Dzielnica Kupiecka <span>{tradeDistNewCounter ? tradeDistNewCounter : null}</span> </NavLink>
+                <NavLink className={styles.navLink} activeClassName={styles.navLinkActive} to="/stories/nobles">Dzielnica Szlachecka <span>{nobleDistNewCounter ? nobleDistNewCounter : null}</span> </NavLink>
+                <NavLink className={styles.navLink} activeClassName={styles.navLinkActive} to="/stories/closed">Sesje Zamknięte</NavLink>
             </nav>
 
             {/* <Button size="lg" variant="outline-dark">Dodaj nową sesję</Button> */}
