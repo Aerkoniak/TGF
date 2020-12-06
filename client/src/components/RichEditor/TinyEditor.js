@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Editor } from '@tinymce/tinymce-react';
 import parse from 'html-react-parser';
+import styles from '../../css/editor.module.css'
 
 import { Button } from 'react-bootstrap';
 
@@ -14,7 +15,8 @@ class TinyEditor extends Component {
         dateValue: "",
         timeValue: "",
         warnings: "",
-
+        hiddenContent: "",
+        isHiddenAreaShown: false,
     }
 
     handleEditorChange = (content, editor) => {
@@ -52,6 +54,9 @@ class TinyEditor extends Component {
             chapter.text = this.state.content;
             chapter.place = place;
             chapter.player = player;
+            if (this.props.withHiddenContent) {
+                chapter.hiddenContent = this.state.hiddenContent;
+            }
 
             if (this.props.isAuthor) {
                 if (!this.state.dateValue || !this.state.timeValue) {
@@ -129,7 +134,7 @@ class TinyEditor extends Component {
 
     render() {
         return (
-            <div className="tinyEditor">
+            <div className={styles.tinyEditor}>
                 {this.props.isAuthor ? <div className="nextTurn">
                     <label className="nextTurnLabel" htmlFor="">Ustaw termin końca tury: </label>
                     <input type="date" value={this.state.dateValue} onChange={(e) => this.setState({
@@ -162,7 +167,13 @@ class TinyEditor extends Component {
                     }}
                     onEditorChange={this.handleEditorChange}
                 />
-                <Button className="addProfile" variant="outline-danger" onClick={this.confirmAction}>Zaakceptuj</Button>
+                {this.props.withHiddenContent ? <>
+                    {this.state.isHiddenAreaShown ? <textarea className={styles.hiddenMsg} value={this.state.hiddenContent} onChange={(e) => this.setState({ hiddenContent: e.target.value })} placeholder="Ten tekst zobaczy tylko MG" ></textarea> : null}
+                    <Button size="sm" className="addProfile" variant="outline-success" onClick={() => this.setState({ isHiddenAreaShown: !this.state.isHiddenAreaShown })} >Dodaj OT</Button>
+                </> : null}
+
+
+                <Button size="lg" className="addProfile" variant="outline-danger" onClick={this.confirmAction}>Zaakceptuj</Button>
             </div>
         );
     }
