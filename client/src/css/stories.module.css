@@ -17,7 +17,7 @@
         list-style: none;
         display: flex;
     }
-    .links a {
+    .navLink {
         flex-basis: 25%;
         padding: 15px 10px;
         font-size: calc(10px + 1vmin);
@@ -30,7 +30,8 @@
         border-bottom-right-radius: 5px;
         transition: 0.3s;
     }
-    .links a.active {
+    .navLinkActive {
+        composes: navLink;
         border-bottom-color: white;
         transition: 0.3s;
     }
@@ -88,5 +89,49 @@
         margin: 0 auto;
         list-style: none;
     }
-    
+
+    /* chapter */
+
+    .chapter {
+        position: relative;
+        display: flex;
+        flex-wrap: wrap;
+        padding: 0 0 20px 15px;
+        margin-bottom: 20px;
+        border-bottom: 1px solid black;
+      }
+      .chapterAuthor {
+        text-align: left;
+        flex-basis: 30%;
+        margin-top: 5px;
+      }
+      .replyDate {
+        text-align: left;
+        flex-basis: 30%;
+        padding-top: 5px;
+      }
+      
+      .chapterMsg{
+        flex-basis: 100%;
+        margin-top: 20px;
+        padding: 0;
+      }
+      .hiddenContent {
+          composes: chapterMsg;
+          padding: 10px 10px;
+          background-color: rgba(200, 200, 200, 0.6)
+      }
+      
+      .deleteChapter {
+        position: absolute;
+        top: 5%;
+        left: 90%;        
+        width: 25px;
+        height: 25px;
+        border-radius: 50%;
+        text-align: center;
+        line-height: 16px;
+        border: 2px solid grey;
+        cursor: pointer;
+      }
   }
