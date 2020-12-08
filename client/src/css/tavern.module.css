@@ -1,0 +1,92 @@
+@media (min-width: 1280px) {
+    .main {
+        min-height: 100vh;
+        text-align: justify;
+        padding: 100px calc(10vw + 20px) 20vh calc(20vw + 20px);
+        display: flex;
+        flex-direction: column;      
+    }
+
+    .tavernsRooms {
+        display: flex;
+    }
+
+    .tavernRoom {
+        flex-basis: 50%;
+        text-align: center;
+    }
+
+    /* Tavern */
+
+    .info {
+        text-align: left;
+    }
+    .roomsList {
+        text-align: center;
+        list-style: none;
+        margin: 0 auto;
+        display: flex;
+        width: 50%;
+        justify-content: center;
+    }
+    .roomsList li {
+        flex-basis: 30%;
+        /* background-color: #aaa; */
+    }
+    .roomLink {
+        display: inline-block;
+        color: black;
+        padding: 5px 20px;
+        transition: 0.4s;
+    }
+    .roomLink:hover {
+        transform: translateY(-10px);
+    }
+
+    /* Room */
+
+    .record {
+        display: flex;
+        flex-wrap: wrap;
+        border-left: 2px solid black;
+        margin: 15px 0;
+        padding: 10px 5px;
+    }
+    .author {
+        flex-basis: 50%;
+    }
+    .replyDate {
+        flex-basis: 50%;
+    }
+    .msg{
+        flex-basis: 100%;
+    }
+    .msg p{
+        margin: 0;
+    }
+
+    /* Editor */
+
+    .addRecordWrap {
+        margin: 50px 0;
+    }
+    .addRecord{
+        text-align: center;
+    }
+
+
+    /* Settings */ 
+
+    .settings {
+        min-height: 30vh;
+    }
+    .tavernDesc {
+        text-align: center;
+    }
+    .textArea {
+        display: block;
+        margin: 20px auto;
+        padding: 10px 15px;
+        width: 70%;
+    }
+}
