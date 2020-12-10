@@ -5,6 +5,7 @@
         padding: 100px calc(10vw + 20px) 20vh calc(20vw + 20px);
         display: flex;
         flex-direction: column;      
+        position: relative;
     }
 
     .tavernsRooms {
@@ -51,6 +52,11 @@
         border-left: 2px solid black;
         margin: 15px 0;
         padding: 10px 5px;
+        position: relative;
+    }
+    .recWhispered {
+        composes: record;
+        border: 1px solid red;
     }
     .author {
         flex-basis: 50%;
@@ -65,6 +71,17 @@
         margin: 0;
     }
 
+    .delete {
+        position: absolute;
+        top: 0;
+        right: 0;
+        cursor: pointer;
+    }
+    .edit {
+        composes: delete;
+        top: 50%;
+    }
+
     /* Editor */
 
     .addRecordWrap {
@@ -77,16 +94,89 @@
 
     /* Settings */ 
 
-    .settings {
-        min-height: 30vh;
+    .settIcon{
+        cursor: pointer;
+        position: absolute;
+        top: 100px;
+        right: 10vw;
+        font-size: 30px;
     }
-    .tavernDesc {
-        text-align: center;
-    }
-    .textArea {
+
+    .editBtn {
         display: block;
         margin: 20px auto;
-        padding: 10px 15px;
-        width: 70%;
     }
+
+    .settings {
+        min-height: 70vh;
+        display: flex;
+        border-bottom: 2px solid black;
+        margin-bottom: 50px;
+        padding-bottom: 50px;
+    }
+    .settingNav {
+        flex-basis: 30%;
+        display: flex;
+        flex-direction: column;
+        /* background-color: #999; */
+    }
+
+    .list {
+        margin: auto;
+        list-style: none;
+    }
+    .listEl {
+        display: block;
+        height: 60px;
+        width: 200px;
+        font-size: 18px;
+        /* padding: 15px 30px; */
+        cursor: pointer;
+        transition: 0.3s;
+    }
+    /* .listEl:nth-of-type(3):hover {
+        transform: translateX(20px);
+    } */
+    /* .listElAct {
+        composes: listEl;
+        transform: translateX(20px);
+    } */
+
+    .settingsWrap{
+        flex-basis: 70%;
+        display: flex;
+        flex-direction: column;
+        /* background-color: #ddd; */
+    }
+
+    .tavernDesc, .addRoom, .editRoom {
+        margin: auto;
+        text-align: center;
+    }
+    .tavernDesc {
+        background-color: #fff;
+        flex-basis: 80%;
+        width: 80%;
+    }
+    .addRoom, .editRoom {
+        width: 80%;
+    }
+    .addRoom input, .editRoom input {
+        width: 70%;
+        padding: 5px 10px;
+        text-align: center;
+    }
+
+    .textArea{
+        margin: 20px auto;
+        padding: 15px 20px;
+        width: 70%;
+        min-height: 300px;
+        display: block;
+    }
+    .confirmBtn {
+        align-self: flex-end;
+    }
+
 }
+
