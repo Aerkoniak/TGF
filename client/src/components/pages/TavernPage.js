@@ -1,49 +1,65 @@
 import React, { useEffect, useState } from 'react';
 import { NavLink, Switch, Route } from 'react-router-dom';
-import { connect } from 'react-redux';
+import { connect, useSelector } from 'react-redux';
+import styles from '../../css/tavern.module.css'
+
+
 import { fetchTavernRooms, addTavernRecord, checkTavernRecord } from '../../data/actions/tavernActions';
 
 import ProfileViewer from '../ProfileViewer/ProfileViewer';
-import TavernRoom from '../pages/TavernRoom';
+// import TavernRoom from '../pages/TavernRoom';
+import Tavern from '../tavernsFeature/Tavern';
+import { selectPlayersIn } from '../../data/slices/tavernSlice';
 
 
 
-const TavernPage = ({ taverns, fetchTavernRooms }) => {
+const TavernPage = ({ player, taverns, fetchTavernRooms }) => {
+
+    const playersIn = useSelector(selectPlayersIn);
 
     const [isDescActive, setActiveDesc] = useState(false);
+    const [tavernsArray, setTavernsArray] = useState([]);
 
     useEffect(() => {
-        fetchTavernRooms();
-    }, [])
+        setTavernsArray(taverns)
+    }, [taverns])
 
-    const tavernRoom = taverns.map(room => ((
-        <div className="tavernRoom" key={`${room.name}`} >
-            <NavLink className="tavernName" to={`/tavern/${room.name}`}><p id={`${room.name}`} >{room.name}</p></NavLink>
-            {isDescActive ? <p className="tavernDesc" id={`${room.name}`} >{room.desc}</p> : null}
-        </div>
-    )))
+    const tavernRoom = tavernsArray.map(tavern => {
+        let rooms = [];
+        let guests = [];
+        tavern.rooms.forEach(room => {
+            rooms.push(room.name)
+        });
+        playersIn.forEach(guest => {
+            if (tavern.name === guest.tavern) guests.push(guest.name)
+        })
+        return (
+            <div className={styles.tavernRoom} key={`${tavern.name}`} >
+                <NavLink className="tavernName" to={`/taverns/${tavern.name}`}>
+                    <p>{`Karczma ${tavern.name}`}</p>
+                </NavLink>
+                <p>{tavern.desc}</p>
+                <p>{`Dostępne pokoje: ${rooms} `}</p>
+                {guests.length > 0 ? <p className="">{`W karczmie znajdują się: ${guests}`}</p> : <p className="">W karczmie aktualnie nikogo nie ma.</p>}
+            </div>
+        )
+    }
+    )
 
-    const tavernRoutes = taverns.map(tavernRoute => ((
-        <Route key={tavernRoute.id + tavernRoute.name} path={`/tavern/${tavernRoute.name}`} render={(routeProps) => (<TavernRoom {...routeProps} id={tavernRoute.id} room={tavernRoute} />)} />
-    )))
 
     return (
-        <section className="tavernPage mainPage">
-            <div className="tavernsRooms">
-            <span className="toggleActiveDesc" onClick={() => setActiveDesc(!isDescActive)}>Rozwiń opisy</span>
+        <section className={styles.main}>
+            <div className={styles.tavernsRooms}>
                 {tavernRoom}
             </div>
-
-            <Switch>
-                {tavernRoutes}
-            </Switch>
 
             <ProfileViewer />
         </section>
     );
 }
 const MapStateToProps = state => ({
-    taverns: state.taverns.taverns,
+    taverns: state.t.taverns,
+    player: state.player.player
 })
 
 const MapDispatchToProps = dispatch => {
