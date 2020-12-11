@@ -79,7 +79,7 @@ const SingleStory = ({ player, story, fetchGlobalStories, addChapter, deleteChap
             <p className={styles.replyDate}>{chapter.replyDate}</p>
             <div className={styles.chapterMsg}>{parse(chapter.msg)}</div>
             {player.rank <= 2 ? <p onClick={deleteChapterSupporter} className={styles.deleteChapter} id={index}> x </p> : null}
-            {player.rank <= 2 && chapter.hiddenContent ? <p className={styles.hiddenContent}>{chapter.hiddenContent}</p> : null}
+            {(player.id === story.author.id || player.id === chapter.author.id) && chapter.hiddenContent ? <p className={styles.hiddenContent}>{chapter.hiddenContent}</p> : null}
 
         </div>
     ))).reverse()
