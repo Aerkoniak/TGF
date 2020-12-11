@@ -151,22 +151,35 @@ app.post('/edit-account', (req, res) => {
                 })
             break;
         case 'character - reset':
-            players.doc(character.accountDocRef).set({ name: "", race: "", class: "", age: null, height: null, posture: "", hairColor: "", eyeColor: "" }, { merge: true })
-                .then(ok => {
-                    if (ok.writeTime) {
-                        res.json({ saved: true })
-                        console.log("/edit-account -- reset --- done")
-                    }
-                })
+            {
+                players.doc(character.accountDocRef).set({ name: "", race: "", class: "", age: null, height: null, posture: "", hairColor: "", eyeColor: "", stats: [], skills: [] }, { merge: true })
+                    .then(ok => {
+                        if (ok.writeTime) {
+
+                            console.log("/edit-account -- reset --- done")
+                            players.doc(character.accountDocRef).get()
+                                .then(doc => {
+                                    let player = doc.data()
+                                    res.json({ player })
+                                })
+                        }
+                    })
+            }
             break;
         case 'character - profile':
-            players.doc(character.docRef).set({ profile: character.profile }, { merge: true })
-                .then(ok => {
-                    if (ok.writeTime) {
-                        res.json({ saved: true })
-                        console.log("/edit-account -- char-profile --- done")
-                    }
-                })
+            {
+                players.doc(character.docRef).set({ profile: character.profile }, { merge: true })
+                    .then(ok => {
+                        if (ok.writeTime) {
+                            players.doc(character.docRef).get()
+                                .then(doc => {
+                                    let player = doc.data()
+                                    res.json({ player })
+                                })
+                            console.log("/edit-account -- char-profile --- done")
+                        }
+                    })
+            }
             break;
         case "name":
             players.doc(character.accountDocRef).set({ name: character.name }, { merge: true })
@@ -333,15 +346,18 @@ app.post('/stories-update', (req, res) => {
                             })
                     };
                     players.doc(story.author.docRef).update({
-                        storyField: FieldValue.increment(1)
+                        storyField: FieldValue.increment(1),
+                        FabularPoints: FieldValue.increment(1)
                     })
                         .catch(err => console.log(err));
+
                     spectatorsArray.forEach(spectator => {
                         players.doc(spectator.docRef).update({
                             storyField: FieldValue.increment(1)
                         })
                             .catch(err => console.log(err));
                     })
+
 
 
 
@@ -407,7 +423,6 @@ app.post('/stories-update', (req, res) => {
                 stories.doc(docRef.id).update({ refID: docRef.id });
                 res.json({ id: story.id });
                 console.log("/stories-update --- createStory --- done")
-
             })
     } else if (closeStory) {
         console.log("/stories-update --- closeStory")
