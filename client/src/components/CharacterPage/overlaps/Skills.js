@@ -29,7 +29,7 @@ const Skills = ({ player, skills, stats }) => {
 
     useEffect(() => {
         let price = (ownedSkillsArray.length - 2) * 1.25;
-        if (ownedSkillsArray.length < 2) price = 0
+        if (ownedSkillsArray.length < 6) price = 0
         setSkillPrice(price);
         let counter = 0;
         ownedSkillsArray.forEach(skill => {
@@ -107,31 +107,6 @@ const Skills = ({ player, skills, stats }) => {
             })
         }
 
-
-
-        // allSkillsArray.forEach(skill => {
-        //     if (skill.name === takenSkill) {
-        //         let skills = {
-        //             price,
-        //             skill
-        //         }
-        //         dispatch(increaseSkill(skills));
-        //         let newStat = {}
-        //         let increaseStats = []
-        //         stats.map(stat => {
-        //             if (stat.name === skill.base) {
-        //                 let newStat = {}
-        //                 newStat.name = stat.name
-        //                 newStat.val = stat.val + 5
-        //                 increaseStats.push(newStat)
-        //             } else increaseStats.push(stat)
-        //         })
-        //         newStat.stats = increaseStats;
-        //         newStat.player = player;
-        //         dispatch(updateStatistics(newStat))
-        //     }
-        // })}
-
         else if (lvl == 5) setWarnings("Maksymalny poziom umiejętności to Piątka.");
         else {
             allSkillsArray.forEach(skill => {
@@ -165,7 +140,7 @@ const Skills = ({ player, skills, stats }) => {
         })
         if (flag) {
             return (
-                <li>
+                <li className={`skillsEl a${skill.cat}`}>
                     <div className="skills">
                         <p className="skillName">{skill.name}</p>
                         <p className="skillBase">{skill.base}</p>
@@ -179,7 +154,7 @@ const Skills = ({ player, skills, stats }) => {
         let price = (skill.lvl * 2.5) + (skillUpgPrice * 1.5);
         if (skill.lvl === 1) price = 2.5 * 2;
         return (
-            <li>
+            <li className={`skillsEl a${skill.cat}`}>
                 <div className="skills">
                     <p className="skillName">{skill.name}</p>
                     <p className="skillName">{skill.lvl}</p>
