@@ -6,6 +6,8 @@ import { auth } from '../../data/firebase/firebaseConfig'
 import { signOut, sendVerification } from '../../data/firebase/firebaseActions'
 import { resetCharacter } from '../../data/actions/creatorActions';
 
+import { Spinner, Button } from 'react-bootstrap'
+
 
 import LeftHandedUtility from '../LeftHandedUtility/LeftHandedUtility';
 import AutoLogUtility from '../AutoLogUtility/AutoLogUtility';
@@ -17,9 +19,11 @@ const SettingsPage = ({ player, isLogged, signOut, sendVerification, resetCharac
     const [redirect, setRedirect] = useState(false);
     const [verifyButtonActive, hideVerifyButton] = useState(false);
     const [setAvatar, confirmSettingAvatar] = useState(false);
+    const [reset, toggleReset] = useState(false);
 
     useEffect(() => {
         auth.onAuthStateChanged(function (user) {
+            console.log("SettingsPage - useEffect - onAuthStateChanged - res")
             console.log(user)
             if (!user.emailVerified) hideVerifyButton(true);
         })
@@ -29,8 +33,17 @@ const SettingsPage = ({ player, isLogged, signOut, sendVerification, resetCharac
         sendVerification(player.login)
     }
     const resetSupporter = () => {
+        toggleReset(true);
         let char = player;
+        console.log("Reset")
         resetCharacter(char);
+        setTimeout(() => {
+            toggleReset(false)
+        }, 500)
+    }
+    const signOutSupporter = () => {
+        signOut()
+        setRedirect(true)
     }
 
     return (
@@ -42,12 +55,15 @@ const SettingsPage = ({ player, isLogged, signOut, sendVerification, resetCharac
                     {verifyButtonActive ? <button className="verifyBtn" onClick={verificationSupporter}>Wyślij e-mail weryfikacyjny</button> : null}
 
                     <AutoLogUtility />
-                    <p className="logOutUtility" onClick={signOut}>Wyloguj mnie</p>
+                    <p className="logOutUtility" onClick={signOutSupporter}>Wyloguj mnie</p>
                 </div>
                 <div className="accountSettings">
                     <h2 className="test">Ustawienia konta:</h2>
                     {player.rank != 10 ? <SetRankUtility /> : null}
-                    <button className="resetCharacter" onClick={resetSupporter}>Zresetuj swoją KP</button>
+
+                    {reset ? <Spinner animation="border" /> : <Button variant="outline-dark" onClick={resetSupporter}>Zresetuj swoją postać</Button>}
+
+
                     <button className="resetCharacter" onClick={e => confirmSettingAvatar(!setAvatar)} >Dodaj avatar</button>
                     {setAvatar ? <DropZone /> : null}
 
