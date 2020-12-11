@@ -19,12 +19,18 @@ const Stats = ({ player, races }) => {
     const [freeStatPoints, setPoints] = useState(0);
 
     useEffect(() => {
-        if (!player.stats) setPoints(10)
-        else setPoints(-1)
+        if (!player.stats || player.stats.length === 0) {
+
+            setPoints(10)
+        }
+        else {
+
+            setPoints(-1)
+        }
     }, [player])
 
     useEffect(() => {
-        if (!player.stats) {
+        if (!player.stats || player.stats.length === 0) {
             let statsList = [];
             races.forEach(race => {
                 if (race.id === player.race) {
@@ -101,7 +107,12 @@ const Stats = ({ player, races }) => {
     return (
         <div className="stats">
             <h3 className="test">Dział statystyk:</h3>
-            {!player.stats ? <h2 className="test">{`Masz ${freeStatPoints} punktów na edycję swoich startowych statystyk.`}</h2> : null}
+            {!player.stats || player.stats.length === 0 ?
+                <>
+                    <h2 className="test">{`Masz ${freeStatPoints} punktów na edycję swoich startowych statystyk.`}</h2>
+                    <p>Pamiętaj by rozdać je za jednym razem.</p>
+                </>
+                : null}
 
             {freeStatPoints < 10 && freeStatPoints >= 0 ? <Button variant="outline-danger" block onClick={confirmChanges} >{loading === "loading" ? <Spinner animation="border" variant="dark" /> : `Zatwierdź zmiany`}</Button> : null}
 
