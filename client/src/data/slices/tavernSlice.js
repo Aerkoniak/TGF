@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { createDate } from '../usefullFN';
-import { tavernDB } from '../firebase/firebaseConfig';
-import { toggleFetched } from './globalStoriesSlice';
+import { tavernDB, FieldValue } from '../firebase/firebaseConfig';
+// import { toggleFetched } from './globalStoriesSlice';
 
 
 export const tavernSlice = createSlice({
@@ -15,14 +15,22 @@ export const tavernSlice = createSlice({
     },
     reducers: {
         toggleSend: (state, action) => {
-            state.isSend = action.payload
+            state.isSend = action.payload;
+            // console.log(`isSend(${action.payload})`)
         },
         toggleFetched: (state, action) => {
             state.isFetched = action.payload
         },
         updateTaverns: (state, action) => {
-            let taverns = action.payload;
-            state.taverns = taverns;
+            let taverns = []
+            // console.log(action.payload)
+            if (action.payload) {
+                taverns = action.payload;
+                state.taverns = taverns;
+            } else if (!action.payload) {
+                taverns = state.taverns;
+                state.taverns = taverns;
+            }
             taverns.map(tavern => {
                 tavern.rooms.map(room => {
                     state.rooms[`${tavern.name}-${room.name}`] = tavern[room.name]
@@ -30,11 +38,8 @@ export const tavernSlice = createSlice({
             })
         },
         updateRoom: (state, action) => {
-            let oldTavernLength = state.rooms[action.payload.name].length;
-            let newTavernLength = action.payload.data.length;
-            if (newTavernLength > oldTavernLength) {
-                state.rooms[action.payload.name] = action.payload.data;
-            }
+            // console.log(`updateRoom w ${action.payload.name}`)
+            state.rooms[action.payload.name] = action.payload.data;
         },
         updateSingleTavern: (state, action) => {
             let taverns = state.taverns;
@@ -44,7 +49,8 @@ export const tavernSlice = createSlice({
                     ind = index
                 }
             })
-            state.taverns[ind] = action.payload
+            state.taverns[ind] = action.payload;
+            console.log("updateSingleTavern")
         },
         showPlayers: (state, action) => {
             let guests = state.playersIn;
@@ -59,7 +65,7 @@ export const tavernSlice = createSlice({
     }
 })
 
-export const { toggleSend, updateTaverns, updateRoom, updateSingleTavern, showPlayers } = tavernSlice.actions;
+export const { toggleSend, toggleFetched, updateTaverns, updateRoom, updateSingleTavern, showPlayers } = tavernSlice.actions;
 
 export const fetchTaverns = () => dispatch => {
     let taverns = []
@@ -81,6 +87,10 @@ export const addTavernRecord = record => dispatch => {
     newRecord.txt = record.text;
     newRecord.replyDate = createDate();
     newRecord.ID = new Date().getTime();
+    if (record.whispered) {
+        newRecord.whispered = record.whispered;
+        newRecord.between = record.between;
+    }
 
     let recordsArray = []
     dispatch(toggleSend(false))
@@ -91,32 +101,104 @@ export const addTavernRecord = record => dispatch => {
             recordsArray.push(newRecord);
             let room = {
             };
-            room.name = `${record.tavern}-${record.room}`;
-            room.data = recordsArray
-            dispatch(updateRoom(room))
-            dispatch(toggleSend(true))
-            delete room.name;
-            delete room.data;
             room[`${record.room}`] = recordsArray;
             let string = `${record.tavern}`
             tavernDB.doc(string).set(room, { merge: true })
-                .catch(err => console.log(err))
+                .then(function () {
+                    console.log("Document successfully written!");
+                    dispatch(toggleSend(true))
+                })
+                .catch(function (error) {
+                    console.error("Error writing document: ", error);
+                });
         })
 }
 
 export const editTavern = edit => dispatch => {
+    // console.log(`Robi się editTavern o typie ${edit.type}`)
+    dispatch(toggleSend(false))
+
     switch (edit.type) {
         case 'description':
             {
-                tavernDB.doc(edit.docName).set({ desc: edit.desc }, { merge: true });
-                let tavern = edit.tavern;
-                tavern.desc = edit.desc;
-                dispatch(updateSingleTavern(tavern))
+                tavernDB.doc(edit.docName).set({ desc: edit.desc }, { merge: true })
+                    .then(function () {
+                        console.log("Document successfully written!");
+                        dispatch(toggleSend(true))
+                    })
+                    .catch(function (error) {
+                        console.error("Error writing document: ", error);
+                    });
+            }
+            break;
+        case 'addRoom':
+            {
+                let change = {
+                    rooms: edit.rooms,
+                }
+                change[edit.roomName] = []
+                tavernDB.doc(edit.docName).set(change, { merge: true })
+                    .then(function () {
+                        console.log("Document successfully written!");
+                        dispatch(toggleSend(true))
+                    })
+                    .catch(function (error) {
+                        console.error("Error writing document: ", error);
+                    });
+            }
+            break;
+        case 'deleteRecord':
+            {
+                let change = {
+                };
+                change[edit.roomName] = edit.records;
+                tavernDB.doc(edit.docName).set(change, { merge: true })
+                    .then(function () {
+                        console.log("Document successfully written!");
+                        dispatch(toggleSend(true))
+                    })
+                    .catch(function (error) {
+                        console.error("Error writing document: ", error);
+                    });
+            }
+            break;
+        case 'deleteRoom':
+            {
+                tavernDB.doc(edit.docName).set({ rooms: edit.rooms }, { merge: true })
+                    .then(function () {
+                        console.log("Document successfully deleted!");
+                        tavernDB.doc(edit.docName).update({
+                            [edit.roomName]: FieldValue.delete()
+                        })
+                        dispatch(toggleSend(true))
+
+                    }).catch(function (error) {
+                        console.error("Error removing document: ", error);
+                    });
+
+
             }
             break;
         default:
             return
     }
+}
+
+export const editRecord = edit => dispatch => {
+    dispatch(toggleSend(false));
+
+    let change = {
+    };
+    change[edit.roomName] = edit.records;
+    tavernDB.doc(edit.docName).set(change, { merge: true })
+        .then(function () {
+            console.log("Document successfully written!");
+            dispatch(toggleSend(true))
+        })
+        .catch(function (error) {
+            console.error("Error writing document: ", error);
+        });
+
 }
 
 export const selectRooms = state => state.t.rooms;
