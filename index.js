@@ -132,23 +132,26 @@ app.post('/edit-account', (req, res) => {
 
     switch (character.changed) {
         case "character - stageOne":
-            players.doc(character.accountDocRef).set({ name: character.name, race: character.race, class: character.class }, { merge: true })
+            {
+                players.doc(character.accountDocRef).set({ name: character.name, race: character.race, class: character.class, origin: character.origin }, { merge: true })
                 .then(ok => {
                     if (ok.writeTime) {
                         res.json({ saved: true })
                         console.log("/edit-account -- stageOne --- done")
                     }
                 })
-
+            }
             break;
         case 'character - stageTwo':
-            players.doc(character.accountDocRef).set({ age: character.age, height: character.height, posture: character.posture, hairColor: character.hairColor, eyeColor: character.eyeColor }, { merge: true })
+            {
+                players.doc(character.accountDocRef).set({ age: character.age, height: character.height, posture: character.posture, hairColor: character.hairColor, eyeColor: character.eyeColor }, { merge: true })
                 .then(ok => {
                     if (ok.writeTime) {
                         res.json({ saved: true })
                         console.log("/edit-account -- stageTwo --- done")
                     }
                 })
+            }
             break;
         case 'character - reset':
             {
