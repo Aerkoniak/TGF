@@ -17,6 +17,13 @@ admin.initializeApp(dbAdmin);
 
 const FieldValue = require('firebase-admin').firestore.FieldValue;
 
+
+// FUNKCJE ZŁODZIEJSKIE 
+
+const pickPocket = require('./pickpocketing');
+
+// FIRESTORE 
+
 const db = admin.firestore()
 db.settings({ ignoreUndefinedProperties: true })
 const players = db.collection("players");
@@ -72,7 +79,7 @@ app.post('/login', (req, res) => {
     console.log("/login")
     let account = req.body.account;
     const { login, password, lastLogged } = account;
-    let lastActiveTime = new Date().getTime();
+
     players.where("login", "==", `${login}`).get()
         .then(snapshot => {
             if (snapshot.size === 0) {
@@ -84,13 +91,33 @@ app.post('/login', (req, res) => {
                     let player = {};
                     player = document;
 
-                    players.doc(player.accountDocRef).set({ lastLog: lastLogged, lastActiveTime: lastActiveTime }, { merge: true })
-                        .then(ok => {
-                            if (ok.writeTime) {
-                                console.log("Login --- done")
-                                res.json({ player })
-                            }
+
+                    let lastActiveDate = new Date();
+                    let lastActiveTime = lastActiveDate.getTime();
+                    let lastDayActive = lastActiveDate.getDate();
+
+                    let change = {
+                        lastLog: lastLogged,
+                        lastActiveTime: lastActiveTime
+                    }
+
+                    if (lastDayActive > player.lastDayActive || !player.lastDayActive) {
+                        change.lastDayActive = lastDayActive;
+                        let points = player.actionPoints || 0;
+                        if (points <= 8 || !points) {
+                            points += 2
+                            change.actionPoints = points;
+                        }
+                    }
+
+                    players.doc(player.accountDocRef).set(change, { merge: true });
+                    players.doc(player.accountDocRef).get()
+                        .then(doc => {
+                            let player = doc.data()
+                            res.json({ player })
                         })
+
+
 
                 })
             }
@@ -134,28 +161,28 @@ app.post('/edit-account', (req, res) => {
         case "character - stageOne":
             {
                 players.doc(character.accountDocRef).set({ name: character.name, race: character.race, class: character.class, origin: character.origin }, { merge: true })
-                .then(ok => {
-                    if (ok.writeTime) {
-                        res.json({ saved: true })
-                        console.log("/edit-account -- stageOne --- done")
-                    }
-                })
+                    .then(ok => {
+                        if (ok.writeTime) {
+                            res.json({ saved: true })
+                            console.log("/edit-account -- stageOne --- done")
+                        }
+                    })
             }
             break;
         case 'character - stageTwo':
             {
                 players.doc(character.accountDocRef).set({ age: character.age, height: character.height, posture: character.posture, hairColor: character.hairColor, eyeColor: character.eyeColor }, { merge: true })
-                .then(ok => {
-                    if (ok.writeTime) {
-                        res.json({ saved: true })
-                        console.log("/edit-account -- stageTwo --- done")
-                    }
-                })
+                    .then(ok => {
+                        if (ok.writeTime) {
+                            res.json({ saved: true })
+                            console.log("/edit-account -- stageTwo --- done")
+                        }
+                    })
             }
             break;
         case 'character - reset':
             {
-                players.doc(character.accountDocRef).set({ name: "", race: "", class: "", age: null, height: null, posture: "", hairColor: "", eyeColor: "", stats: [], skills: [] }, { merge: true })
+                players.doc(character.accountDocRef).set({ name: "", race: "", class: "", age: null, height: null, posture: "", hairColor: "", eyeColor: "", stats: [], skills: [], FabularPoints: 100, }, { merge: true })
                     .then(ok => {
                         if (ok.writeTime) {
 
@@ -244,26 +271,46 @@ app.post('/edit-account', (req, res) => {
                 })
             break;
         case 'diary':
-            players.doc(character.docRef).set({ diary: character.diary }, { merge: true })
-                .then(ok => {
-                    if (ok.writeTime) {
-                        players.orderBy("id").get()
-                            .then(snapshot => {
-                                let characters = [];
-                                snapshot.forEach(doc => {
-                                    let data = doc.data();
-                                    if (data.name && data.race && data.class && (data.rank < 3 || data.rank === 10)) {
-                                        let character = {};
-                                        character = data;
-                                        characters.push(character)
-                                    }
+            {
+                players.doc(character.docRef).set({ diary: character.diary }, { merge: true })
+                    .then(ok => {
+                        if (ok.writeTime) {
+                            players.orderBy("id").get()
+                                .then(snapshot => {
+                                    let characters = [];
+                                    snapshot.forEach(doc => {
+                                        let data = doc.data();
+                                        if (data.name && data.race && data.class && (data.rank < 3 || data.rank === 10)) {
+                                            let character = {};
+                                            character = data;
+                                            characters.push(character)
+                                        }
+                                    })
+                                    res.json(characters);
+                                    console.log("/edit-account -- diary --- done")
                                 })
-                                res.json(characters);
-                                console.log("/edit-account -- diary --- done")
-                            })
-                    }
-                })
+                        }
+                    })
+            }
             break;
+        case 'equipment':
+            {
+                players.doc(character.docRef).set({
+                    equipment: {
+                        privEq: character.store,
+                        body: character.body
+                    }
+                }, { merge: true })
+                    .then(() => {
+                        players.doc(character.docRef).get()
+                            .then((doc) => {
+                                let player = doc.data();
+                                res.json(player)
+                            })
+                    })
+            }
+            break;
+
     }
 })
 
@@ -991,6 +1038,65 @@ app.post('/stories/prive-update', (req, res) => {
             })
     }
 })
+
+
+
+
+app.post('/atelier', (req, res) => {
+    const { docRef, item, privEq } = req.body.data;
+
+    switch (req.body.data.type) {
+        case "magazine":
+            {
+                console.log("Wewnątrz magazine")
+                players.doc(docRef).set({
+                    equipment: {
+                        privEq: privEq
+                    }
+                }, { merge: true })
+                    .then(() => {
+                        players.doc(docRef).get()
+                            .then(doc => {
+                                let player = doc.data()
+                                res.json({ player })
+                            })
+
+                    })
+                    .catch(err => console.log(err))
+            }
+            break;
+
+        default: {
+            res.json({ msg: "ok" })
+        }
+    }
+})
+
+app.post('/steal', (req, res) => {
+    const { targetDocRef, thief, type } = req.body.data;
+
+    switch (type) {
+        case 'pocket':
+            {
+                players.doc(targetDocRef).get()
+                    .then(doc => {
+                        let victim = doc.data();
+
+                        let effect = pickPocket(thief, victim);
+                        console.log(effect)
+
+                        res.json({ ok: true })
+                    })
+
+            }
+            break;
+        default: {
+            res.json({ ok: true })
+        }
+    }
+
+})
+
 
 
 
