@@ -90,6 +90,24 @@ const Settings = ({ tavern, tavernIndex }) => {
         }
         dispatch(editTavern(edit))
     }
+    const deleteRoom = () => {
+        let rooms = [
+            ...tavern.rooms
+        ];
+        let Ind = false;
+        rooms.forEach((room, index) => {
+            if (room.name === name) Ind = index;
+        })
+        rooms.splice(index, 1);
+        let edit = {
+            docName: tavern.name,
+            roomName: name,
+            rooms: rooms,
+            type: "deleteRoom",
+        }
+        console.log(edit)
+        dispatch(editTavern(edit))
+    }
 
 
     const dropdowns = tavern.rooms.map((dropdown, index) => {
@@ -131,8 +149,10 @@ const Settings = ({ tavern, tavernIndex }) => {
                 {isEditRoom ?
                     <div className={styles.editRoom}>
                         <h5>Edytuj pokój</h5>
+
                         <input type="text" placeholder="Nazwa pokoju" value={name} onChange={e => setName(e.target.value)} />
                         <textarea value={desc} onChange={(e) => setDesc(e.target.value)} className={styles.textArea}></textarea>
+                        <Button variant="dark" onClick={deleteRoom} className={styles.confirmBtn}>Usuń pokój</Button>
                         <Button variant="outline-dark" onClick={editRoom} className={styles.confirmBtn}>Zatwierdź</Button>
                     </div> : null}
             </div>
