@@ -9,19 +9,38 @@ export const workshopSlice = createSlice({
     },
     reducers: {
         setEq: (state, action) => {
+            let list = action.payload;
+            state.equipment = list;
+        },
+        pushEq: (state, action) => {
             let list = state.equipment;
             list.push(action.payload);
             state.equipment = list;
-        },
+        }
     }
 })
 
-export const { setEq } = workshopSlice.actions;
+export const { setEq, pushEq } = workshopSlice.actions;
 
 // export const fetchEquipment = (docRef) => dispatch => {
 
 // }
 
+export const magazineItem = (player, item) => dispatch => {
+    let privEq = [...player.equipment.privEq];
+    privEq.push(item);
+    let data = {
+        docRef: player.accountDocRef,
+        item: item,
+        type: "magazine",
+        privEq: privEq,
+    }
+    axios.post('/atelier', { data })
+        .then((res) => {
+            let payload = res.data.player;
+            dispatch({ type: "UPDATE_PLAYER", payload });
+        })
+}
 
 
 
@@ -41,7 +60,6 @@ export const makeItem = (skills, item) => {
             if (skill.lvl > craftSkill) craftSkill = skill.lvl;
         }
     })
-
 
 
     switch (craftSkill) {
