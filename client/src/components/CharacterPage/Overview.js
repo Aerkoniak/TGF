@@ -16,12 +16,19 @@ const Overview = ({ player, character }) => {
 
     const hisSkills = skillsArray.map(skill => {
         return (
-            <p className="test">{skill.name}</p>
+            // zrób moduł pod KP, dla ekwipunku i podlądu KP i potem Diary
+            <>
+                <p className="test">{skill.name}</p>
+                {player.rank <= 2 ? <p className="test">{skill.lvl}</p> : null}
+            </>
         )
     })
     const hisStats = statsArray.map(stats => {
         return (
-            <p className="test">{stats.name}</p>
+            <>
+                <p className="test">{stats.name}</p>
+                {player.rank <= 2 ? <p className="test">{stats.val}</p> : null}
+            </>
         )
     })
 
