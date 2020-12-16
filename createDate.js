@@ -1,4 +1,4 @@
-export const createDate = (givenDate) => {
+const createDate = (givenDate) => {
     let date = new Date();
 
     if (givenDate) {
@@ -78,3 +78,5 @@ export const createDate = (givenDate) => {
         return startDate;
     }
 }
+
+module.exports = createDate;
