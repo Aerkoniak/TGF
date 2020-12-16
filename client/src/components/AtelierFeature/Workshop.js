@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { connect, useDispatch } from 'react-redux';
 import styles from '../../css/atelier.module.css';
+import _ from 'lodash';
 
 import { Button, Accordion, Card, InputGroup, FormControl, Spinner, Form, OverlayTrigger, Tooltip } from 'react-bootstrap';
-import { makeItem, setEq } from '../../data/slices/workshopSlice';
+import { makeItem, setEq, magazineItem } from '../../data/slices/workshopSlice';
 
 const Workshop = ({ player, equipment }) => {
 
@@ -11,6 +12,7 @@ const Workshop = ({ player, equipment }) => {
     const [newItem, toggleNewItem] = useState(false);
     const [eqStore, toggleEqStore] = useState(false);
     const [bodyPart, setBodyPart] = useState("");
+    // const [bodyWord, setBodyWord] = useState("");
     const [itemName, setItemName] = useState("");
     const [itemDesc, setItemDesc] = useState("");
 
@@ -19,17 +21,45 @@ const Workshop = ({ player, equipment }) => {
     const [itemDone, setItemDone] = useState(false);
 
     useEffect(() => {
-        setEqList(equipment)
+        if (player.equipment) {
+            dispatch(setEq(player.equipment.privEq));
+        }
+    }, [player])
+    useEffect(() => {
+        let equip = _.sortBy(equipment, ["bodyCat", "name"])
+        setEqList(equip);
     }, [equipment])
 
     const forgeItem = () => {
         let item = {
             name: itemName,
-            place: bodyPart,
+            bodyCat: bodyPart,
             desc: itemDesc
         };
+        switch (item.bodyCat) {
+            case "1": {
+                item.bodyPlace = "Na głowie"
+            } break;
+            case "2": {
+                item.bodyPlace = "Na szyi"
+            } break;
+            case "3": {
+                item.bodyPlace = "Korpus"
+            } break;
+            case "4": {
+                item.bodyPlace = "W rękach"
+            } break;
+            case "5": {
+                item.bodyPlace = "Na dłoniach"
+            } break;
+            case "6": {
+                item.bodyPlace = "Na nogach"
+            } break;
+        }
+
         let skills = player.skills;
         const newItem = makeItem(skills, item);
+        console.log(newItem);
         setItemDone(newItem);
     }
 
@@ -40,7 +70,7 @@ const Workshop = ({ player, equipment }) => {
         setItemDone(false);
     }
     const saveItem = () => {
-        dispatch(setEq(itemDone));
+        dispatch(magazineItem(player, itemDone))
         setBodyPart("");
         setItemName("");
         setItemDesc("");
@@ -58,7 +88,7 @@ const Workshop = ({ player, equipment }) => {
         return (
             <div className={styles.newItem}>
                 <p>{item.name}</p>
-                <p>{item.place}</p>
+                <p>{item.bodyPlace}</p>
                 <p>{item.quality}</p>
                 <p>
                     <OverlayTrigger
@@ -93,11 +123,19 @@ const Workshop = ({ player, equipment }) => {
                                     <InputGroup.Prepend>
                                         <InputGroup.Text>Wybierz część ciała</InputGroup.Text>
                                     </InputGroup.Prepend>
-                                    <FormControl as='select' custom value={bodyPart} onChange={(e) => setBodyPart(e.target.value)}>
-                                        <option val=""></option>
-                                        <option val="1">Głowa</option>
-                                        <option val="2">Korpus</option>
-                                        <option val="3">Nogi</option>
+                                    <FormControl as='select' custom value={bodyPart} onChange={(e) => {
+                                        setBodyPart(e.target.value)
+
+                                    }}>
+                                        <option value=""></option>
+                                        <option value="1">Głowa</option>
+                                        <option value="2">Szyja</option>
+                                        <option value="3">Korpus</option>
+                                        <option value="4">Ręce</option>
+                                        {/* opcja Dłonie z val 5 będzie dostępna tylko po spełnieniu odpowiednich warunków. */}
+                                        <option value="5">Dłonie</option>
+                                        <option value="6">Stopy</option>
+
                                     </FormControl>
                                     <InputGroup.Prepend>
                                         <InputGroup.Text>Nazwij swój przedmiot</InputGroup.Text>
@@ -108,6 +146,7 @@ const Workshop = ({ player, equipment }) => {
                                 <FormControl as="textarea" placeholder="Opisz krótko swój przedmiot" value={itemDesc} onChange={(e) => setItemDesc(e.target.value)} />
                                 <Button block onClick={forgeItem} variant="outline-dark">Stwórz</Button>
                             </Form>
+
                             {itemDone ?
                                 <div className={styles.itemDoneWrap}>
                                     <JustDoneItem item={itemDone} />
