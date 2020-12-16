@@ -17,6 +17,9 @@ admin.initializeApp(dbAdmin);
 
 const FieldValue = require('firebase-admin').firestore.FieldValue;
 
+// FUNKCJA DATY
+
+const createDate = require('./createDate');
 
 // FUNKCJE ZŁODZIEJSKIE 
 
@@ -1072,20 +1075,100 @@ app.post('/atelier', (req, res) => {
     }
 })
 
-app.post('/steal', (req, res) => {
-    const { targetDocRef, thief, type } = req.body.data;
+app.post('/theft', (req, res) => {
+    const { data } = req.body;
 
-    switch (type) {
+    switch (data.type) {
         case 'pocket':
             {
-                players.doc(targetDocRef).get()
+                players.doc(data.targetDocRef).get()
                     .then(doc => {
                         let victim = doc.data();
 
-                        let effect = pickPocket(thief, victim);
-                        console.log(effect)
+                        let victimsEq = [...victim.equipment.body];
+                        let thiefEq = [...data.thief.equipment.privEq];
+                        let victimChronicle = [...victim.chronicles];
+                        let thiefChronicle = [...data.thief.chronicles];
 
-                        res.json({ ok: true })
+                        const date = createDate();
+                        const chronicleEntry = {};
+                        chronicleEntry.date = date;
+                        // FN pickPocket zwraca rezultat i efekt kradzieży na podstawie danych. 
+                        let ret = pickPocket(data.thief, victim);
+                        // console.log(ret.result);
+                        console.log(ret.effect);
+
+
+
+                        // jeśli result wynosi 1 lub 2 to przesuwam pomiędzy eq kradziony przedmiot
+                        if (ret.result === 1 || ret.result === 2) {
+
+                            let stolenItem = null;
+                            let stolenIndex = 0;
+
+                            victimsEq.forEach((eq, index) => {
+                                if (eq != null) {
+                                    if (eq.id === data.itemID) {
+                                        stolenItem = eq;
+                                        stolenIndex = index;
+                                    }
+                                }
+                            })
+                            victimsEq.splice(stolenIndex, 1, null);
+
+                            // console.log("stolenItem to ---", stolenItem)
+                            // console.log("victimsEq to ---", victimsEq)
+
+                            thiefEq.push(stolenItem);
+                            // console.log("thiefEq to ---", thiefEq)
+
+                            if (ret.result === 2) {
+                                chronicleEntry.observation = `Ktoś wpadł na Ciebie nagle i poczułeś dziwne wrażenie tracenia czegoś. ${stolenItem.name} zniknął!
+                                Przypomniałeś sobie istotę z posturą ${data.thief.posture}, mającą ${data.thief.eyeColor} oczy i ${data.thief.hairColor} włosy. Miała też około ${data.thief.height} wzrostu.
+                                To musiał być złodziej.`
+                                victimChronicle.push(chronicleEntry);
+
+                            } else {
+                                chronicleEntry.observation = `Ktoś wpadł na Ciebie nagle i poczułeś dziwne wrażenie tracenia czegoś. ${stolenItem.name} zniknął! Dramat, nic nawet nie zauważyłeś.`
+                                victimChronicle.push(chronicleEntry);
+                            }
+                        } else if (ret.result === 3) {
+                            chronicleEntry.observation = `Ktoś wpadł na Ciebie nagle i poczułeś czyjeś palce przy swojej biżuteri! Szarpnąłeś się i odskoczyła od Ciebie jakaś istota. Wszystko stało się zbyt szybko i nic nie zauważyłeś.`
+                            victimChronicle.push(chronicleEntry);
+                        } else if (ret.result === 4) {
+                            chronicleEntry.observation = `Ktoś wpadł na Ciebie nagle i poczułeś czyjeś palce przy swojej biżuteri! Szarpnąłeś się i odskoczyła od Ciebie istota z posturą ${data.thief.posture}, mającą ${data.thief.eyeColor} oczy i ${data.thief.hairColor} włosy. Miała też około ${data.thief.height} wzrostu.
+                            To musiał być złodziej.`
+                            victimChronicle.push(chronicleEntry);
+                        } else if (ret.result === 5) {
+                            chronicleEntry.observation = `Ktoś wpadł na Ciebie nagle i poczułeś czyjeś palce przy swojej biżuteri! Szarpnąłeś się i zobaczyłeś jak ${data.thief.name} odskakuje od Ciebie. To on był złodziejem!`
+                            victimChronicle.push(chronicleEntry);
+                        }
+
+                        let thiefChronEntry = {
+                            date: date,
+                            observation: ret.effect
+                        }
+                        thiefChronicle.push(thiefChronEntry)
+
+
+
+                        players.doc(data.targetDocRef).set({
+                            chronicles: victimChronicle,
+                            equipment: {
+                                body: victimsEq
+                            }
+                        }, { merge: true });
+                        players.doc(data.thief.accountDocRef).set({
+                            chronicles: thiefChronicle,
+                            equipment: {
+                                privEq: thiefEq
+                            }
+                        }, { merge: true })
+                            .then(() => {
+                                res.json({ msg: ret.effect })
+                            })
+
+
                     })
 
             }
@@ -1098,7 +1181,35 @@ app.post('/steal', (req, res) => {
 })
 
 
+app.post('/everyone', (req, res) => {
+    let characters = [];
 
+    players.orderBy("id").get()
+        .then(snapshot => {
+            snapshot.forEach(doc => {
+                let player = doc.data();
+                characters.push(player.accountDocRef)
+            })
+            console.log(characters)
+            characters.map(char => {
+                // if (char == "vEeFufqeuA3dPNHiAb6l") {
+                //     console.log("Nic nie zmienione")
+                // } else {
+                //     console.log("Zmiana")
+                //     players.doc(char).set({
+                //         chronicles: []
+                //     }, { merge: true })
+                // }
+                console.log("Zmiana")
+                players.doc(char).set({
+                    chronicles: []
+                }, { merge: true })
+
+            })
+        })
+
+    res.json({ ok: true })
+})
 
 
 app.post(
