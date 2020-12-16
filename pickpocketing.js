@@ -37,7 +37,6 @@ const pickPocket = (thief, victim) => {
 
 
     // USTALENIE SZANSY na kradzież na podstawie różnicy pomiędzy Zręcznością + Modyfikatorem, a Spostrzegawczością ofiary
-
     let chance = 0;
     let thiefScore = thiefDext + modifier;
     // console.log(thiefScore)
@@ -71,25 +70,35 @@ const pickPocket = (thief, victim) => {
     // console.log("k100 - ", k100)
 
     // USTALENIE i przypisanie Efektu na podstawie rzutu k100 i szansy z podziałem na skuteczność powodzenia.
-    let effect = ""
+    let effect = "";
+    let result = 0;
     if (k100 < chance) {
         // console.log((chance - k100))
         if (k100 < (chance / 2)) {
-            effect = `Kradzież kieszonkowa udała się, bo rzut wyniósł ${k100} przy szansie ${chance}. Kradzież była super udana, więc ofiara nie wie nawet kto i kiedy ją okradł.`
+            effect = `Kradzież kieszonkowa udała się, bo rzut wyniósł ${k100} przy szansie ${chance}. Kradzież była super udana, więc ofiara nie wie nawet kto i kiedy ją okradł.`;
+            result = 1;
         } else {
-            effect = `Kradzież kieszonkowa udała się, bo rzut wyniósł ${k100} przy szansie ${chance}. Ofiara zorientowała się jednak i zdołała zapamiętać parę szczegółów o napastniku.`
+            effect = `Kradzież kieszonkowa udała się, bo rzut wyniósł ${k100} przy szansie ${chance}. Ofiara zorientowała się jednak i zdołała zapamiętać parę szczegółów o napastniku.`;
+            result = 2;
         }
     } else if (k100 == chance) {
-        effect = `Kradzież kieszonkowa NIE udała się, bo rzut wyniósł ${k100} przy szansie ${chance}. Złodziej NIE MOŻE być zidentyfikowany.`
+        effect = `Kradzież kieszonkowa NIE udała się, bo rzut wyniósł ${k100} przy szansie ${chance}. Złodziej NIE MOŻE być zidentyfikowany.`;
+        result = 3;
     } else {
         if (k100 > 90) {
-            effect = `Kradzież kieszonkowa NIE udała się, bo rzut wyniósł ${k100} przy szansie ${chance}, w dodatku złodziej miał takiego pecha iż jego toższamość jest znana ofiarze.`
+            effect = `Kradzież kieszonkowa NIE udała się, bo rzut wyniósł ${k100} przy szansie ${chance}, w dodatku złodziej miał takiego pecha iż jego toższamość jest znana ofiarze.`;
+            result = 5;
         } else {
             effect = `Kradzież kieszonkowa NIE udała się, bo rzut wyniósł ${k100} przy szansie ${chance}, a jak na złość ofiara jest w stanie powiedzieć coś o złodzieju.`
+            result = 4;
         }
     }
-
-    return effect;
+    console.log(effect);
+    let ret = {
+        effect,
+        result
+    }
+    return ret;
 }
 
 module.exports = pickPocket;
