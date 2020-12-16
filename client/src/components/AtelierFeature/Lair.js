@@ -25,10 +25,10 @@ const Lair = ({ player, characters }) => {
         let thief = {
             stats: player.stats,
             skills: player.skills,
-            docRef: player.accountDocRef,
+            player: player
         }
         let targetDocRef = docRef;
-        dispatch(tryStealing(targetDocRef, thief))
+        // dispatch(tryStealing(targetDocRef, thief))
 
     }
 
