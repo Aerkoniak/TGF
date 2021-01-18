@@ -26,8 +26,9 @@ export const resetCharacter = char => dispatch => {
     character.changed = "character - reset";
     axios.post('/edit-account', { character })
         .then(res => {
-            if (res.data.saved) {
-                delete character.changed;
+            if (res.data) {
+                let player = res.data.player;
+                dispatch({ type: "LOG_IN", player })
                 // dispatch({ type: "RESET_CHARACTER_COMPLETE", character });
             }
         })
@@ -59,19 +60,61 @@ export const addProfileOverlap = overlap => dispatch => {
 }
 
 export const editOverlap = overlap => dispatch => {
-    console.log(overlap)
     let profile = overlap.player.profile;
-    profile.map(oldOverlap => {
-        if (oldOverlap.name === overlap.name) {
-            oldOverlap.text = overlap.text
+    let ind = null;
+
+    if (overlap.oldName) {
+        profile.map((oldOver, index) => {
+            if (oldOver.name === overlap.oldName) ind = index;
+        })
+        let next = {
+            name: overlap.name,
+            text: overlap.text
         }
-    })
+        profile.splice(ind, 1, next)
+    } else {
+        profile.map(oldOverlap => {
+            if (oldOverlap.name === overlap.name) {
+                oldOverlap.text = overlap.text
+            }
+        })
+    }
     console.log(profile)
     let character = {};
     character.changed = "character - profile";
     character.profile = profile;
     character.docRef = overlap.player.accountDocRef;
+    console.log(character)
+
     axios.post('/edit-account', { character })
+        .then(res => {
+            if (res.data.player) {
+                let player = res.data.player;
+                dispatch({ type: "LOG_IN", player })
+            }
+        })
+}
+
+export const deleteOverlap = (overlap, player) => dispatch => {
+    let profile = player.profile;
+    let ind = null;
+    profile.map((oldOverlap, index) => {
+        if (oldOverlap.name === overlap) ind = index;
+    })
+    profile.splice(ind, 1)
+
+    let character = {};
+    character.changed = "character - profile";
+    character.profile = profile;
+    character.docRef = player.accountDocRef;
+    console.log(character)
+    axios.post('/edit-account', { character })
+        .then(res => {
+            if (res.data.player) {
+                let player = res.data.player;
+                dispatch({ type: "LOG_IN", player })
+            }
+        })
 }
 
 

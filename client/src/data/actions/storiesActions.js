@@ -20,13 +20,6 @@ export const deleteChapter = (chapterIndex, refID) => dispatch => {
     axios.post('/stories-update', { deleteChapter })
 }
 
-export const changeSeenInSession = (id, refID) => dispatch => {
-    let seen = {};
-    seen.id = id;
-    seen.refID = refID;
-    axios.post('/stories-update', { seen })
-    dispatch({ type: "STORY_SEEN" });
-}
 
 
 export const closeStory = story => dispatch => {
@@ -34,7 +27,4 @@ export const closeStory = story => dispatch => {
     story.place = "4";
     let closeStory = story;
     axios.post('/stories-update', { closeStory })
-        .then(res => {
-
-        })
 }

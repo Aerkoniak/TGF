@@ -5,6 +5,7 @@ import styles from '../../css/atelier.module.css';
 
 
 import Workshop from '../AtelierFeature/Workshop';
+import Lair from '../AtelierFeature/Lair';
 import ProfileViewer from '../ProfileViewer/ProfileViewer';
 
 const Atelier = ({ player }) => {
@@ -15,7 +16,7 @@ const Atelier = ({ player }) => {
             {player.class === "Rzemieślnik" ? <Workshop /> : null}
             {player.class === "Mag" ? <p>Pracownia Magiczna</p> : null}
             {player.class === "Wojownik" ? <p>Sala treningowa</p> : null}
-            {player.class === "Łotrzyk" ? <p>Skromna melina</p> : null}
+            {player.class === "Łotrzyk" ? <Lair /> : null}
 
             <ProfileViewer />
         </section>

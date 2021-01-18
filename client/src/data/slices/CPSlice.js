@@ -76,7 +76,6 @@ export const updateStatistics = stats => dispatch => {
     character.changed = "stats";
     character.stats = stats.stats;
     character.docRef = stats.player.accountDocRef;
-    console.log(character)
     axios.post('/edit-account', { character })
         .then(res => {
             let payload = res.data;
@@ -88,14 +87,23 @@ export const updateStatistics = stats => dispatch => {
 export const updatePlayer = docRef => dispatch => {
     axios.post('/fetch-player', { docRef })
         .then(res => {
-            let payload = res.data;
+            let payload = res.data.player;
+            console.log(payload);
             dispatch({ type: "UPDATE_PLAYER", payload });
+        })
+}
+
+export const fetchCharactersList = argument => dispatch => {
+    dispatch({ type: "FETCH_CHAR_START" });
+    axios.post('/characters-fetch')
+        .then(res => {
+            let payload = res.data.characters;
+            dispatch({ type: "FETCH_CHAR_SUCCESS", payload })
         })
 }
 
 export const updateDiary = object => dispatch => {
     dispatch(setLoading("loading"))
-    console.log(object)
     let character = {};
     character.changed = "diary";
     character.docRef = object.character.accountDocRef;
@@ -114,6 +122,23 @@ export const updateDiary = object => dispatch => {
             dispatch(setLoading(false))
         })
 }
+
+export const confirmEqChanges = data => dispatch => {
+    dispatch(setLoading("loading"))
+    let character = {};
+    character.changed = "equipment";
+    character.docRef = data.docRef;
+    character.body = data.body;
+    character.store = data.store;
+    axios.post('/edit-account', { character })
+        .then(res => {
+            let payload = res.data;
+            dispatch({ type: "UPDATE_PLAYER", payload });
+            dispatch(setLoading(false))
+        })
+}
+
+
 
 export const selectSkills = state => state.cp.ownSkills;
 export const selectFabPoints = state => state.cp.PF;

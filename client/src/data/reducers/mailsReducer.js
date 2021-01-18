@@ -1,4 +1,4 @@
-const initState = { mails: [{addreesse: {id:1,name: "Kot Olivier",}, sender: {id:0, name: "Frederick Ferr"}, title: "Tytuł 1 wiadomości", startDate: "Sobota, 22.", id: 654163541}] };
+const initState = { mails: [] };
 
 const mailsReducer = (state = initState, action) => {
     switch (action.type) {
@@ -12,6 +12,11 @@ const mailsReducer = (state = initState, action) => {
             ...state,
             fetch_status: "complete",
             mails: action.mails
+        };
+        case 'MAIL_FETCH_FAILED': 
+        return {
+            ...state,
+            fetch_status: "failed"
         };
 
         default:

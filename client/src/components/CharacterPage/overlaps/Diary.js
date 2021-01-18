@@ -22,7 +22,7 @@ const Diary = ({ player, character, inPlayerPage, updateDiary }) => {
     useEffect(() => {
         if (!character) {
             setDiary(player);
-            setDiariesArray(player.diary || [])
+            setDiariesArray(player.chronicles)
         } else {
             setDiary(character)
             console.log(character.diary)
@@ -40,8 +40,9 @@ const Diary = ({ player, character, inPlayerPage, updateDiary }) => {
     const diaryEntries = diariesArray.map(diary => {
         return (
             <div className="diaryEntry">
-                <p>{parse(diary.text)}</p>
-                <p>{`Wpis dodany przez ID${diary.author.id} - ${diary.author.name}`}</p>
+                {!character ? <p>{diary.observation}</p> : <p>{parse(diary.text)}</p>}
+                {/* <p>{parse(diary.observation)}</p> */}
+                {!character ? null : <p>{`Wpis dodany przez ID${diary.author.id} - ${diary.author.name}`}</p>}
                 <p>{diary.date}</p>
             </div>
         )

@@ -3,7 +3,6 @@ import { createDate } from '../usefullFN';
 
 
 export const sendMail = message => dispatch => {
-
     const newMessage = {}
     newMessage.startDate = createDate();
     let sender = {}
@@ -15,7 +14,7 @@ export const sendMail = message => dispatch => {
     addreesse.name = message.addreesse.name;
     addreesse.id = message.addreesse.id;
     addreesse.rank = message.addreesse.rank;
-    addreesse.docRef= message.addreesse.accountDocRef;
+    addreesse.docRef = message.addreesse.accountDocRef;
     newMessage.sender = sender;
     newMessage.addreesse = addreesse;
     newMessage.startText = message.text
@@ -53,8 +52,8 @@ export const sendMailReply = message => dispatch => {
     axios.post('/mails-update', { newMessage })
         .then(res => {
             if (res.data.saved) {
-                let id = newMessage.author.id
-                axios.post('/mails-fetch', { id })
+                // let id = newMessage.author.id
+                // axios.post('/mails-fetch', { id })
             }
         })
 }
@@ -76,7 +75,6 @@ export const fetchMails = login => dispatch => {
                 let mails = res.data.mailsArray;
                 dispatch({ type: 'MAIL_FETCH_COMPLETE', mails });
             }
-
         })
 }
 
@@ -96,5 +94,5 @@ export const addingPlayerToMail = mail => dispatch => {
 
 export const deletePlayerFromMail = player => dispatch => {
     let deletedPlayer = player;
-    axios.post('/mails-update', {deletedPlayer})
+    axios.post('/mails-update', { deletedPlayer })
 }

@@ -116,7 +116,7 @@ const PriveSessionsPage = ({ player, id, priveStories, isLogged }) => {
 const MapStateToProps = state => ({
     player: state.player.player,
     id: state.stories.id,
-    priveStories: state.stories.priveStories,
+    priveStories: state.priveStories.stories,
     isLogged: state.player.isLogged
 })
 

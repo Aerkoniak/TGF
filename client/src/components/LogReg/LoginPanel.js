@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import Cookies from 'js-cookie';
+import { Link } from 'react-router-dom'
 
 
 //  ClassComponents
@@ -18,9 +19,9 @@ const LoginPanel = ({ autoLog, AutoLogging }) => {
 
     useEffect(() => {
         const cookie = Cookies.get('autoLog');
-        if (cookie === "true"){
+        if (cookie === "true") {
             AutoLogging()
-        } 
+        }
     }, [])
 
     const [isLogFormVisible, setLogVisibility] = useState(false);
@@ -42,7 +43,7 @@ const LoginPanel = ({ autoLog, AutoLogging }) => {
 
     return (
         <section className="loginPanel">
-            <p className={isLogFormVisible || isRegFormVisible ? "loadPage gameName formVisible" : "loadPage gameName" } >Oude Aard</p>
+            <p className={isLogFormVisible || isRegFormVisible ? "loadPage gameName formVisible" : "loadPage gameName"} >Oude Aard</p>
             <p className={isLogFormVisible || isRegFormVisible ? "loadPage gameDesc hidden" : "loadPage gameDesc"} >Twoja Tekstowa Gra Fabularna</p>
 
             <div className="logPanel">
@@ -55,6 +56,7 @@ const LoginPanel = ({ autoLog, AutoLogging }) => {
                     <RegFormSFC regClassName={isRegFormVisible ? "registerForm" : "registerForm hidden"} />
                 </div>
             </div>
+
         </section>
 
     );

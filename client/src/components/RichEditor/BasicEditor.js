@@ -16,6 +16,7 @@ class BasicEditor extends Component {
         whisperedName: ""
     }
 
+
     pickPlayer = (id) => {
         console.log(typeof id);
         let adress = {};
@@ -35,6 +36,7 @@ class BasicEditor extends Component {
 
     handleEditorChange = (content, editor) => {
         this.setState({ content });
+
     }
 
     confirmAction = () => {
@@ -101,6 +103,8 @@ class BasicEditor extends Component {
     }
 
     render() {
+
+
         return (
             <div className={styles.tinyEditor}>
                 {!this.props.recordForEdit ? <div>
@@ -117,10 +121,13 @@ class BasicEditor extends Component {
                     : null}
 
 
-                <Editor apiKey="aav2pu19wqfcwk3k0fcugetpvv0g2esxr65lrb8oas4r5okk"
+                <Editor style={{ margin: "0" }} className={styles.editorItself} apiKey="aav2pu19wqfcwk3k0fcugetpvv0g2esxr65lrb8oas4r5okk"
                     value={this.props.recordForEdit ? this.props.recordForEdit.edited.txt : this.state.content}
                     init={{
                         height: 300,
+                        // content_css: "css/editor.module.css",
+                        selector: 'textarea',
+                        body_class: 'tavernEditor tinyReact',
                         menubar: false,
                         plugins: [
                             'wordcount'

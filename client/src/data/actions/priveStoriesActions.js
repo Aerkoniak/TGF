@@ -66,10 +66,17 @@ export const deleteChapter = (chapterIndex, refID) => dispatch => {
 
 export const deletePlayerFromStory = player => dispatch => {
     let deletedPlayer = player;
-    axios.post('/stories/prive-update', {deletedPlayer})
+    axios.post('/stories/prive-update', { deletedPlayer })
 }
 
 export const addingPlayerFromStory = player => dispatch => {
     let addedPlayer = player;
-    axios.post('/stories/prive-update', {addedPlayer})
+    axios.post('/stories/prive-update', { addedPlayer })
+}
+
+export const closePrive = story => dispatch => {
+    story.closed = true;
+    story.closeTime = createDate()
+    let closedPrive = story;
+    axios.post('/stories/prive-update', { closedPrive })
 }

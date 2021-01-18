@@ -15,15 +15,57 @@
 
     .newItem {
         display: flex;
-        margin: 20px 0;
+        margin: 10px 0;
+        align-items: center;
     }
 
     .newItem p {
         margin: 0;
         flex-basis: 30%;
+       
     }
 
     .itemDoneWrap {
         text-align: center;
     }
+
+/* LAIR */
+
+    .lairWrap{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    margin: 25px 0;
+    }
+
+    .type {
+        flex-basis: 33%;
+        height: 300px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+    
+    .desc {
+        padding: 0 15px;
+    }
+
+
+
+    /* EQUIPPAGE */
+
+ 
+    .equip h5 {
+        margin: 0 0 30px;
+        text-align: left;
+    }
+    .onBody{
+        margin: 20px 0;
+    }
+    .inStore{
+        margin: 20px 0;
+        text-align: left;
+    }
 }
+
+

@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react'
 import { connect } from 'react-redux';
 import { createAccount } from '../../data/actions/generalActions';
-import {createDate} from '../../data/usefullFN'
+import { createDate } from '../../data/usefullFN'
+import { Spinner, Button } from 'react-bootstrap'
+import styles from '../../css/login.module.css'
+
 
 import { Firebase } from '../../data/firebase/firebaseConfig';
 import { createFirebaseAccount, signInFirebase } from '../../data/firebase/firebaseActions';
@@ -10,7 +13,7 @@ import { createFirebaseAccount, signInFirebase } from '../../data/firebase/fireb
 
 
 
-const RegFormSFC = ({ regClassName, isLogged, createAccount, createFirebaseAccount,signInFirebase }) => {
+const RegFormSFC = ({ regClassName, isLogged, createAccount, createFirebaseAccount, signInFirebase }) => {
 
     const [login, setLogin] = useState("");
     const [password, setPassword] = useState("");
@@ -18,7 +21,7 @@ const RegFormSFC = ({ regClassName, isLogged, createAccount, createFirebaseAccou
     const [information, setInformation] = useState("");
     const [warnings, setWarnings] = useState(false);
 
-    
+
 
     const submitForm = e => {
         e.preventDefault();
@@ -29,14 +32,11 @@ const RegFormSFC = ({ regClassName, isLogged, createAccount, createFirebaseAccou
         if (login === "" || password === "" || repPass === "") {
             setInformation("Wszystkie pola muszą zostać wypełnione.");
             setWarnings(true);
-        } else if (password.length < 3) {
-            setInformation("Twoje hasło musi być dłuższe niż 3 znaki.");
+        } else if (password.length < 6) {
+            setInformation("Twoje hasło musi być dłuższe niż 6 znaków.");
             setWarnings(true);
         } else if (password !== repPass) {
             setInformation("Twoje hasła muszą być takie same.");
-            setWarnings(true);
-        } else if (login === " " || login === "  ") {
-            setInformation("Twoje hasło nie może być spacją.");
             setWarnings(true);
         } else {
             isFormOk = true;
@@ -57,23 +57,28 @@ const RegFormSFC = ({ regClassName, isLogged, createAccount, createFirebaseAccou
 
     return (
         <form className={regClassName} onSubmit={submitForm} >
-            {warnings ? <p>{information}</p> :
-                <div className="info">
-                    <p className="formInfo header">Regulamin rejestracji:</p>
-                    <p className="formInfo">Po rejestracji należy zweryfikować adres e-mail.</p>
-                    <p className="formInfo header">ale weryfikacja NIE DZIAŁA - jeszcze</p>
-                    <p className="formInfo">Drugi punkt regulaminu, na który nie mam pomysłu.</p>
-                    <p className="formInfo">Trzeci punkt regulaminu, w którym również nie wiem co wsadzić.</p>
-                </div>}
+
+            <div className="info">
+                <p className="formInfo header">Regulamin rejestracji:</p>
+                <p className="formInfo">Hasło musi mieć 6 znaków/liter długości.</p>
+                <p className="formInfo">Do prawidłowego działania niezbędne jest kliknięcie w link weryfikacyjny.</p>
+                {/* <p className="formInfo"></p> */}
+            </div>
+
             <input className="regInput" type="text" id="login" placeholder="Podaj swój e-mail" value={login} onChange={(e) => setLogin(e.target.value)} />
             <input className="regInput" type="password" id="pass" placeholder="Podaj hasło" value={password} onChange={(e) => setPassword(e.target.value)} />
             <input className="regInput" type="password" id="repPass" placeholder="Powtórz hasło" value={repPass} onChange={(e) => setRepPass(e.target.value)} />
-            { isLogged === "checking" ?
-                <div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-                :
-                <input className="registerSubmit" type="submit" value="Zarejestruj" onSubmit={submitForm} />
-            }
-            {/* <input className="registerSubmit" type="submit" value="Zarejestruj" onSubmit={submitForm} /> */}
+
+
+            <div className={styles.wrap}>
+                {warnings ? <p className={styles.warning}>{warnings}</p> : null}
+                {information ? <p className={styles.warning}>{information}</p> : null}
+
+                {isLogged === "checking" ? <Spinner animation="border" variant="danger" /> : <Button variant="outline-dark" type="submit" onClick={submitForm} >Zarejestruj</Button>}
+            </div>
+
+
+
         </form>
     );
 }

@@ -15,7 +15,7 @@ const createDate = (givenDate) => {
         date = new Date(year, month - 1, day, hour, minute, second, milisecond)
         console.log(date)
         let dayIndex = date.getDay();
-        let timeString = date.toLocaleString();
+        let timeString = date.toLocaleString("pl-PL");
         console.log(timeString)
 
         let dayName = "";
@@ -48,7 +48,7 @@ const createDate = (givenDate) => {
 
     } else {
         let dayIndex = date.getDay();
-        let timeString = date.toLocaleString();
+        let timeString = date.toLocaleString("pl-PL");
         let day = "";
 
         switch (dayIndex) {

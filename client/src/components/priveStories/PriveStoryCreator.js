@@ -30,7 +30,12 @@ const PriveStoryCreator = ({ player, characters, createPriveStory }) => {
     const addPlayer = (e) => {
         e.preventDefault();
         let insideSession = playersInSession;
-        insideSession.push(seachedPlayersList[0]);
+        let pickedPlayer = {
+            name: seachedPlayersList[0].name,
+            id: seachedPlayersList[0].id,
+            accountDocRef: seachedPlayersList[0].accountDocRef
+        }
+        insideSession.push(pickedPlayer);
         setAddressee("")
         setPlayersList([]);
         setPlayers(insideSession);
@@ -78,7 +83,9 @@ const PriveStoryCreator = ({ player, characters, createPriveStory }) => {
 
             {playersInSession ? <div className="players">Gracze w sesji: {playersInside}</div> : null}
 
-            <TinyEditor priveStoryCreator title={titleValue} playersInSession={playersInSession} createPriveStory={createPriveStory} />
+            <TinyEditor priveStoryCreator title={titleValue}
+                playersInSession={playersInSession}
+                createPriveStory={createPriveStory} />
 
             {/* <RichEditor priveStoryCreator title={titleValue} playersInSession={playersInSession} action={createPriveStory} /> */}
         </form>

@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { Redirect } from 'react-router-dom'
+import axios from 'axios';
+import { Redirect, Link } from 'react-router-dom'
 import { connect } from 'react-redux';
 import { toggleHand } from '../../data/actions/generalActions'
 import { auth } from '../../data/firebase/firebaseConfig'
 import { signOut, sendVerification } from '../../data/firebase/firebaseActions'
 import { resetCharacter } from '../../data/actions/creatorActions';
 
-import { Spinner, Button } from 'react-bootstrap'
+import { Spinner, Button } from 'react-bootstrap';
+import styles from '../../css/settings.module.css';
 
 
 import LeftHandedUtility from '../LeftHandedUtility/LeftHandedUtility';
@@ -21,6 +23,8 @@ const SettingsPage = ({ player, isLogged, signOut, sendVerification, resetCharac
     const [setAvatar, confirmSettingAvatar] = useState(false);
     const [reset, toggleReset] = useState(false);
 
+    const [value, changeValue] = useState("Zmień")
+
     useEffect(() => {
         auth.onAuthStateChanged(function (user) {
             console.log("SettingsPage - useEffect - onAuthStateChanged - res")
@@ -29,9 +33,10 @@ const SettingsPage = ({ player, isLogged, signOut, sendVerification, resetCharac
         })
     }, [])
 
-    const verificationSupporter = (player) => {
-        sendVerification(player.login)
-    }
+    // const verificationSupporter = (player) => {
+    //     sendVerification(player.login)
+    // }
+
     const resetSupporter = () => {
         toggleReset(true);
         let char = player;
@@ -46,26 +51,43 @@ const SettingsPage = ({ player, isLogged, signOut, sendVerification, resetCharac
         setRedirect(true)
     }
 
+    const changeByEveryone = () => {
+        axios.post('/everyone', { player })
+    }
+
     return (
         <section className="settingsPage mainPage">
+            {player.rank <= 2 ?
+                < Link to="/panel"><Button variant="outline-warning">Przejdź do Panelu</Button></Link>
+                : null}
+
 
             <div className="desktopSetting">
                 <div className="gameSettings">
-                    <h2 className="test">Ustawienia gry:</h2>
-                    {verifyButtonActive ? <button className="verifyBtn" onClick={verificationSupporter}>Wyślij e-mail weryfikacyjny</button> : null}
 
-                    <AutoLogUtility />
-                    <p className="logOutUtility" onClick={signOutSupporter}>Wyloguj mnie</p>
+                    {/* <h2 className="test">Ustawienia gry:</h2> */}
+
+                    {/* {verifyButtonActive ? <button className="verifyBtn" onClick={verificationSupporter}>Wyślij e-mail weryfikacyjny</button> : null} */}
+
+                    {/* <AutoLogUtility /> */}
+
                 </div>
-                <div className="accountSettings">
+
+                <div className={styles.accountSettings}>
+
                     <h2 className="test">Ustawienia konta:</h2>
-                    {player.rank != 10 ? <SetRankUtility /> : null}
 
-                    {reset ? <Spinner animation="border" /> : <Button variant="outline-dark" onClick={resetSupporter}>Zresetuj swoją postać</Button>}
-
-
-                    <button className="resetCharacter" onClick={e => confirmSettingAvatar(!setAvatar)} >Dodaj avatar</button>
+                    <Button className={styles.btn} variant="outline-success" onClick={e => confirmSettingAvatar(!setAvatar)} >Dodaj avatar</Button>
                     {setAvatar ? <DropZone /> : null}
+
+                    {reset ? <Spinner className={styles.btn} animation="border" /> : <Button className={styles.btn} variant="outline-dark" onClick={resetSupporter}>Zresetuj swoją postać</Button>}
+
+                    <Button className={styles.btn} variant="outline-danger" onClick={signOutSupporter} >Wyloguj</Button>
+
+                    {player.rank === 0 ? <Button onClick={changeByEveryone}>Test</Button> : null}
+
+
+                    {/* {player.rank != 10 ? <SetRankUtility /> : null} */}
 
                 </div>
 
@@ -77,20 +99,17 @@ const SettingsPage = ({ player, isLogged, signOut, sendVerification, resetCharac
 
             <div className="mobileSettings">
                 <div className="gameSettings">
-                    <h2 className="test">Ustawienia gry</h2>
-                    <AutoLogUtility />
+                    <h2 className="test">Ustawienia konta</h2>
+                    {/* <AutoLogUtility /> */}
                     <LeftHandedUtility />
-                    <p className="logOutUtility" onClick={signOut}>Wyloguj mnie</p>
-                </div>
-                <div className="accountSettings">
-                    <h2 className="test">Ustawienia konta:</h2>
-                    <SetRankUtility />
+
+                    <Button variant="outline-danger" onClick={signOutSupporter} >Wyloguj</Button>
                 </div>
 
 
             </div>
-            {redirect ? <Redirect to="/login" /> : null}
-        </section>
+            { redirect ? <Redirect to="/login" /> : null}
+        </section >
     );
 }
 

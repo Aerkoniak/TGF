@@ -4,18 +4,11 @@ const fs = require('fs');
 const bodyParser = require('body-parser');
 require('dotenv').config()
 
+const { htmlToText } = require('html-to-text');
+
+
 const multer = require('multer')
 const upload = multer({ dest: 'uploads/' })
-
-const firebase = require("firebase/app");
-const firebaseConfig = require('./firebaseConfig');
-firebase.initializeApp(firebaseConfig);
-
-const admin = require('firebase-admin');
-const dbAdmin = require('./firebaseAdmin');
-admin.initializeApp(dbAdmin);
-
-const FieldValue = require('firebase-admin').firestore.FieldValue;
 
 // FUNKCJA DATY
 
@@ -23,12 +16,36 @@ const createDate = require('./createDate');
 
 // FUNKCJE ZŁODZIEJSKIE 
 
-const pickPocket = require('./pickpocketing');
+const pickPocket = require('./logic/pickpocketing');
+
+// FUNKCJE Szpiegowska
+
+const checkInterceptedMsg = require('./logic/spying');
+// const updateLastActiveDate = require('./logic/updateLastActiveDate');
+
+// RAPORTOWANIE Błędów
+
+const reportErrors = require('./logic/reportErrors');
 
 // FIRESTORE 
+const firebase = require("firebase/app");
+const admin = require('firebase-admin');
 
-const db = admin.firestore()
-db.settings({ ignoreUndefinedProperties: true })
+const firebaseConfig = require('./firebaseConfig');
+firebase.initializeApp(firebaseConfig);
+
+const dbAdmin = require('./firebaseAdmin');
+admin.initializeApp(dbAdmin);
+
+
+const db = admin.firestore();
+
+// const db = require('./db/firestore');
+
+db.settings({ ignoreUndefinedProperties: true });
+const FieldValue = require('firebase-admin').firestore.FieldValue;
+const { merge } = require('lodash');
+
 const players = db.collection("players");
 const stories = db.collection('stories');
 const mails = db.collection('mails');
@@ -41,12 +58,15 @@ const port = process.env.PORT || 3000;
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
+
 // app.use(express.static(path.join(__dirname, 'build')));
-
-
 // app.get('/*', function (req, res) {
 //     res.sendFile(path.join(__dirname, 'build', 'index.html'));
 // });
+
+// const updateLastActiveDate = (req, res, next) => {
+
+// }
 
 
 app.post("/registerAccount", (req, res) => {
@@ -58,9 +78,10 @@ app.post("/registerAccount", (req, res) => {
     account.priveField = 0;
     account.mailsField = 0;
     account.storyField = 0;
+    account.FabularPoints = 5;
     players.get()
         .then(snapshot => {
-            let size = snapshot.size + 1;
+            let size = snapshot.size;
             account.id = size;
             players.add(account)
                 .then(docRef => {
@@ -74,7 +95,14 @@ app.post("/registerAccount", (req, res) => {
                                 res.json({ player });
                             }
                         })
+                        .catch(err => {
+                            reportErrors(err, "94")
+                        })
                 })
+                .catch(err => {
+                    reportErrors(err, "103")
+                })
+
         })
 })
 
@@ -82,11 +110,16 @@ app.post('/login', (req, res) => {
     console.log("/login")
     let account = req.body.account;
     const { login, password, lastLogged } = account;
+    console.log(login)
 
     players.where("login", "==", `${login}`).get()
         .then(snapshot => {
             if (snapshot.size === 0) {
+                console.log("nie ma gracza")
                 res.json({ msg: "Nie ma takiego gracza." })
+
+                reportErrors({ msg: "Nie ma takiego gracza." }, "121")
+
             } else {
                 snapshot.forEach(doc => {
                     const document = doc.data();
@@ -119,9 +152,9 @@ app.post('/login', (req, res) => {
                             let player = doc.data()
                             res.json({ player })
                         })
-
-
-
+                        .catch(err => {
+                            reportErrors(err, "156")
+                        })
                 })
             }
         });
@@ -138,6 +171,9 @@ app.post('/fetch-player', (req, res) => {
             console.log("/fetch-player --- done")
             res.json({ player })
         })
+        .catch(err => {
+            reportErrors(err, "175")
+        })
 })
 
 app.post('/update-activeTime', (req, res) => {
@@ -148,10 +184,10 @@ app.post('/update-activeTime', (req, res) => {
     } else if (lastActiveTime && accountDocRef) {
         players.doc(accountDocRef).set({ lastActiveTime: lastActiveTime }, { merge: true })
             .catch(err => {
-                console.log(err)
+                reportErrors(err, "187")
             })
         res.json({ data: "ok" });
-        console.log("update-activeTime")
+        // console.log("update-activeTime")
     }
 
 })
@@ -170,6 +206,9 @@ app.post('/edit-account', (req, res) => {
                             console.log("/edit-account -- stageOne --- done")
                         }
                     })
+                    .catch(err => {
+                        reportErrors(err, "210")
+                    })
             }
             break;
         case 'character - stageTwo':
@@ -180,6 +219,9 @@ app.post('/edit-account', (req, res) => {
                             res.json({ saved: true })
                             console.log("/edit-account -- stageTwo --- done")
                         }
+                    })
+                    .catch(err => {
+                        reportErrors(err, "224")
                     })
             }
             break;
@@ -195,7 +237,13 @@ app.post('/edit-account', (req, res) => {
                                     let player = doc.data()
                                     res.json({ player })
                                 })
+                                .catch(err => {
+                                    reportErrors(err, "241")
+                                })
                         }
+                    })
+                    .catch(err => {
+                        reportErrors(err, "246")
                     })
             }
             break;
@@ -209,8 +257,14 @@ app.post('/edit-account', (req, res) => {
                                     let player = doc.data()
                                     res.json({ player })
                                 })
+                                .catch(err => {
+                                    reportErrors(err, "261")
+                                })
                             console.log("/edit-account -- char-profile --- done")
                         }
+                    })
+                    .catch(err => {
+                        reportErrors(err, "267")
                     })
             }
             break;
@@ -222,6 +276,9 @@ app.post('/edit-account', (req, res) => {
                         console.log("/edit-account -- name --- done")
                     }
                 })
+                .catch(err => {
+                    reportErrors(err, "280")
+                })
             break;
         case "profile":
             players.doc(character.accountDocRef).set({ profile: character.profile }, { merge: true })
@@ -230,6 +287,9 @@ app.post('/edit-account', (req, res) => {
                         res.json({ saved: true })
                         console.log("/edit-account -- profile --- done")
                     }
+                })
+                .catch(err => {
+                    reportErrors(err, "292")
                 })
             break;
         case 'rank':
@@ -243,7 +303,13 @@ app.post('/edit-account', (req, res) => {
                                 res.json({ saved: true, player })
                                 console.log("/edit-account -- rank --- done")
                             })
+                            .catch(err => {
+                                reportErrors(err, "307")
+                            })
                     }
+                })
+                .catch(err => {
+                    reportErrors(err, "312")
                 })
             break;
         case 'skills':
@@ -256,7 +322,13 @@ app.post('/edit-account', (req, res) => {
                                 res.json(player)
                                 console.log("/edit-account -- skills --- done")
                             })
+                            .catch(err => {
+                                reportErrors(err, "326")
+                            })
                     }
+                })
+                .catch(err => {
+                    reportErrors(err, "331")
                 })
             break;
         case 'stats':
@@ -270,7 +342,13 @@ app.post('/edit-account', (req, res) => {
                                 res.json(player)
                                 console.log("/edit-account -- stats --- done")
                             })
+                            .catch(err => {
+                                reportErrors(err, "346")
+                            })
                     }
+                })
+                .catch(err => {
+                    reportErrors(err, "351")
                 })
             break;
         case 'diary':
@@ -292,7 +370,13 @@ app.post('/edit-account', (req, res) => {
                                     res.json(characters);
                                     console.log("/edit-account -- diary --- done")
                                 })
+                                .catch(err => {
+                                    reportErrors(err, "374")
+                                })
                         }
+                    })
+                    .catch(err => {
+                        reportErrors(err, "379")
                     })
             }
             break;
@@ -310,6 +394,9 @@ app.post('/edit-account', (req, res) => {
                                 let player = doc.data();
                                 res.json(player)
                             })
+                    })
+                    .catch(err => {
+                        reportErrors(err, "399")
                     })
             }
             break;
@@ -329,11 +416,14 @@ app.post('/stories-fetch', (req, res) => {
             res.json({ storiesArray })
             console.log("/stories-fetch --- done")
         })
+        .catch(err => {
+            reportErrors(err, "420")
+        })
 })
 
 app.post('/stories-update', (req, res) => {
     console.log("/stories-update")
-    const { newChapter, seen, deleteChapter, createStory, closeStory } = req.body;
+    const { newChapter, seen, deleteChapter, createStory, closeStory, editChapter, modifiedSpectators } = req.body;
 
     if (newChapter) {
         console.log("/stories-update --- newChapter")
@@ -352,6 +442,9 @@ app.post('/stories-update', (req, res) => {
                                 res.json({ saved: true })
                                 console.log("/stories-update --- newChapter --- done")
                             }
+                        })
+                        .catch(err => {
+                            reportErrors(err, "447")
                         })
                 } else {
 
@@ -388,6 +481,9 @@ app.post('/stories-update', (req, res) => {
                                     console.log("/stories-update --- newChapter --- done")
                                 }
                             })
+                            .catch(err => {
+                                reportErrors(err, "485")
+                            })
                     } else {
                         let lastReply = new Date().getTime();
                         stories.doc(chapter.storyID).set({ lastReply: lastReply, chapters: chaptersArray, spectators: spectatorsArray }, { merge: true })
@@ -397,23 +493,26 @@ app.post('/stories-update', (req, res) => {
                                     console.log("/stories-update --- newChapter --- done")
                                 }
                             })
+                            .catch(err => {
+                                reportErrors(err, "497")
+                            })
                     };
                     players.doc(story.author.docRef).update({
                         storyField: FieldValue.increment(1),
                         FabularPoints: FieldValue.increment(1)
                     })
-                        .catch(err => console.log(err));
+                        .catch(err => {
+                            reportErrors(err, "505")
+                        })
 
                     spectatorsArray.forEach(spectator => {
                         players.doc(spectator.docRef).update({
                             storyField: FieldValue.increment(1)
                         })
-                            .catch(err => console.log(err));
+                            .catch(err => {
+                                reportErrors(err, "513")
+                            })
                     })
-
-
-
-
                 }
             })
     } else if (seen) {
@@ -438,6 +537,12 @@ app.post('/stories-update', (req, res) => {
                             console.log("/stories-update --- seen --- done")
                         }
                     })
+                    .catch(err => {
+                        reportErrors(err, "541")
+                    })
+            })
+            .catch(err => {
+                reportErrors(err, "542")
             })
     } else if (deleteChapter) {
         console.log("/stories-update --- deleteChapter")
@@ -455,6 +560,12 @@ app.post('/stories-update', (req, res) => {
                             console.log("/stories-update --- deleteChapter --- done")
                         }
                     })
+                    .catch(err => {
+                        reportErrors(err, "564")
+                    })
+            })
+            .catch(err => {
+                reportErrors(err, "568")
             })
     } else if (createStory) {
         console.log("/stories-update --- createStory")
@@ -477,19 +588,54 @@ app.post('/stories-update', (req, res) => {
                 res.json({ id: story.id });
                 console.log("/stories-update --- createStory --- done")
             })
+            .catch(err => {
+                reportErrors(err, "592")
+            })
     } else if (closeStory) {
         console.log("/stories-update --- closeStory")
 
-        const { refID, place, closeTime } = req.body.closeStory;
+        const { refID, place, closeTime, shutting } = req.body.closeStory;
+        console.log(shutting)
 
-        stories.doc(refID).set({ closeTime: closeTime, place: place }, { merge: true })
+        stories.doc(refID).set({ closeTime: closeTime, place: place, shutting: shutting }, { merge: true })
             .then(ok => {
                 if (ok.writeTime) {
                     res.json({ saved: true })
                     console.log("/stories-update --- closeStory --- done")
                 }
             })
-            .catch(err => console.log(err))
+            .catch(err => {
+                reportErrors(err, "608")
+            })
+    } else if (editChapter) {
+        console.log("/stories-update --- editChapter")
+        const { storyID, chapters } = req.body.editChapter
+
+        stories.doc(storyID).set({ chapters: chapters }, { merge: true })
+            .then(ok => {
+                if (ok.writeTime) {
+                    res.json({ saved: true })
+                    console.log("/stories-update --- editChapter --- done")
+                }
+            })
+            .catch(err => {
+                reportErrors(err, "622")
+            })
+
+    } else if (modifiedSpectators) {
+        console.log("/stories-update --- modifiedSpectators")
+        const { refID, spectators } = req.body.modifiedSpectators;
+
+        stories.doc(refID).set({ spectators: spectators }, { merge: true })
+            .then(ok => {
+                if (ok.writeTime) {
+                    res.json({ saved: true })
+                    console.log("/stories-update --- modifiedSpectators --- done")
+                }
+            })
+            .catch(err => {
+                reportErrors(err, "637")
+            })
     }
 })
 
@@ -511,6 +657,9 @@ app.post('/characters-fetch', (req, res) => {
             console.log("/characters-fetch --- done")
 
         })
+        .catch(err => {
+            reportErrors(err, "661")
+        })
 
 })
 
@@ -528,6 +677,7 @@ app.post('/mails-create', (req, res) => {
     newMail.between = [addreesse.id, sender.id];
     newMail.records = [];
     newMail.lastReply = message.startDate;
+    newMail.replyStamp = new Date().getTime();
     // console.log(newMail);
 
     mails.add(newMail)
@@ -539,9 +689,13 @@ app.post('/mails-create', (req, res) => {
             players.doc(addreesse.docRef).update({
                 mailsField: FieldValue.increment(1)
             })
-                .catch(err => console.log(err))
+                .catch(err => {
+                    reportErrors(err, "693")
+                })
         })
-        .catch(err => console.log(err))
+        .catch(err => {
+            reportErrors(err, "697")
+        })
 });
 
 app.post('/mails-fetch', (req, res) => {
@@ -569,15 +723,21 @@ app.post('/mails-fetch', (req, res) => {
                             res.json({ mailsArray })
                             console.log("/mails-fetch --- done")
                         })
+                        .catch(err => {
+                            reportErrors(err, "727")
+                        })
                 })
             }
+        })
+        .catch(err => {
+            reportErrors(err, "733")
         })
 
 })
 
-app.post('/mails-update', (req, res) => {
+app.post('/mails-update', async (req, res) => {
     console.log("/mails-update")
-    const { newMessage, read, newViewer, deletedPlayer } = req.body;
+    const { newMessage, read, newViewer, deletedPlayer, mailList } = req.body;
     if (newMessage) {
         console.log("/mails-update --- newMessage")
         const mailRecord = req.body.newMessage;
@@ -634,8 +794,9 @@ app.post('/mails-update', (req, res) => {
                     })
                 }
                 let lastReply = mailRecord.replyDate;
+                let replyStamp = new Date().getTime()
 
-                mails.doc(mailRecord.mailsDocRef).set({ records: recordsArray, sender: sender, addreesse: addreesse, viewers: viewers, lastReply: lastReply }, { merge: true })
+                mails.doc(mailRecord.mailsDocRef).set({ records: recordsArray, sender: sender, addreesse: addreesse, viewers: viewers, lastReply: lastReply, replyStamp: replyStamp }, { merge: true })
                     .then(ok => {
                         if (ok.writeTime) {
                             res.json({ saved: true })
@@ -643,13 +804,20 @@ app.post('/mails-update', (req, res) => {
 
                         }
                     })
-                    .catch(err => console.log(err));
+                    .catch(err => {
+                        reportErrors(err, "808")
+                    })
                 inform.forEach(docRef => {
                     players.doc(docRef).update({
                         mailsField: FieldValue.increment(1)
                     })
-                        .catch(err => console.log(err))
+                        .catch(err => {
+                            reportErrors(err, "815")
+                        })
                 })
+            })
+            .catch(err => {
+                reportErrors(err, "820")
             })
     } else if (read) {
         console.log("/mails-update --- read")
@@ -667,10 +835,16 @@ app.post('/mails-update', (req, res) => {
                     sender = mail.sender;
                     sender.read = true;
                     mails.doc(refID).set({ sender: sender }, { merge: true })
+                        .catch(err => {
+                            reportErrors(err, "839")
+                        })
                 } else if (id === mail.addreesse.id) {
                     addreesse = mail.addreesse;
                     addreesse.read = true;
                     mails.doc(refID).set({ addreesse: addreesse }, { merge: true })
+                        .catch(err => {
+                            reportErrors(err, "846")
+                        })
                 } else if (id != mail.sender.id && mail.addreesse.id) {
                     viewers.map(viewer => {
                         if (id === viewer.id) {
@@ -678,12 +852,18 @@ app.post('/mails-update', (req, res) => {
                         }
                     })
                     mails.doc(refID).set({ viewers: viewers }, { merge: true })
+                        .catch(err => {
+                            reportErrors(err, "856")
+                        })
                 }
 
 
                 res.json({ saved: true })
                 console.log("/mails-update --- read --- done")
 
+            })
+            .catch(err => {
+                reportErrors(err, "866")
             })
     } else if (newViewer) {
         console.log("/mails-update --- newViewer")
@@ -700,13 +880,21 @@ app.post('/mails-update', (req, res) => {
                 viewers = mail.viewers;
                 viewers.push(viewer);
                 mails.doc(mailsDocRef).set({ between: between, viewers: viewers }, { merge: true })
+                    .catch(err => {
+                        reportErrors(err, "884")
+                    })
                 console.log("/mails-update --- newViewer --- done")
 
+            })
+            .catch(err => {
+                reportErrors(err, "890")
             })
         players.doc(viewer.docRef).update({
             mailsField: FieldValue.increment(1)
         })
-            .catch(err => console.log(err))
+            .catch(err => {
+                reportErrors(err, "896")
+            })
     } else if (deletedPlayer) {
         console.log("/mails-update --- deletePlayer")
 
@@ -734,9 +922,132 @@ app.post('/mails-update', (req, res) => {
                 })
                 between.splice(removedIndex, 1)
                 mails.doc(mailsDocRef).set({ between: between, viewers: viewers }, { merge: true })
+                    .catch(err => {
+                        reportErrors(err, "926")
+                    })
                 console.log("/mails-update --- deletePlayer --- done")
 
             })
+            .catch(err => {
+                reportErrors(err, "932")
+            })
+    } else if (mailList) {
+        const { type, refsArray, fullMailsArray, playerID } = mailList;
+
+        switch (type) {
+            case "delete":
+                {
+                    refsArray.map(ref => {
+                        mails.doc(ref).delete()
+                            .catch(err => {
+                                reportErrors(err, "943")
+                            })
+                    })
+
+                }
+                break;
+            case "archive":
+                {
+                    refsArray.map(ref => {
+                        mails.doc(ref).set({ archived: true }, { merge: true })
+                            .catch(err => {
+                                reportErrors(err, "954")
+                            })
+                    })
+                }
+                break;
+            case "read":
+                {
+                    fullMailsArray.map((mail, index) => {
+                        let flag = refsArray.includes(mail.mailsDocRef);
+                        if (flag) {
+                            if (playerID === mail.addreesse.id) {
+                                mails.doc(mail.mailsDocRef).set({
+                                    addreesse: {
+                                        read: true
+                                    }
+                                }, { merge: true })
+                                    .catch(err => {
+                                        reportErrors(err, "971")
+                                    })
+
+                            } else if (playerID === mail.sender.id) {
+                                mails.doc(mail.mailsDocRef).set({
+                                    sender: {
+                                        read: true
+                                    }
+                                }, { merge: true })
+                                    .catch(err => {
+                                        reportErrors(err, "981")
+                                    })
+                            } else {
+                                let modViewers = [...mail.viewers];
+                                modViewers.map(viewer => {
+                                    if (viewer.id === playerID) {
+                                        viewer.read = true;
+                                    }
+                                })
+                                mails.doc(mail.mailsDocRef).set({
+                                    viewers: modViewers
+                                }, { merge: true })
+                                    .catch(err => {
+                                        reportErrors(err, "994")
+                                    })
+                            }
+                        }
+                    })
+
+                }
+                break;
+            case "unread":
+                {
+                    fullMailsArray.map((mail, index) => {
+                        let flag = refsArray.includes(mail.mailsDocRef);
+                        if (flag) {
+                            if (playerID === mail.addreesse.id) {
+                                mails.doc(mail.mailsDocRef).set({
+                                    addreesse: {
+                                        read: false
+                                    }
+                                }, { merge: true })
+                                    .catch(err => {
+                                        reportErrors(err, "1014")
+                                    })
+
+                            } else if (playerID === mail.sender.id) {
+                                mails.doc(mail.mailsDocRef).set({
+                                    sender: {
+                                        read: false
+                                    }
+                                }, { merge: true })
+                                    .catch(err => {
+                                        reportErrors(err, "1024")
+                                    })
+
+
+                            } else {
+                                let modViewers = [...mail.viewers];
+                                modViewers.map(viewer => {
+                                    if (viewer.id === playerID) {
+                                        viewer.read = false;
+                                    }
+                                })
+                                mails.doc(mail.mailsDocRef).set({
+                                    viewers: modViewers
+                                }, { merge: true })
+                                    .catch(err => {
+                                        reportErrors(err, "1039")
+                                    })
+                            }
+                        }
+                    })
+                }
+                break;
+            default: {
+                return
+            }
+        }
+        res.json({ saved: true })
     }
 
 })
@@ -793,11 +1104,16 @@ app.post('/stories/prive-create', (req, res) => {
             console.log("/stories/prive-create --- done")
 
         })
+        .catch(err => {
+            reportErrors(err, "1108")
+        })
     spectators.forEach(spectator => {
         players.doc(spectator.docRef).update({
             priveField: FieldValue.increment(1)
         })
-            .catch(err => console.log(err));
+            .catch(err => {
+                reportErrors(err, "1115")
+            })
     })
 
 })
@@ -805,37 +1121,30 @@ app.post('/stories/prive-create', (req, res) => {
 app.post('/stories/prive-fetch', (req, res) => {
     console.log("/stories/prive-fetch")
 
-    let mail = req.body.mail;
+    let playerID = req.body.id;
     let priveStoriesArray = []
 
 
-    players.where('login', "==", `${mail}`).get()
+    priveStories.where('between', 'array-contains', playerID).orderBy('id', 'asc').get()
         .then(snapshot => {
             snapshot.forEach(doc => {
-                let player = doc.data();
-                let playerID = player.id;
-
-                priveStories.where('between', 'array-contains', playerID).orderBy('id', 'asc').get()
-                    .then(snapshot => {
-                        snapshot.forEach(doc => {
-                            let story = doc.data()
-                            priveStoriesArray.push(story);
-                        })
-                        res.json({ saved: true, priveStoriesArray });
-                        console.log("/stories/prive-fetch --- done")
-
-                    })
+                let story = doc.data()
+                priveStoriesArray.push(story);
             })
-
+            res.json({ saved: true, priveStoriesArray });
+            console.log("/stories/prive-fetch --- done")
 
         })
-
+        .catch(err => {
+            reportErrors(err, "1139")
+        })
 })
+
 
 app.post('/stories/prive-update', (req, res) => {
     console.log("/stories/prive-update")
 
-    const { newChapter, seen, deleteChapter, deletedPlayer, addedPlayer, closedPrive } = req.body;
+    const { newChapter, seen, deleteChapter, deletedPlayer, addedPlayer, closedPrive, editChapter } = req.body;
 
     if (seen) {
         console.log("/stories/prive-update --- seen")
@@ -862,6 +1171,9 @@ app.post('/stories/prive-update', (req, res) => {
 
                         }
                     })
+                    .catch(err => {
+                        reportErrors(err, "1175")
+                    })
             })
     } else if (newChapter) {
         console.log("/stories/prive-update --- newChapter")
@@ -882,6 +1194,9 @@ app.post('/stories/prive-update', (req, res) => {
                                 console.log("/stories/prive-update --- newChapter --- done")
 
                             }
+                        })
+                        .catch(err => {
+                            reportErrors(err, "1199")
                         })
                 } else {
                     chaptersArray = story.chapters;
@@ -914,6 +1229,9 @@ app.post('/stories/prive-update', (req, res) => {
                                     res.json({ saved: true })
                                 }
                             })
+                            .catch(err => {
+                                reportErrors(err, "1233")
+                            })
                     } else {
                         priveStories.doc(chapter.storyID).set({ chapters: chaptersArray, spectators: spectatorsArray }, { merge: true })
                             .then(ok => {
@@ -921,12 +1239,17 @@ app.post('/stories/prive-update', (req, res) => {
                                     res.json({ saved: true })
                                 }
                             })
+                            .catch(err => {
+                                reportErrors(err, "1243")
+                            })
                     }
                     spectatorsArray.forEach(spectator => {
                         players.doc(spectator.docRef).update({
                             priveField: FieldValue.increment(1)
                         })
-                            .catch(err => console.log(err));
+                            .catch(err => {
+                                reportErrors(err, "1251")
+                            })
                     })
 
 
@@ -950,6 +1273,12 @@ app.post('/stories/prive-update', (req, res) => {
 
                         }
                     })
+                    .catch(err => {
+                        reportErrors(err, "1277")
+                    })
+            })
+            .catch(err => {
+                reportErrors(err, "1281")
             })
     } else if (deletedPlayer) {
         console.log("/stories/prive-update --- deletedPlayer")
@@ -988,6 +1317,9 @@ app.post('/stories/prive-update', (req, res) => {
 
                         }
                     })
+                    .catch(err => {
+                        reportErrors(err, "1321")
+                    })
 
             })
     } else if (addedPlayer) {
@@ -1020,10 +1352,15 @@ app.post('/stories/prive-update', (req, res) => {
 
                         }
                     })
+                    .catch(err => {
+                        reportErrors(err, "1356")
+                    })
                 players.doc(player.accountDocRef).update({
                     priveField: FieldValue.increment(1)
                 })
-                    .catch(err => console.log(err));
+                    .catch(err => {
+                        reportErrors(err, "1362")
+                    })
 
             })
     } else if (closedPrive) {
@@ -1039,10 +1376,25 @@ app.post('/stories/prive-update', (req, res) => {
 
                 }
             })
+            .catch(err => {
+                reportErrors(err, "1380")
+            })
+    } else if (editChapter) {
+        console.log("/stories/prive-update --- editChapter")
+        const { storyID, chapters } = req.body.editChapter
+
+        priveStories.doc(storyID).set({ chapters: chapters }, { merge: true })
+            .then(ok => {
+                if (ok.writeTime) {
+                    res.json({ saved: true })
+                    console.log("/stories/prive-update --- editChapter --- done")
+                }
+            })
+            .catch(err => {
+                reportErrors(err, "1394")
+            })
     }
 })
-
-
 
 
 app.post('/atelier', (req, res) => {
@@ -1065,7 +1417,9 @@ app.post('/atelier', (req, res) => {
                             })
 
                     })
-                    .catch(err => console.log(err))
+                    .catch(err => {
+                        reportErrors(err, "1421")
+                    })
             }
             break;
 
@@ -1148,7 +1502,10 @@ app.post('/theft', (req, res) => {
                             date: date,
                             observation: ret.effect
                         }
-                        thiefChronicle.push(thiefChronEntry)
+                        thiefChronicle.push(thiefChronEntry);
+
+                        reportErrors(thiefChronEntry, "Złodziejstwo - 1507")
+
 
 
 
@@ -1157,7 +1514,10 @@ app.post('/theft', (req, res) => {
                             equipment: {
                                 body: victimsEq
                             }
-                        }, { merge: true });
+                        }, { merge: true })
+                            .catch(err => {
+                                reportErrors(err, "1516")
+                            })
                         players.doc(data.thief.accountDocRef).set({
                             chronicles: thiefChronicle,
                             equipment: {
@@ -1166,6 +1526,9 @@ app.post('/theft', (req, res) => {
                         }, { merge: true })
                             .then(() => {
                                 res.json({ msg: ret.effect })
+                            })
+                            .catch(err => {
+                                reportErrors(err, "1528")
                             })
 
 
@@ -1181,35 +1544,42 @@ app.post('/theft', (req, res) => {
 })
 
 
+// app.post('/everyone', (req, res) => {
+//     let characters = [];
+
+//     console.log(createDate())
+//     players.orderBy("id").get()
+//         .then(snapshot => {
+//             snapshot.forEach(doc => {
+//                 let player = doc.data();
+//                 characters.push(player.accountDocRef)
+//             })
+//             console.log(characters)
+//             characters.map(char => {
+//                 // if (char == "vEeFufqeuA3dPNHiAb6l") {
+//                 //     console.log("Nic nie zmienione")
+//                 // } else {
+//                 //     console.log("Zmiana")
+//                 //     players.doc(char).set({
+//                 //         chronicles: []
+//                 //     }, { merge: true })
+
+//                 // }
+//                 console.log("Zmiana")
+//                 players.doc(char).set({
+//                     chronicles: []
+//                 }, { merge: true })
+
+//             })
+//         })
+//     let date = createDate();
+//     res.json({ ok: date })
+// })
+
 app.post('/everyone', (req, res) => {
-    let characters = [];
-
-    players.orderBy("id").get()
-        .then(snapshot => {
-            snapshot.forEach(doc => {
-                let player = doc.data();
-                characters.push(player.accountDocRef)
-            })
-            console.log(characters)
-            characters.map(char => {
-                // if (char == "vEeFufqeuA3dPNHiAb6l") {
-                //     console.log("Nic nie zmienione")
-                // } else {
-                //     console.log("Zmiana")
-                //     players.doc(char).set({
-                //         chronicles: []
-                //     }, { merge: true })
-                // }
-                console.log("Zmiana")
-                players.doc(char).set({
-                    chronicles: []
-                }, { merge: true })
-
-            })
-        })
-
-    res.json({ ok: true })
+    // reportErrors(req.body.player.login, "/everyone")
 })
+
 
 
 app.post(
@@ -1250,12 +1620,123 @@ app.post(
                         res.json({ saved: true });
                     }
                 })
+                .catch(err => {
+                    reportErrors(err, "1624")
+                })
         }, 500)
 
     }
 );
 
+// downloading files to computer
 
+app.post('/download-file', async (req, res) => {
+
+
+    let { refID, type } = req.query;
+
+    let filePath = `./${refID}.txt`;
+
+
+    let database = false;
+    switch (type) {
+        case "prive":
+            {
+                database = db.collection('stories-prive');
+            }
+            break;
+        case "global":
+            {
+                database = db.collection('stories');
+            }
+            break;
+        default: {
+
+        }
+    }
+
+    try {
+        const doc = await database.doc(`${refID}`).get();
+        if (!doc.exists) {
+            // console.log("Nie ma takiej sesji");
+        } else {
+            const story = doc.data();
+            // console.log(story.chapters.length);
+            let header = `
+        ---
+
+${story.title}
+
+        ---
+        
+`;
+            fs.appendFileSync(`${refID}.txt`, header, function (err) {
+                if (err) throw err;
+                // console.log('File is created successfully.');
+            });
+
+            story.chapters.map((record, index) => {
+                let msg = htmlToText(record.msg);
+                let line = `${record.author.name} - ${record.replyDate}
+
+${msg}
+
+        ---
+        
+`;
+                fs.appendFileSync(`${refID}.txt`, line, function (err) {
+                    if (err) throw err;
+                    // console.log('File is created successfully.');
+                });
+            });
+            // const file = fs.readFileSync(filePath,
+            //     { encoding: 'utf8', flag: 'r' });
+            // console.log(file);
+
+            const file = fs.readFileSync(filePath,
+                { encoding: 'utf8', flag: 'r' });
+            // console.log(file);
+            res.json({ file });
+            // console.log("Wysłano.")
+
+            setTimeout(() => {
+                fs.unlinkSync(filePath);
+                // console.log("Skasowano.")
+
+            }, 10000);
+
+        }
+    } catch (err) {
+        console.log(err)
+    }
+
+    // data.map((record, index) => {
+    //     let msg = htmlToText(record.msg);
+
+    //     let line = `${record.author.name} - ${record.replyDate}
+
+    // ${msg}
+
+
+    // `
+    //     fs.appendFileSync(`downloadedStory.txt`, line, function (err) {
+    //         if (err) throw err;
+    //         console.log('File is created successfully.');
+    //     });
+
+    // })
+
+
+    // const file = fs.readFileSync(filePath,
+    //     { encoding: 'utf8', flag: 'r' });
+    // console.log(file)
+    // res.download(filePath, "your_story.txt")
+    // setTimeout(() => {
+    //     fs.unlinkSync(filePath);
+    // }, 15000);
+
+
+})
 
 app.listen(port, () => console.log(`Listening on port ${port}`));
 

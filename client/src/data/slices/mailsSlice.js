@@ -115,6 +115,20 @@ export const deletePlayerFromMail = player => dispatch => {
     axios.post('/mails-update', { deletedPlayer })
 }
 
+export const organizingMails = (mailsRefArray, type, priveMails, player) => dispatch => {
+
+    let mailList = {
+        type: type,
+        refsArray: [...mailsRefArray],
+        fullMailsArray: [...priveMails],
+        playerID: player.id,
+    }
+    axios.post('/mails-update', { mailList })
+        .then(res => {
+            if (res.data.saved) dispatch(fetchMails(player.login))
+        })
+}
+
 export const selectSend = state => state.m.isSend;
 
 export default mailsSlice.reducer;

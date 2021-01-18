@@ -75,6 +75,7 @@ const playerReducer = (state = initState, action) => {
                 setActive: false
             }
         case 'UPDATE_PLAYER':
+            console.log(action.payload)
             return {
                 ...state,
                 player: action.payload

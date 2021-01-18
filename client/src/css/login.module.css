@@ -1,0 +1,17 @@
+.wrap {
+    text-align: center;
+    margin: 0 auto;
+    /* background-color: #aaa; */
+    width: 100%;
+}
+
+.info {
+    display: block;
+    text-align: left;
+    margin-top: 10px 0;
+}
+
+.warning {
+    margin: 10px 0;
+    color: red;
+}

@@ -76,7 +76,7 @@ const Navbar = ({ globalStories, priveStories, isLeftHanded, fetchGlobalStories,
                 <NavLink className="navMob" to="/settings">U</NavLink>
             </nav>
             <nav className="desktop">
-                <NavLink to="/" exact className="navDesk">Herold</NavLink>
+                <NavLink to="/atelier" exact className="navDesk">Atelier</NavLink>
                 <NavLink to="/stories" className={newSessionChapter || newChapterInPrive ? "navDesk sessions newMessage" : "navDesk sessions"}>Sesje
                 <p className={newChapterInPrive ? "subLink prive new" : "subLink"}><Link to="/sessions/prive" >Sesje prywatne</Link></p>
                 </NavLink>

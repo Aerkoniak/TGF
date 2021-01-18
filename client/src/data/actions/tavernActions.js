@@ -16,6 +16,7 @@ export const fetchTavernRooms = () => dispatch => {
 }
 
 export const addTavernRecord = (tavernRecord) => dispatch => {
+    dispatch({type: 'SET_ACTIVE_FALSE'})
     console.log(tavernRecord);
     const newRecord = {}
     newRecord.replyDate = createDate();
@@ -37,6 +38,22 @@ export const addTavernRecord = (tavernRecord) => dispatch => {
             recordsArray = room.records;
             recordsArray.push(newRecord);
             tavernDB.doc(`${newRecord.room}`).set({ records: recordsArray }, { merge: true });
+            dispatch({type: 'SET_ACTIVE_TRUE'})
         })
 }
 
+
+export const deleteRecord = (recordIndex, tavernRoom) => dispatch => {
+    let records = []
+
+    tavernDB.doc(`${tavernRoom}`).get()
+        .then(doc => {
+            let room = doc.data();
+            records = room.records;
+            records.splice(recordIndex, 1)
+            tavernDB.doc(`${tavernRoom}`).set({records: records}, {merge: true});
+            dispatch({ type: 'STORY_EDITED' })
+        })
+
+    // then jest niepotrzebny, ponieważ onSnapshot w sesji załatwia reload sesji.
+}

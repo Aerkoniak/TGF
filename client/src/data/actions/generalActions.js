@@ -70,7 +70,6 @@ export const toggleAutoLog = log => dispatch => {
     Cookies.remove('autoLogLogin');
     Cookies.remove('autoLogPassword');
     if (log.argument) {
-        console.log(log)
         Cookies.set('autoLog', log.argument, { expires: 7 });
         Cookies.set('autoLogLogin', log.login, { expires: 7 });
         Cookies.set('autoLogPassword', log.pass, { expires: 7 });
@@ -160,7 +159,6 @@ export const setRank = char => dispatch => {
 }
 
 export const fetchCharactersList = argument => dispatch => {
-
     dispatch({ type: "FETCH_CHAR_START" });
     axios.post('/characters-fetch')
         .then(res => {
@@ -173,7 +171,8 @@ export const setRefreshToken = token => dispatch => {
     dispatch({ type: "SET_REFRESH_TOKEN", token });
 }
 
-export const updateActive = player => dispatch => {
+export const updateActive = (player, component) => dispatch => {
+    console.log(`updateActive() w ${component}`)
     let lastActiveTime = new Date().getTime();
     let data = {};
     data.lastActiveTime = lastActiveTime;

@@ -1,10 +1,36 @@
+
+
 .tinyEditor {
     flex-basis: 100%;
     display: flex;
     flex-direction: column;
 }
 
+
 .hiddenMsg {
     margin: 20px 0;
     padding: 10px 15px;
+}
+
+.whisper {
+    display: inline-block;
+    padding-right: 20px;
+    margin: 20px 0 10px;
+}
+
+.formControl {
+    display: flex;
+}
+.formControl input {
+    flex-basis: 50%;
+    display: inline-block;
+    padding: 5px 0;
+    /* background-color: #eee; */
+    text-align: center;
+    margin: 10px 0 20px;
+}
+
+p {
+    margin: 0;
+    padding: 0;
 }

@@ -80,8 +80,8 @@
     
     .InfoSlide {
         text-align: center;
-        background-color: #ccc;
-        height: 20vh;
+        background-color: #ddd;
+        min-height: 30vh;
         border-radius: 10px;
     }
     .storyPlayers{
@@ -98,34 +98,59 @@
         flex-wrap: wrap;
         padding: 0 0 20px 15px;
         margin-bottom: 20px;
-        border-bottom: 1px solid black;
+        border-bottom: 2px solid black;
+      }
+      .chapter p {
+          margin: 0;
       }
       .chapterAuthor {
         text-align: left;
         flex-basis: 30%;
-        margin-top: 5px;
+        padding-top: 5px;        
+        font-weight: bold;
       }
       .replyDate {
         text-align: left;
         flex-basis: 30%;
         padding-top: 5px;
       }
-      
       .chapterMsg{
         flex-basis: 100%;
         margin-top: 20px;
         padding: 0;
       }
-      .hiddenContent {
-          composes: chapterMsg;
-          padding: 10px 10px;
+
+      p.hiddenContent {
+          width: 100%;
+          display: block;
+          padding: 10px 5px;
+          margin: 20px 0;
+          /* border-top: 1px solid grey;
+          border-bottom: 1px solid grey; */
           background-color: rgba(200, 200, 200, 0.6)
+      }
+      .editedInfo {
+          font-size: 14px;
+          padding-top: 40px;
+      }
+      .showHistory{
+        font-size: 14px;
+        text-align: center;
+        width: 100%;
+        padding: 5px 0 20px;
+      }
+      .history {
+        width: 100%;
+      }
+      .prevVersion{
+          /* display:flex; */
+        padding-bottom: 10px;
       }
       
       .deleteChapter {
         position: absolute;
-        top: 5%;
-        left: 90%;        
+        top: 5px;
+        right: 5px;        
         width: 25px;
         height: 25px;
         border-radius: 50%;
@@ -133,5 +158,28 @@
         line-height: 16px;
         border: 2px solid grey;
         cursor: pointer;
+        transition: 0.3s;
+      }
+      .editChapter {
+          composes: deleteChapter;
+          top: calc(100% - 30px);
+      }
+      .deleteChapter:hover, .editChapter:hover {
+          color: white;
+          background-color: #000;
+          border-color: #000;
+      }
+      .closeStoryBtn {
+          margin: 10px auto;
+      }
+      .confirmClosing {
+          transform: translateX(20px);
+      }
+      .deleteChapterConfirmation {
+          width: 100%;
+      }
+      .deleteChapterBtn {
+          display: block;
+        margin: 0 auto;
       }
   }

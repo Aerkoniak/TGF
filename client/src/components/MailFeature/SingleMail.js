@@ -175,6 +175,11 @@ const SingleMail = ({ player, mail, characters, sendMailReply, fetchMails, chang
             <div className="mailsChapters">
                 {mailsChapters}
             </div>
+            <div className="mailRecord" key={`${mail.replyDate}`}>
+                <p className="storyAuthor">{mail.sender.name} <span className="mailReplyDate">{mail.startDate}</span></p>
+
+                <div className="recordMsg">{parse(mail.startText)}</div>
+            </div>
 
             <ProfileViewer />
         </section>

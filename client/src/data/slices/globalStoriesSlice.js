@@ -52,7 +52,9 @@ export const createStory = story => dispatch => {
             let id = res.data.id
             dispatch(fetchGlobalStories());
             dispatch(toggleID(id));
-            dispatch(toggleID(false));
+            setTimeout(() => {
+                dispatch(toggleID(false));
+            }, 2000)
         })
 }
 
@@ -69,10 +71,23 @@ export const addChapter = (chapter) => dispatch => {
     author.rank = chapter.player.rank;
     author.docRef = chapter.player.accountDocRef;
     newChapter.author = author;
+    if (chapter.hiddenContent) {
+        newChapter.hiddenContent = chapter.hiddenContent
+    }
     if (chapter.nextTurn) {
         newChapter.nextTurn = createDate(chapter.nextTurn)
     }
     axios.post('/stories-update', { newChapter })
+    dispatch(toggleSend(true));
+}
+
+export const editChapter = (chapter) => dispatch => {
+    dispatch(toggleSend(false));
+    let editChapter = { ...chapter };
+
+    console.log(editChapter)
+
+    axios.post('/stories-update', { editChapter })
     dispatch(toggleSend(true));
 }
 
@@ -89,6 +104,40 @@ export const changeSeenInSession = (id, refID) => dispatch => {
     seen.refID = refID;
     axios.post('/stories-update', { seen })
     dispatch(toggleID(false));
+}
+
+export const closeStory = (story, shutting) => dispatch => {
+    let closeStory = { story };
+    closeStory.closeTime = createDate();
+    closeStory.place = "4";
+    closeStory.refID = story.refID;
+    closeStory.shutting = shutting;
+    // console.log(closeStory)
+    axios.post('/stories-update', { closeStory })
+}
+
+export const toggleObserve = (player, story) => dispatch => {
+    let modifiedSpectators = { ...story };
+    let specIndex = false;
+    let spectators = [...modifiedSpectators.spectators]
+
+    spectators.map((spectator, index) => {
+        if (spectator.id === player.id) {
+            specIndex = index;
+        }
+    })
+    if (specIndex) {
+        spectators.splice(specIndex, 1);
+    } else {
+        spectators.push({
+            id: player.id,
+            name: player.name,
+            docRef: player.accountDocRef,
+            seen: true
+        })
+    }
+    modifiedSpectators.spectators = spectators;
+    axios.post('/stories-update', { modifiedSpectators })
 }
 
 

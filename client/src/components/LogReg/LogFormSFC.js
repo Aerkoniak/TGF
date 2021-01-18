@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Redirect } from 'react-router-dom'
+import { Redirect, Link } from 'react-router-dom'
 import { connect } from 'react-redux';
 import { logInPlayer } from '../../data/actions/generalActions';
 import { signInFirebase } from '../../data/firebase/firebaseActions';
+import { Spinner, Button } from 'react-bootstrap';
+
+import styles from '../../css/login.module.css'
 
 
 
@@ -38,12 +41,18 @@ const LogFormSFC = ({ player, loginClassName, msg, isLogged, logInPlayer, signIn
 
             <input className="logInput" type="text" id="login" placeholder="twój e-mail" value={login} onChange={(e) => setLogin(e.target.value)} />
             <input className="logInput" type="password" id="password" placeholder="twoje hasło" value={password} onChange={(e) => setPassword(e.target.value)} />
-            { isLogged === "checking" ?
-                <div className="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-                :
-                <input className='loginSubmit' type="submit" value="Zaloguj" onSubmit={submitLogin} />
-            }
-            { warnings ? <p>{warnings}</p> : null}
+
+
+
+            <div className={styles.wrap}>
+                {warnings ? <p className={styles.warning}>{warnings}</p> : null}
+
+                {isLogged === "checking" ? <Spinner animation="border" variant="danger" /> : <Button variant="outline-dark" type="submit" onClick={submitLogin} onSubmit={submitLogin} >Zaloguj</Button>}
+
+                <p className={styles.info}><Link to="/login/reminder">Zapomniałem hasła</Link></p>
+            </div>
+
+
             {isLogged === "logged" ? <Redirect to="/" /> : null}
         </form>
     );

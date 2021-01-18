@@ -2,8 +2,6 @@ import firebase from 'firebase/app';
 import 'firebase/firestore';
 import 'firebase/auth';
 
-
-
 export const FirebaseConfig = {
   apiKey: process.env.REACT_APP_API_KEY_FIREBASE,
   authDomain: process.env.REACT_APP_AUTH_DOMAIN_FB,
@@ -21,6 +19,7 @@ export const Firebase = () => firebase.initializeApp(FirebaseConfig);
 const db = firebase.firestore()
 export const auth = firebase.auth()
 
+export const FieldValue = firebase.firestore.FieldValue;
 
 export const mailsDB = db.collection('mails');
 export const storiesDB = db.collection('stories');

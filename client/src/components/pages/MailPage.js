@@ -38,7 +38,7 @@ const MailPage = ({ mails, player }) => {
     return (
         <section className="mailPage mainPage">
             <ul className={styles.mailTypeLinks}>
-                <li> <NavLink className={newMessage ? styles.newMailTypeLink : styles.typeLink} to="/mails/prive">Poczta prywatna</NavLink> </li>
+                <li> <NavLink activeClassName={styles.typeLinkActive} className={newMessage ? styles.newMailTypeLink : styles.typeLink} to="/mails/prive">Poczta prywatna</NavLink> </li>
                 <li> <NavLink className={styles.typeLink} to="/mails/fab">Poczta fabularna</NavLink> </li>
             </ul>
 

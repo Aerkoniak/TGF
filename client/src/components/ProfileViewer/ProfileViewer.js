@@ -3,29 +3,28 @@ import { connect } from 'react-redux';
 
 import { fetchCharactersList, updateActive } from '../../data/actions/generalActions';
 import { fetchMails } from '../../data/actions/mailsActions';
-import parse from 'html-react-parser';
+import { Link } from 'react-router-dom';
 
 
 const ProfileViewer = ({ player, isLogged, characters, fetchCharactersList, fetchMails, updateActive }) => {
 
     const [playerLogged, setPlayerLog] = useState(false)
 
-    useEffect(() => {
-        if (isLogged === "logged") {
-            fetchCharactersList();
-            fetchMails(player.id);
-            updateActive(player);
-        }
-    }, [isLogged])
+    // useEffect(() => {
+    //     if (isLogged === "logged") {
+    //         fetchCharactersList();
+    //     }
+    // }, [isLogged])
 
     useEffect(() => {
         if (characters.length > 0) {
             setPlayerLog(true);
-        } 
+        }
     }, [characters])
 
     const [onlinePlayers, setOnlinePlayers] = useState([]);
     const [offlinePlayers, setOfflinePlayers] = useState([]);
+    const [offlinePlayersShown, showOfflinePlayers] = useState(false);
 
     const [character, chooseCharObj] = useState(false)
 
@@ -59,42 +58,16 @@ const ProfileViewer = ({ player, isLogged, characters, fetchCharactersList, fetc
 
     const playersOnline = onlinePlayers.map((character, index) => ((
         <li className="characterListElement" key={characters + index}>
-            <p onClick={chooseCharacter} id={character.name}>{character.name}</p>
+            <p onClick={chooseCharacter} id={character.name}><Link to={`/characters/id${character.id}/${character.profile[0].name}`}>{character.name}</Link></p>
         </li>
     )))
     const playersOffline = offlinePlayers.map((character, index) => ((
         <li className="characterListElement" key={characters + index}>
-            <p onClick={chooseCharacter} id={character.name}>{character.name}</p>
+            <p onClick={chooseCharacter} id={character.name}><Link to={`/characters/id${character.id}/${character.profile[0].name}`}>{character.name}</Link></p>
         </li>
     )))
 
-    const checkRang = (player) => {
-        switch (player.rank) {
-            case 0:
-                return (
-                    <p className="rank">Administrator</p>
-                )
-                break;
-            case 2:
-                return (
-                    <p className="rank">Mistrz Gry</p>
-                )
-                break;
-            case 3:
-                return (
-                    <p className="rank">Mieszkaniec</p>
-                )
-                break;
-            case 4:
-                return (
-                    <p className="rank">Przybysz</p>
-                )
-                break;
 
-            default:
-                break;
-        }
-    }
 
     return (
         <>
@@ -105,28 +78,16 @@ const ProfileViewer = ({ player, isLogged, characters, fetchCharactersList, fetc
                             <h3 className="test">Gracze online:</h3>
                             {playersOnline}
                         </ul>
-                        <ul className="offline">
-                            <h3 className="test">Gracze offline:</h3>
-                            {playersOffline}
-                        </ul>
+                        <button className="offlineBtn" onClick={() => showOfflinePlayers(!offlinePlayersShown)}>Pokaż graczy offline</button>
+                        {offlinePlayersShown ?
+                            <ul className="offline">
+                                {playersOffline}
+                            </ul>
+                            : null}
+
                     </div>
                     : null}
-
-
-
             </section>
-            <div className={character ? "playersViewer" : "playersViewer hidden"}>
-                {character ? <p className="closeViewer" onClick={() => chooseCharObj(false)}>zamknij podgląd</p> : null}
-                {character ? <div className="header">
-                    <p className="header">{character.name}</p>
-                    <p className="header">{checkRang(character)}</p>
-                    <p className="header">Rasa: {character.race}</p>
-                    <p className="header">Wiek: {character.age}</p>
-                    <p className="header">Klasa: {character.class}</p>
-                </div> : null}
-
-                {character ? <div className="mainProfile">{parse(character.profile)}</div> : null}
-            </div>
 
         </>
     );

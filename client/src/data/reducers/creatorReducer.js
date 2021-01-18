@@ -75,6 +75,13 @@ const initState = {
         { name: "Wspinaczka", base: "Zręczność", cat: 4 },
         { name: "Wykształcenie", base: "Inteligencja", cat: 4 },
         { name: "Zielarstwo", base: "Inteligencja", cat: 4 },
+        { name: "Znajomość Miasta", base: "Inteligencja", cat: 4 },
+
+        { name: "Magia runiczna", base: "Inteligencja", cat: 5 },
+        { name: "Magia szamańska", base: "Inteligencja", cat: 5 },
+        { name: "Magia spirytystyczna", base: "Inteligencja", cat: 5 },
+        { name: "Magia kapłańska", base: "Inteligencja", cat: 5 },
+
     ],
     done: false,
 };

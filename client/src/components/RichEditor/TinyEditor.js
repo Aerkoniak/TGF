@@ -6,6 +6,7 @@ import styles from '../../css/editor.module.css'
 
 import { Button } from 'react-bootstrap';
 
+import { createDate } from '../../data/usefullFN';
 
 
 
@@ -24,7 +25,40 @@ class TinyEditor extends Component {
     }
 
     confirmAction = () => {
-        const { addProfileOverlap, title, player, sendMailReply, place, addChapterPrive, addChapterGlobal, createPriveStory, createStory, sendMail, editOverlap, addTavernRecord, updateDiary } = this.props;
+        const { addProfileOverlap, title, player, sendMailReply, place, addChapterPrive, addChapterGlobal, createPriveStory, createStory, sendMail, editOverlap, addTavernRecord, updateDiary, editChapter } = this.props;
+
+        const editChapterSupporter = (oldChapter) => {
+            let chapter = { ...oldChapter };
+            // console.log(chapter);
+            let recordHistory = [];
+            if (chapter.recordHistory) {
+                recordHistory = [...chapter.recordHistory];
+            }
+            recordHistory.push(chapter.msg);
+            chapter.recordHistory = recordHistory;
+            // console.log(chapter);
+            chapter.msg = this.state.content;
+            chapter.lastEdit = {
+                id: player.id,
+                name: player.name,
+                when: createDate()
+            }
+            // console.log(chapter);
+            let recordIndex = false;
+
+            let chapters = [...place.chapters];
+            chapters.map((oneChapter, index) => {
+                if (oneChapter.id === chapter.id) recordIndex = index
+            });
+            chapters.splice(recordIndex, 1, chapter);
+
+            let editedChapter = {
+                storyID: chapter.storyID,
+                chapters: chapters
+            }
+            console.log(editedChapter);
+            return editedChapter
+        }
 
         if (addProfileOverlap) {
             let profile = {
@@ -42,39 +76,67 @@ class TinyEditor extends Component {
             sendMailReply(message)
         } else if (addChapterPrive) {
             let chapter = {};
-            chapter.place = place;
-            chapter.player = player;
-            chapter.text = this.state.content;
-            addChapterPrive(chapter);
+
+            if (this.props.initialValue) {
+                const editedChapter = editChapterSupporter(this.props.recordBefore);
+                // console.log(editedChapter)
+                editChapter(editedChapter);
+            } else {
+                chapter.place = place;
+                chapter.player = player;
+                chapter.text = this.state.content;
+                if (this.props.withHiddenContent) {
+                    chapter.hiddenContent = this.state.hiddenContent;
+                }
+                addChapterPrive(chapter);
+            }
+            this.setState({
+                content: ""
+            })
         } else if (addChapterGlobal) {
-            let chapter = {};
-            if (this.props.isAuthor) {
-                chapter.nextTurn = `${this.state.dateValue}, ${this.state.timeValue}`
-            };
-            chapter.text = this.state.content;
-            chapter.place = place;
-            chapter.player = player;
-            if (this.props.withHiddenContent) {
-                chapter.hiddenContent = this.state.hiddenContent;
+            if (this.props.initialValue) {
+
+                const editedChapter = editChapterSupporter(this.props.recordBefore);
+                // console.log(editedChapter)
+                editChapter(editedChapter);
+
+            } else {
+                let chapter = {};
+                if (this.props.isAuthor) {
+                    chapter.nextTurn = `${this.state.dateValue}, ${this.state.timeValue}`
+                };
+                chapter.text = this.state.content;
+                chapter.place = place;
+                chapter.player = player;
+                if (this.props.withHiddenContent) {
+                    chapter.hiddenContent = this.state.hiddenContent;
+                }
+
+                if (this.props.isAuthor) {
+                    if (!this.state.dateValue || !this.state.timeValue) {
+                        this.setState({
+                            warnings: "Musisz ustawić termin odpisu."
+                        })
+                    } else addChapterGlobal(chapter)
+                } else {
+                    addChapterGlobal(chapter)
+                }
             }
 
-            if (this.props.isAuthor) {
-                if (!this.state.dateValue || !this.state.timeValue) {
-                    this.setState({
-                        warnings: "Musisz ustawić termin odpisu."
-                    })
-                } else addChapterGlobal(chapter)
-            } else {
-                addChapterGlobal(chapter)
-            }
 
         } else if (createPriveStory) {
+
             let priveStory = {}
             priveStory.title = title;
             priveStory.players = this.props.playersInSession;
-            priveStory.author = player;
+            priveStory.author = {
+                name: player.name,
+                id: player.id,
+                accountDocRef: player.accountDocRef
+            };
             priveStory.text = this.state.content;
 
+            console.log(priveStory)
             createPriveStory(priveStory);
         } else if (createStory) {
             let story = {}
@@ -112,6 +174,10 @@ class TinyEditor extends Component {
             let overlap = {};
             overlap.player = player;
             overlap.name = this.props.overlapName;
+            if (this.props.newTitle) {
+                overlap.name = this.props.newTitle;
+                overlap.oldName = this.props.overlapName;
+            }
             overlap.text = this.state.content;
             editOverlap(overlap);
             this.props.closeEditor();
@@ -153,7 +219,7 @@ class TinyEditor extends Component {
                         height: 500,
                         // skin: 'oxide-dark',
                         // content_css: 'dark',
-                        menubar: false,
+                        menubar: true,
                         plugins: [
                             'advlist autolink lists link image',
                             'charmap print preview anchor help',

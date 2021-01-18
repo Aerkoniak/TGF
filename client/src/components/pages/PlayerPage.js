@@ -12,6 +12,8 @@ import { addProfileOverlap } from '../../data/actions/creatorActions';
 import { fetchCharactersList } from '../../data/actions/generalActions';
 import { updateActive } from '../../data/actions/generalActions';
 import Diary from '../CharacterPage/overlaps/Diary';
+import Overview from '../CharacterPage/Overview';
+import Equip from '../CharacterPage/overlaps/Equip';
 
 
 
@@ -49,13 +51,17 @@ const PlayerPage = ({ character, player, addProfileOverlap, fetchCharactersList 
         if (character.id === player.id) {
             const unsubscribe = playersDB.doc(`${player.accountDocRef}`)
                 .onSnapshot(doc => {
+                    console.log("PlayerPage - useEffect - onSnapshot - res")
                     let data = doc.data();
                     if (data.profile.length > character.profile.length) {
                         setNewOverlap(false);
                         fetchCharactersList();
+                        console.log("PlayerPage - useEffect - onSnapshot - nextFetch")
+
                     }
 
                 })
+            console.log("PlayerPage - useEffect - updateActive")
             updateActive(player)
             const myInterval = setInterval(updateActive(player), 300000);
             setTimeout(() => {
@@ -101,11 +107,13 @@ const PlayerPage = ({ character, player, addProfileOverlap, fetchCharactersList 
                     {checkRang(character)}
                     <h2 className="metrics">{character.name}</h2>
                     <p className="metrics">Rasa: {character.race}</p>
-                    <p className="metrics">Z zamiłowania: {character.class}</p>
+                    <p className="metrics">Klasa: {character.class}</p>
+                    <p className="metrics">Pochodzenie: {character.origin}</p>
                     <p className="metrics">Wiek: {character.age} lat</p>
                     {character.height ? <p className="metrics">Wzrost: {character.height} centymetrów</p> : null}
-                    {character.posture ? <p className="metrics">{character.posture} postura.</p> : null}
-                    {character.hairColor ? <p className="metrics">{`Ma ${character.hairColor} włosy i ${character.eyeColor} oczy.`}</p> : null}
+                    {character.posture ? <p className="metrics">Postura: {character.posture}</p> : null}
+                    {character.eyeColor ? <p className="metrics">{`Ma ${character.eyeColor} oczy.`}</p> : null}
+                    {character.hairColor === "łysy" ? <p className="metrics">{`Jest łysą istotą.`}</p> : <p className="metrics">{`Ma ${character.hairColor} włosy.`}</p>}
                 </div>
             </div>
 
@@ -116,13 +124,17 @@ const PlayerPage = ({ character, player, addProfileOverlap, fetchCharactersList 
                 <div className="profileNav">
                     <NavLink key={"a" + character.id} to={`/characters/id${character.id}/${character.profile[0].name}`}>Profil</NavLink>
                     <NavLink to={`/characters/id${character.id}/diary`}>Kronika</NavLink>
-                    <NavLink to={`/characters/id${character.id}/kp`}>Karta Postaci</NavLink>
+                    <NavLink to={`/characters/id${character.id}/overview`}>Karta Postaci</NavLink>
+                    <NavLink to={`/characters/id${character.id}/dayEquip`}>Ekwipunek codzienny</NavLink>
                 </div>
 
 
 
                 <Switch>
-                    <Route key={1 * 2} path={`/characters/id${character.id}/diary`} render={(routeProps) => (<Diary {...routeProps} character={character} />)} />
+                    <Route key={1 * 2} path={`/characters/id${character.id}/diary`} render={(routeProps) => (<Diary {...routeProps} character={character} inPlayerPage />)} />
+                    {overlapsRoutes}
+                    <Route key={character.id * 2} path={`/characters/id${character.id}/overview`} render={(routeProps) => (<Overview {...routeProps} character={character} inPlayerPage />)} />
+                    <Route key={1 * 2} path={`/characters/id${character.id}/dayEquip`} render={(routeProps) => (<Equip {...routeProps} character={character} inPlayerPage />)} />
                     {overlapsRoutes}
                 </Switch>
             </div>

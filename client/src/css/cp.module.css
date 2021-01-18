@@ -1,0 +1,15 @@
+/* PODSUMOWANIE */
+
+/* STAGEONE */
+
+.labelInfo {
+    font-size: 18px;
+    text-align: center;
+}
+.labelValue {
+    font-weight: bold;
+}
+
+@media (min-width: 1280px) {
+    
+}

@@ -19,7 +19,7 @@ const Overview = ({ player, character }) => {
             // zrób moduł pod KP, dla ekwipunku i podlądu KP i potem Diary
             <>
                 <p className="test">{skill.name}</p>
-                {player.rank <= 2 ? <p className="test">{skill.lvl}</p> : null}
+                {player.rank <= 2 ? <span>{skill.lvl}</span> : null}
             </>
         )
     })
@@ -27,7 +27,7 @@ const Overview = ({ player, character }) => {
         return (
             <>
                 <p className="test">{stats.name}</p>
-                {player.rank <= 2 ? <p className="test">{stats.val}</p> : null}
+                {player.rank <= 2 ? <span>{stats.val}</span> : null}
             </>
         )
     })

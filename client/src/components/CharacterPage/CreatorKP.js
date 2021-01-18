@@ -1,4 +1,7 @@
 import React, { useState, useEffect } from 'react';
+
+import styles from '../../css/cp.module.css'
+
 import { Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { playersDB } from '../../data/firebase/firebaseConfig';
@@ -15,7 +18,7 @@ const CreatorKP = ({ player, creator, isLogged, setCharacter, fetchPlayer }) => 
                 .onSnapshot(doc => {
                     let data = doc.data();
                     fetchPlayer(player.accountDocRef);
-                    console.log("Pobrano dane")
+                    console.log("CreatorKP - useEffect - onSnapshot - res i fetch")
                 })
             return function cleanup() {
                 unsubscribe()
@@ -33,10 +36,11 @@ const CreatorKP = ({ player, creator, isLogged, setCharacter, fetchPlayer }) => 
             confirmStageOne(true);
             setRedirect(false)
         }
-        else if (player.name && player.race && player.class) {
+        else if (player.name && player.race && player.class && player.origin) {
             confirmStageOne(false);
             setRaceObject("");
             setClassObject("");
+            setOriginObject("");
             confirmStageTwo(true);
             setRedirect(false)
         }
@@ -50,6 +54,7 @@ const CreatorKP = ({ player, creator, isLogged, setCharacter, fetchPlayer }) => 
     const [nameValue, setNameValue] = useState("");
     const [raceValue, setRaceValue] = useState("");
     const [classValue, setClassValue] = useState("");
+    const [originValue, setOriginValue] = useState("");
     const [warnings, setWarnings] = useState("");
 
     const [ageValue, setAgeValue] = useState(null);
@@ -61,6 +66,7 @@ const CreatorKP = ({ player, creator, isLogged, setCharacter, fetchPlayer }) => 
 
     const [raceObject, setRaceObject] = useState("");
     const [classObject, setClassObject] = useState("");
+    const [originObject, setOriginObject] = useState("");
     const [baseRaseStats, setRaceStats] = useState([]);
     const [baseAbilitiesArray, setAbilities] = useState([]);
 
@@ -82,6 +88,16 @@ const CreatorKP = ({ player, creator, isLogged, setCharacter, fetchPlayer }) => 
             }
         })
     }
+    const setOrigin = e => {
+        setOriginValue(e.target.value)
+        creator.origin.map(origin => {
+            if (origin.id === e.target.value) {
+                setOriginObject(origin);
+                // setAbilities(origin.desc);
+            }
+        })
+    }
+
     const setAge = e => {
         let age = e.target.value;
 
@@ -116,7 +132,9 @@ const CreatorKP = ({ player, creator, isLogged, setCharacter, fetchPlayer }) => 
             setNameValue("");
             setRaceValue("");
             setClassValue("");
+            setOriginValue("");
             setRaceObject("");
+            setOriginObject("");
             setClassObject("");
         } else {
 
@@ -126,6 +144,7 @@ const CreatorKP = ({ player, creator, isLogged, setCharacter, fetchPlayer }) => 
                     name: nameValue,
                     race: raceValue,
                     class: classValue,
+                    origin: originValue,
                     accountDocRef: player.accountDocRef,
                     type: "stageOne"
                 }
@@ -171,10 +190,12 @@ const CreatorKP = ({ player, creator, isLogged, setCharacter, fetchPlayer }) => 
     const classOptions = creator.classes.map(clas => ((
         <option value={clas.id}>{clas.name}</option>
     )))
+    const originOptions = creator.origin.map(origin => ((
+        <option value={origin.id}>{origin.name}</option>
+    )))
 
     return (
-        <section className="creatorKP">
-
+        <section>
             {stageOne ? <>
                 <div className="stageOne">
                     <h2 className="test">Kreator Postaci - etap I</h2>
@@ -193,6 +214,12 @@ const CreatorKP = ({ player, creator, isLogged, setCharacter, fetchPlayer }) => 
                         {classOptions}
                     </select>
 
+                    <label className="creatorLabel" htmlFor="class">Wybierz swoje pochodzenie:</label>
+                    <select className="creatorInput" name="" id="class" value={originValue} onChange={setOrigin}>
+                        <option value=""></option>
+                        {originOptions}
+                    </select>
+
                     <button className="confirmStages" id="confirm" onClick={ConfirmStageOne} >Zaakceptuj</button>
                     <button className="confirmStages" id="reset" onClick={ConfirmStageOne} >Zresetuj</button>
 
@@ -202,9 +229,9 @@ const CreatorKP = ({ player, creator, isLogged, setCharacter, fetchPlayer }) => 
                 :
                 isCreatorComplete ? null :
                     <div className="stageOne">
-                        <p className="test">Imię: <span className="kp">{player.name}</span> </p>
-                        <p className="test">Rasa: <span className="kp">{player.race}</span> </p>
-                        <p className="test">Klasa: <span className="kp">{player.class}</span></p>
+                        <p className={styles.labelInfo}>Imię: <span className={styles.labelValue}>{player.name}</span> </p>
+                        <p className={styles.labelInfo}>Rasa: <span className={styles.labelValue}>{player.race}</span> </p>
+                        <p className={styles.labelInfo}>Klasa: <span className={styles.labelValue}>{player.class}</span></p>
                     </div>
             }
 
@@ -220,17 +247,21 @@ const CreatorKP = ({ player, creator, isLogged, setCharacter, fetchPlayer }) => 
                     <label className="creatorLabel" htmlFor="posture">Wybierz posturę swojej postaci:</label>
                     <select className="creatorInput" name="" id="posture" value={postureValue} onChange={e => setPostureValue(e.target.value)}>
                         <option value=""></option>
-                        <option value="Chudzielec">Niedowaga</option>
-                        <option value="Zwykła">Zwykła</option>
-                        <option value="Umięśniona">Umięśniona</option>
-                        <option value="Nadwaga">Nadwaga</option>
+                        <option value="chorobliwie chudy">Niedowaga</option>
+                        <option value="żylast">Żylasty</option>
+                        <option value="przeciętn">Zwykła</option>
+                        <option value="umięśnion">Umięśniona</option>
+                        <option value="tęg">Nadwaga</option>
+                        <option value="grub">Otyły</option>
                     </select>
 
                     <label className="creatorLabel" htmlFor="hair">Wybierz kolor włosów:</label>
                     <select name="" id="hair" className="creatorInput" value={hairColor} onChange={e => setHairColor(e.target.value)}>
                         <option value=""></option>
                         <option value="blond">Blond</option>
+                        <option value="rude">Rude</option>
                         <option value="brązowe">Brązowe</option>
+                        <option value="siwe">Siwe</option>
                         <option value="czarne">Czarne</option>
                         <option value="łysy">brak włosów</option>
                     </select>
@@ -239,9 +270,10 @@ const CreatorKP = ({ player, creator, isLogged, setCharacter, fetchPlayer }) => 
                     <label className="creatorLabel" htmlFor="eyes">Wybierz kolor oczu:</label>
                     <select name="" id="eyes" className="creatorInput" value={eyeColor} onChange={e => setEyesColor(e.target.value)}>
                         <option value=""></option>
-                        <option value="niebieskie">Niebieskie</option>
                         <option value="zielone">Zielone</option>
+                        <option value="niebieskie">Niebieskie</option>
                         <option value="brązowe">Brązowe</option>
+                        <option value="szare">Szare</option>
                         <option value="czarne">Czarne</option>
                     </select>
 
@@ -255,7 +287,12 @@ const CreatorKP = ({ player, creator, isLogged, setCharacter, fetchPlayer }) => 
 
 
             <div className="infoCreator">
-                {raceObject ? <p>Rasy:</p> : null}
+                {/* {originObject ? <p>Pochodzenie:</p> : null} */}
+                {originObject ? <div>
+                    <h3 className="name">{originObject.name}</h3>
+                    {originObject.desc}
+                </div> : null}
+                {/* {raceObject ? <p>Rasy:</p> : null} */}
                 {raceObject ? <div>
                     <h3 className="name">{raceObject.name}</h3>
                     <p className="desc">{raceObject.desc}</p>
@@ -265,11 +302,11 @@ const CreatorKP = ({ player, creator, isLogged, setCharacter, fetchPlayer }) => 
                         {baseStats}
                     </ul>
                 </div> : null}
-                {classObject ? <p>Klasy:</p> : null}
+                {/* {classObject ? <p>Klasy:</p> : null} */}
                 {classObject ? <div>
                     <h3 className="name">{classObject.name}</h3>
                     <p className="desc">Lorem ipsum dolor sit amet consectetur adipisicing elit. Odit eum et iste molestiae ullam, aspernatur, ut, dicta deleniti ratione ea molestias perspiciatis. Dolor in eos labore magnam beatae, eaque vero!</p>
-                    <p>Bazowe statystyki:</p>
+                    <p>Podstawowe umiejętności:</p>
                     <ul className="baseStats" >
                         {baseAbilities}
                     </ul>
